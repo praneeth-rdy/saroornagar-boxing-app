@@ -27,6 +27,7 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | B-07 | Edge Function `admin-staff` (create, reset_password, set_blocked) | done (2026-11-05), deployed 2026-11-05 (version 1) |
 | B-08 | Harden profile creation (app_metadata role) and revoke anon select (`20261105081756_harden_profiles.sql`) | done (2026-11-05), applied to hosted |
 | B-09 | Merge `profiles_select_own` and `profiles_select_staff` into one policy (performance advisor: multiple permissive policies) | todo |
+| B-11 | Apply `20261105111738_fee_tier_800.sql` to hosted (the MCP apply was blocked by the permission classifier on 2026-11-05; hosted still reports 1000 for seniors) | blocked on the owner's approval of the prompt |
 | B-10 | Hosted migration history carries MCP timestamps, not file names; run `supabase migration repair` before any `db push` | todo (only if db push is ever used) |
 
 ## App

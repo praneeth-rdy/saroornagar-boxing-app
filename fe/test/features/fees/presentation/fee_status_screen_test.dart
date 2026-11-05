@@ -52,15 +52,15 @@ void main() {
       );
       expect(
         feeStatusSubtitle(
-          status(tier: 1000, paid: 1000, on: DateTime(2026, 11, 3)),
+          status(tier: 800, paid: 800, on: DateTime(2026, 11, 3)),
         ),
-        'Paid 1000 on 3 Nov',
+        'Paid 800 on 3 Nov',
       );
       expect(
-        feeStatusSubtitle(status(tier: 1000, paid: 500)),
-        'Partly paid 500 of 1000',
+        feeStatusSubtitle(status(tier: 800, paid: 500)),
+        'Partly paid 500 of 800',
       );
-      expect(feeStatusSubtitle(status(tier: 1000)), 'Unpaid · 1000 due');
+      expect(feeStatusSubtitle(status(tier: 800)), 'Unpaid · 800 due');
       expect(feeStatusSubtitle(status()), 'No date of birth, tier unknown');
       expect(feeStatusSubtitle(status(paid: 700)), 'Paid 700');
     });
@@ -80,7 +80,7 @@ void main() {
           fixturePayment(
             id: 'p1',
             traineeId: 'a',
-            amount: 1000,
+            amount: 800,
             paidOn: DateTime(2026, 11, 3),
           ),
           fixturePayment(id: 'p2', traineeId: 'b', amount: 500),
@@ -91,9 +91,9 @@ void main() {
 
       expect(find.text('November 2026'), findsOneWidget);
       expect(find.text('2 unpaid · 2 paid'), findsOneWidget);
-      expect(find.text('Paid 1000 on 3 Nov'), findsOneWidget);
-      expect(find.text('Partly paid 500 of 1000'), findsOneWidget);
-      expect(find.text('Unpaid · 1000 due'), findsOneWidget);
+      expect(find.text('Paid 800 on 3 Nov'), findsOneWidget);
+      expect(find.text('Partly paid 500 of 800'), findsOneWidget);
+      expect(find.text('Unpaid · 800 due'), findsOneWidget);
       expect(find.text('No date of birth, tier unknown'), findsOneWidget);
       // Everyone but the fully paid row still owes, so offers Record.
       expect(find.widgetWithText(LinkButton, 'Record'), findsNWidgets(3));
@@ -117,7 +117,7 @@ void main() {
         _trainee('e', 'Esha Tierless Unpaid', null),
       ],
       payments: [
-        fixturePayment(id: 'p1', traineeId: 'a', amount: 1000),
+        fixturePayment(id: 'p1', traineeId: 'a', amount: 800),
         fixturePayment(id: 'p2', traineeId: 'b', amount: 500),
         fixturePayment(id: 'p3', traineeId: 'd', amount: 700),
       ],

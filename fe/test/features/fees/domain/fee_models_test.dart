@@ -16,15 +16,15 @@ FeeStatus _status({int? tier, int paid = 0}) => FeeStatus(
 void main() {
   group('FeeStatus', () {
     test('isPaid is true for any payment', () {
-      expect(_status(tier: 1000).isPaid, isFalse);
-      expect(_status(tier: 1000, paid: 1).isPaid, isTrue);
+      expect(_status(tier: 800).isPaid, isFalse);
+      expect(_status(tier: 800, paid: 1).isPaid, isTrue);
       expect(_status(paid: 500).isPaid, isTrue);
     });
 
     test('outstanding is the tier less the paid amount, floored at 0', () {
-      expect(_status(tier: 1000).outstanding, 1000);
-      expect(_status(tier: 1000, paid: 400).outstanding, 600);
-      expect(_status(tier: 1000, paid: 1000).outstanding, 0);
+      expect(_status(tier: 800).outstanding, 800);
+      expect(_status(tier: 800, paid: 400).outstanding, 400);
+      expect(_status(tier: 800, paid: 800).outstanding, 0);
       expect(_status(tier: 500, paid: 900).outstanding, 0);
     });
 

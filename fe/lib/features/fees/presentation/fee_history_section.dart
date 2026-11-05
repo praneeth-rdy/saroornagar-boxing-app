@@ -147,7 +147,7 @@ class _PaymentsCard extends ConsumerWidget {
   }
 }
 
-/// `1000 · Cash · paid 3 Nov`, with the note on the next line.
+/// `800 · Cash · paid 3 Nov`, with the note on the next line.
 String _paymentDetails(FeePayment payment) {
   final line =
       '${payment.amount} · ${paymentMethodLabel(payment.method)} · '

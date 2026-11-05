@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/errors/app_exception.dart';
 import '../../../core/models/payment_method.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/india_date.dart';
@@ -12,8 +14,9 @@ import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/choice_row.dart';
-import '../../../core/widgets/date_field.dart';
+import '../../../core/widgets/eyebrow.dart';
 import '../../../core/widgets/inline_banner.dart';
+import '../../../core/widgets/link_button.dart';
 import '../../../core/widgets/list_row.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../today/presentation/today_providers.dart';
@@ -21,24 +24,30 @@ import '../../trainees/domain/trainee.dart';
 import '../../trainees/presentation/trainee_avatar.dart';
 import '../../trainees/presentation/trainee_providers.dart';
 import 'fee_providers.dart';
-import 'month_navigator.dart';
 
-// Same bounds and messages as `record_fee_payment`.
-const _minAmount = 1;
-const _maxAmount = 100000;
-const _amountDigits = 6;
+// Same note limit and method message as `record_fee_payment`.
 const _noteMaxLength = 300;
 const _noteLines = 4;
-const _amountMessage = 'Enter an amount between 1 and 100000';
 const _methodMessage = 'Choose cash or UPI';
+const _amountMessage = 'Choose $juniorFee or $seniorFee';
 
 // Arrears are recorded late, but not years late; the server sets no lower bound.
 const _paidOnLookbackYears = 1;
+
+const _iconSize = 20.0;
+
+const _amounts = [
+  ChoiceOption(value: juniorFee, label: '$juniorFee', caption: 'Junior'),
+  ChoiceOption(value: seniorFee, label: '$seniorFee', caption: 'Senior'),
+];
 
 const _methods = [
   ChoiceOption(value: PaymentMethod.cash, label: 'Cash'),
   ChoiceOption(value: PaymentMethod.upi, label: 'UPI'),
 ];
+
+final _dateFormat = DateFormat('d MMM yyyy');
+final _monthFormat = DateFormat('MMM yyyy');
 
 /// Records a fee payment for one trainee; [month] preselects the period.
 class RecordPaymentScreen extends ConsumerWidget {
@@ -78,11 +87,12 @@ class _PaymentFormState extends ConsumerState<_PaymentForm> {
 
   /// Advance payments may name next month, never later.
   late final DateTime latestMonth;
-  late final TextEditingController amount;
   late final TextEditingController note;
   late DateTime paidOn;
   late DateTime periodMonth;
+  int? amount;
   PaymentMethod? method;
+  var isNoteOpen = false;
 
   /// Field errors show only after the first submit.
   var isSubmitted = false;
@@ -93,9 +103,7 @@ class _PaymentFormState extends ConsumerState<_PaymentForm> {
     today = dateOnly(ref.read(clockProvider)());
     currentMonth = monthOf(today);
     latestMonth = DateTime(currentMonth.year, currentMonth.month + 1);
-    final tier = widget.trainee.feeTierOn(today);
-    amount = TextEditingController(text: tier?.toString())
-      ..addListener(revalidate);
+    amount = widget.trainee.feeTierOn(today);
     note = TextEditingController();
     paidOn = today;
     final month = widget.month;
@@ -106,13 +114,8 @@ class _PaymentFormState extends ConsumerState<_PaymentForm> {
 
   @override
   void dispose() {
-    amount.dispose();
     note.dispose();
     super.dispose();
-  }
-
-  void revalidate() {
-    if (isSubmitted) setState(() {});
   }
 
   Future<void> pickPaidOn() async {
@@ -131,15 +134,15 @@ class _PaymentFormState extends ConsumerState<_PaymentForm> {
 
   Future<void> submit() async {
     setState(() => isSubmitted = true);
+    final chosenAmount = amount;
     final chosenMethod = method;
-    final value = _amountValue(amount.text);
-    if (value == null || chosenMethod == null) return;
+    if (chosenAmount == null || chosenMethod == null) return;
     final trimmedNote = note.text.trim();
     final payment = await ref
         .read(recordPaymentControllerProvider.notifier)
         .record(
           traineeId: widget.trainee.id,
-          amount: value,
+          amount: chosenAmount,
           method: chosenMethod,
           paidOn: paidOn,
           periodMonth: periodMonth,
@@ -155,70 +158,69 @@ class _PaymentFormState extends ConsumerState<_PaymentForm> {
   Widget build(BuildContext context) {
     final submission = ref.watch(recordPaymentControllerProvider);
     final failure = submission.isLoading ? null : submission.error;
-    final hasAmountError = isSubmitted && _amountValue(amount.text) == null;
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.gutter,
-        AppSpacing.sm,
-        AppSpacing.gutter,
-        AppSpacing.xl,
-      ),
+    return Column(
       children: [
-        _TraineeHeader(trainee: widget.trainee, today: today),
-        const SizedBox(height: AppSpacing.xl),
-        AppTextField(
-          controller: amount,
-          label: 'Amount',
-          keyboardType: TextInputType.number,
-          maxLength: _amountDigits,
-          errorText: hasAmountError ? _amountMessage : null,
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        const Text('Method', style: AppTypography.label),
-        const SizedBox(height: AppSpacing.sm),
-        ChoiceRow<PaymentMethod>(
-          options: _methods,
-          selected: method,
-          onSelected: (value) => setState(() => method = value),
-        ),
-        if (isSubmitted && method == null) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            _methodMessage,
-            style: AppTypography.caption.copyWith(color: AppColors.negative),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.gutter,
+              AppSpacing.sm,
+              AppSpacing.gutter,
+              AppSpacing.lg,
+            ),
+            children: [
+              _TraineeHeader(trainee: widget.trainee, today: today),
+              const SizedBox(height: AppSpacing.xl),
+              const Eyebrow('Amount'),
+              const SizedBox(height: AppSpacing.sm),
+              ChoiceRow<int>(
+                options: _amounts,
+                selected: amount,
+                onSelected: (value) => setState(() => amount = value),
+              ),
+              if (isSubmitted && amount == null)
+                const _FieldError(_amountMessage),
+              const SizedBox(height: AppSpacing.lg),
+              const Eyebrow('Method'),
+              const SizedBox(height: AppSpacing.sm),
+              ChoiceRow<PaymentMethod>(
+                options: _methods,
+                selected: method,
+                onSelected: (value) => setState(() => method = value),
+              ),
+              if (isSubmitted && method == null)
+                const _FieldError(_methodMessage),
+              const SizedBox(height: AppSpacing.lg),
+              _WhenCard(
+                paidOn: paidOn,
+                periodMonth: periodMonth,
+                latestMonth: latestMonth,
+                onPickPaidOn: pickPaidOn,
+                onMonthChanged: (next) => setState(() => periodMonth = next),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              if (isNoteOpen)
+                AppTextField(
+                  controller: note,
+                  label: 'Note',
+                  keyboardType: TextInputType.multiline,
+                  maxLength: _noteMaxLength,
+                  maxLines: _noteLines,
+                  showCounter: true,
+                )
+              else
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: LinkButton(
+                    label: 'Add a note',
+                    onPressed: () => setState(() => isNoteOpen = true),
+                  ),
+                ),
+            ],
           ),
-        ],
-        const SizedBox(height: AppSpacing.lg),
-        DateField(label: 'Paid on', date: paidOn, onPick: pickPaidOn),
-        const SizedBox(height: AppSpacing.lg),
-        const Text('For month', style: AppTypography.label),
-        const SizedBox(height: AppSpacing.sm),
-        MonthNavigator(
-          month: periodMonth,
-          latest: latestMonth,
-          onChanged: (next) => setState(() => periodMonth = next),
         ),
-        const SizedBox(height: AppSpacing.lg),
-        AppTextField(
-          controller: note,
-          label: 'Note (optional)',
-          keyboardType: TextInputType.multiline,
-          maxLength: _noteMaxLength,
-          maxLines: _noteLines,
-          showCounter: true,
-        ),
-        if (failure != null) ...[
-          const SizedBox(height: AppSpacing.md),
-          InlineBanner(
-            message: failure is AppException
-                ? failure.message
-                : UnknownException.defaultMessage,
-            tone: InlineBannerTone.error,
-          ),
-        ],
-        const SizedBox(height: AppSpacing.xl),
-        PrimaryButton(
-          label: 'Record payment',
+        _SubmitBar(
+          failure: failure,
           isBusy: submission.isLoading,
           onPressed: submit,
         ),
@@ -249,9 +251,158 @@ class _TraineeHeader extends StatelessWidget {
   }
 }
 
-/// The typed amount when it is a whole number in the server's range, else null.
-int? _amountValue(String text) {
-  final value = int.tryParse(text.trim());
-  if (value == null || value < _minAmount || value > _maxAmount) return null;
-  return value;
+class _FieldError extends StatelessWidget {
+  const _FieldError(this.message);
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.xs),
+      child: Text(
+        message,
+        style: AppTypography.caption.copyWith(color: AppColors.negative),
+      ),
+    );
+  }
+}
+
+/// Paid-on date and period month as two rows of one card.
+class _WhenCard extends StatelessWidget {
+  const _WhenCard({
+    required this.paidOn,
+    required this.periodMonth,
+    required this.latestMonth,
+    required this.onPickPaidOn,
+    required this.onMonthChanged,
+  });
+
+  final DateTime paidOn;
+  final DateTime periodMonth;
+  final DateTime latestMonth;
+  final VoidCallback onPickPaidOn;
+  final ValueChanged<DateTime> onMonthChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final chevronStyle = IconButton.styleFrom(
+      foregroundColor: AppColors.ink,
+      disabledForegroundColor: AppColors.line,
+      fixedSize: const Size.square(AppSizes.minTapTarget),
+    );
+    final hasNext = periodMonth.isBefore(latestMonth);
+    return AppCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: ListRow.divide([
+          ListRow(
+            title: 'Paid on',
+            titleStyle: AppTypography.body,
+            onTap: onPickPaidOn,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _dateFormat.format(paidOn),
+                  style: AppTypography.bodyStrong,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                const Icon(
+                  Icons.calendar_today_outlined,
+                  size: _iconSize,
+                  color: AppColors.muted,
+                ),
+              ],
+            ),
+          ),
+          ListRow(
+            title: 'For month',
+            titleStyle: AppTypography.body,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  tooltip: 'Previous month',
+                  style: chevronStyle,
+                  iconSize: _iconSize,
+                  icon: const Icon(Icons.chevron_left),
+                  onPressed: () => onMonthChanged(
+                    DateTime(periodMonth.year, periodMonth.month - 1),
+                  ),
+                ),
+                Text(
+                  _monthFormat.format(periodMonth),
+                  style: AppTypography.bodyStrong,
+                ),
+                IconButton(
+                  tooltip: 'Next month',
+                  style: chevronStyle,
+                  iconSize: _iconSize,
+                  icon: const Icon(Icons.chevron_right),
+                  onPressed: hasNext
+                      ? () => onMonthChanged(
+                          DateTime(periodMonth.year, periodMonth.month + 1),
+                        )
+                      : null,
+                ),
+              ],
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+/// The record button pinned under the form, with the server's message above it.
+class _SubmitBar extends StatelessWidget {
+  const _SubmitBar({
+    required this.failure,
+    required this.isBusy,
+    required this.onPressed,
+  });
+
+  final Object? failure;
+  final bool isBusy;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final error = failure;
+    return ColoredBox(
+      color: AppColors.ground,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.gutter,
+            AppSpacing.sm,
+            AppSpacing.gutter,
+            AppSpacing.md,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (error != null) ...[
+                InlineBanner(
+                  message: error is AppException
+                      ? error.message
+                      : UnknownException.defaultMessage,
+                  tone: InlineBannerTone.error,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+              ],
+              PrimaryButton(
+                label: 'Record payment',
+                isBusy: isBusy,
+                onPressed: onPressed,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

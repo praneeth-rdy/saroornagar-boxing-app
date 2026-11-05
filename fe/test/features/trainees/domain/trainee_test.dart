@@ -21,7 +21,7 @@ void main() {
       final trainee = _born(dateOfBirth);
       final birthday = DateTime(2026, 11, 5);
       expect(trainee.ageOn(birthday), 15);
-      expect(trainee.feeTierOn(birthday), 1000);
+      expect(trainee.feeTierOn(birthday), 800);
     });
 
     test('a leap-day birth has not had the birthday on 28 February', () {
@@ -40,7 +40,7 @@ void main() {
 
   test('feeTierLabel names the two tiers', () {
     expect(feeTierLabel(500), 'Junior');
-    expect(feeTierLabel(1000), 'Senior');
+    expect(feeTierLabel(800), 'Senior');
   });
 
   group('initials', () {

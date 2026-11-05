@@ -100,6 +100,6 @@ void main() {
       MockTraineeRepository(trainees: [senior]),
       traineeId: senior.id,
     );
-    expect(find.text('Senior, 1000 per month'), findsOneWidget);
+    expect(find.text('Senior, 800 per month'), findsOneWidget);
   });
 }

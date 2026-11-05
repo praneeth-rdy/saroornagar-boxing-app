@@ -2,6 +2,22 @@
 
 Newest first. One entry per work session: what changed, what it means for the next session.
 
+## 2026-11-05 (second session, late): email sign-in, logo, compact payments
+
+- Release build had no INTERNET permission (R3-01); fixed, app named "Boxing Club".
+- Owner switched staff auth to email + password with a forgot-password code (run 3):
+  profiles by email, Edge Function by email, recovery screens; a GoTrue quirk (app_metadata
+  written after the insert) that silently broke every created staff member was found and
+  fixed (R3-02). Hosted: phone admin deleted, two migrations applied, function v2, admin
+  re-created by email.
+- Logo canvas (11 artboards); owner chose L5a Classic; badge + launcher icon in the app.
+- Record-payment screen rebuilt compact with a 500 / 800 choice; senior tier is 800
+  (server migration written, hosted apply blocked by the permission classifier: B-11).
+- Workflow quirk recorded (`notes/workflow-relayed-request.md`): direct Agent dispatch when
+  the owner chats mid-run.
+- Next: owner approves B-11; dashboard steps (sign-ups off, {{ .Token }} in the reset
+  template); device walkthrough; backlog A-08..A-11, B-05, B-06, B-09.
+
 ## 2026-11-05 (second session): release 1 built, applied to hosted, installed on the device
 
 - Owner approved the release 1 schema; design A confirmed; standing /build opt-in and

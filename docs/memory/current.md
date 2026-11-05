@@ -1,26 +1,28 @@
 # Current state
 
-Last updated 2026-11-05 (end of the second session). History in `log.md`.
+Last updated 2026-11-05 (end of the second session, late). History in `log.md`.
 
 ## Where the product stands
 
-Release 1 is built, applied to the hosted project and installed on the owner's phone.
-Nothing has been exercised against hosted from the device yet; that walkthrough is the
-first thing to do next.
+Release 1 is built, applied to the hosted project and installed on the owner's phone
+(build 27). Staff sign in by email with a forgot-password flow; the L5a Classic badge is the
+logo and launcher icon; the record-payment screen offers 500 or 800. The owner has signed
+in on the device; a full walkthrough against hosted is still the next step.
 
 | Area | State |
 |---|---|
-| `be/` | 5 migrations (`identity`, `trainees_sessions`, `attendance_trials`, `fees_reports`, `harden_profiles`), pgTAP 501 assertions, seed, Edge Function `admin-staff`. All applied to hosted 2026-11-05 through the MCP (`docs/be/architecture.md` Hosted applies). |
-| `fe/` | Theme A kit, config, errors, auth, shell, Today, Trainees, Trials (public booking + staff list), Fees and reports, Staff admin. Baseline: `flutter analyze` 0 issues, `flutter test` 321 (plus proofs), release signing with the upload keystore. Proofs under `fe/test/proofs/out/` (gitignored), rendered by `flutter test test/proofs`. |
-| Device | Signed release APK (build number = commit count) installed on the owner's phone (model I2214, wireless adb). Rule: reinstall after every landed app run (`.claude/CLAUDE.md` Toolchain). |
-| Hosted | Project `qgqmnaxdxuezjlexlfpw`. First admin user exists (login in `creds.md`). Advisors: no RLS gaps (`notes/hosted-advisors-2026-11-05.md`). Migration history uses MCP timestamps (B-10). |
+| `be/` | 8 migrations (`identity`, `trainees_sessions`, `attendance_trials`, `fees_reports`, `harden_profiles`, `email_sign_in`, `profile_on_metadata`, `fee_tier_800`), pgTAP 523, seed (email accounts), Edge Function `admin-staff` v2 (by email). All on hosted except `fee_tier_800` (B-11). |
+| `fe/` | Theme A kit, config, errors, email auth + forgot password, shell, Today, Trainees, Trials, Fees (compact record screen, 500/800), Staff admin by email, brand badge + launcher icon. Baseline: analyze 0, `flutter test` 383 (+54 proofs). Release signing with the upload keystore; app name "Boxing Club". |
+| Device | Build 27 installed (model I2214, wireless adb). Reinstall after every landed app run. |
+| Hosted | Project `qgqmnaxdxuezjlexlfpw`. Admin by email (login in `creds.md`). Advisors: no RLS gaps. Migration history uses MCP timestamps (B-10). `fee_tier_800` not applied (B-11). |
 | `docs/` | Review log R1-01..R1-07, R2-01..R2-07 (all fixed except R1-03, R1-04 as backlog B-05, B-06). Backlog A-08..A-11, B-05, B-06, B-09, B-10 open. |
 
 ## Blocked on the owner
 
-1. Hosted dashboard: enable the Phone provider (confirmations off) and turn off "Allow new
-   users to sign up". Sign-in from the device fails with "phone provider disabled" until the
-   first is done.
+1. Hosted dashboard: turn off "Allow new users to sign up"; in Email Templates, "Reset
+   Password" must include {{ .Token }} so the forgot-password code arrives (otherwise the
+   mail carries a link the app cannot use). Phone provider is no longer needed.
+1b. Approve the blocked MCP apply of `20261105111738_fee_tier_800.sql` (B-11).
 2. Android application id (D-04): still `com.example.saroornagar_boxing`. Changing it later
    means uninstalling the current build on the phone.
 3. Product calls: B-05 (today's ended batch still bookable), B-06 (inactive trainees drop off

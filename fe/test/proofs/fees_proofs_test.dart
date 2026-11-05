@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:saroornagar_boxing/core/di/repository_providers.dart';
+import 'package:saroornagar_boxing/core/models/trainee_status.dart';
 import 'package:saroornagar_boxing/core/widgets/primary_button.dart';
 import 'package:saroornagar_boxing/features/fees/presentation/attendance_summary_screen.dart';
 import 'package:saroornagar_boxing/features/fees/presentation/fee_status_screen.dart';
 import 'package:saroornagar_boxing/features/fees/presentation/record_payment_screen.dart';
+import 'package:saroornagar_boxing/features/trainees/domain/trainee.dart';
 import 'package:saroornagar_boxing/features/today/presentation/today_providers.dart';
 
 import '../support/fixtures/fees.dart';
@@ -15,6 +17,18 @@ import '../support/mocks/mock_trainee_repository.dart';
 import '../support/scenario.dart';
 import 'proof_harness.dart';
 import 'proof_support.dart';
+
+// 28 on the fixture day, so the senior fee is preselected.
+final _seniorTrainee = Trainee(
+  id: 'trainee-senior',
+  fullName: 'Rohit Verma',
+  phone: '919876500001',
+  dateOfBirth: DateTime(1998, 6, 2),
+  joinedOn: DateTime(2026, 2, 1),
+  status: TraineeStatus.active,
+  createdAt: detailTrainee.createdAt,
+  updatedAt: detailTrainee.updatedAt,
+);
 
 Future<void> _proof(
   WidgetTester tester,
@@ -31,7 +45,9 @@ Future<void> _proof(
     overrides: [
       feeRepositoryProvider.overrideWithValue(fees),
       traineeRepositoryProvider.overrideWithValue(
-        MockTraineeRepository(trainees: [detailTrainee, bareTrainee]),
+        MockTraineeRepository(
+          trainees: [detailTrainee, bareTrainee, _seniorTrainee],
+        ),
       ),
       clockProvider.overrideWithValue(proofClock),
     ],
@@ -91,17 +107,45 @@ void main() {
     await _proof(
       tester,
       'record_payment_prefilled',
-      RecordPaymentScreen(traineeId: detailTrainee.id),
+      RecordPaymentScreen(traineeId: _seniorTrainee.id),
       MockFeeRepository(
-        trainees: [detailTrainee, bareTrainee],
+        trainees: [detailTrainee, bareTrainee, _seniorTrainee],
         clock: proofClock,
       ),
     );
   });
 
+  testWidgets('record payment junior proof', (tester) async {
+    await _proof(
+      tester,
+      'record_payment_junior',
+      RecordPaymentScreen(traineeId: detailTrainee.id),
+      MockFeeRepository(
+        trainees: [detailTrainee, bareTrainee, _seniorTrainee],
+        clock: proofClock,
+      ),
+    );
+  });
+
+  testWidgets('record payment note open proof', (tester) async {
+    await _proof(
+      tester,
+      'record_payment_note_open',
+      RecordPaymentScreen(traineeId: _seniorTrainee.id),
+      MockFeeRepository(
+        trainees: [detailTrainee, bareTrainee, _seniorTrainee],
+        clock: proofClock,
+      ),
+      interact: (tester) async {
+        await tester.tap(find.text('Add a note'));
+        await tester.pumpAndSettle();
+      },
+    );
+  });
+
   testWidgets('record payment error proof', (tester) async {
     final fees = MockFeeRepository(
-      trainees: [detailTrainee, bareTrainee],
+      trainees: [detailTrainee, bareTrainee, _seniorTrainee],
       clock: proofClock,
     );
     await _proof(
@@ -111,7 +155,6 @@ void main() {
       fees,
       interact: (tester) async {
         fees.scenario = MockScenario.permissionDenied;
-        await tester.tap(find.text('UPI'));
         await tester.tap(find.byType(PrimaryButton));
         await tester.pumpAndSettle();
       },

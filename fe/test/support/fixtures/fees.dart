@@ -15,7 +15,7 @@ final fixtureMonth = DateTime(fixtureDay.year, fixtureDay.month);
 FeePayment fixturePayment({
   required String id,
   required String traineeId,
-  int amount = 1000,
+  int amount = 800,
   PaymentMethod method = PaymentMethod.cash,
   DateTime? paidOn,
   DateTime? periodMonth,
@@ -34,7 +34,7 @@ FeePayment fixturePayment({
 );
 
 /// Payments for [month] that leave every third trainee unpaid, every fifth partly paid
-/// and the rest paid in full (1000 when the tier is unknown); cash and UPI alternate.
+/// and the rest paid in full (800 when the tier is unknown); cash and UPI alternate.
 List<FeePayment> fixtureFeePayments(List<Trainee> trainees, {DateTime? month}) {
   final period = month ?? fixtureMonth;
   return [
@@ -44,8 +44,8 @@ List<FeePayment> fixtureFeePayments(List<Trainee> trainees, {DateTime? month}) {
           id: 'payment-${trainee.id}',
           traineeId: trainee.id,
           amount: i % 5 == 1
-              ? (trainee.feeTierOn(period) ?? 1000) ~/ 2
-              : trainee.feeTierOn(period) ?? 1000,
+              ? (trainee.feeTierOn(period) ?? 800) ~/ 2
+              : trainee.feeTierOn(period) ?? 800,
           method: i.isEven ? PaymentMethod.cash : PaymentMethod.upi,
           paidOn: DateTime(period.year, period.month, 1 + i % 4),
           periodMonth: period,

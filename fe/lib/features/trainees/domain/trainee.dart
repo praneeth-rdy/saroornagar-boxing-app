@@ -8,8 +8,12 @@ part 'trainee.g.dart';
 
 // Same tier rule as `private.fee_tier_amount`: under 15 on the day pays the junior fee.
 const _seniorAge = 15;
-const _juniorFee = 500;
-const _seniorFee = 1000;
+
+/// The monthly fee under 15.
+const juniorFee = 500;
+
+/// The monthly fee from 15.
+const seniorFee = 800;
 
 /// A trainee on the club's roster, from `public.trainees`.
 @freezed
@@ -52,7 +56,7 @@ abstract class Trainee with _$Trainee {
   /// Whole years on the calendar date of [on]; null without a date of birth.
   int? ageOn(DateTime on) => ageFrom(dateOfBirth, on);
 
-  /// The monthly fee on [on]: 500 under 15, 1000 from 15; null without a date of birth.
+  /// The monthly fee on [on]: 500 under 15, 800 from 15; null without a date of birth.
   int? feeTierOn(DateTime on) => feeTierFrom(dateOfBirth, on);
 
   /// The monthly fee today in India; see [feeTierOn].
@@ -83,15 +87,15 @@ int? ageFrom(DateTime? dateOfBirth, DateTime on) {
   return on.year - dateOfBirth.year - (hadBirthday ? 0 : 1);
 }
 
-/// 500 under 15 on [on], 1000 from 15; null without a date of birth.
+/// 500 under 15 on [on], 800 from 15; null without a date of birth.
 int? feeTierFrom(DateTime? dateOfBirth, DateTime on) {
   final age = ageFrom(dateOfBirth, on);
   if (age == null) return null;
-  return age < _seniorAge ? _juniorFee : _seniorFee;
+  return age < _seniorAge ? juniorFee : seniorFee;
 }
 
 /// `Junior` for the under-15 fee, `Senior` for the other.
-String feeTierLabel(int tier) => tier == _juniorFee ? 'Junior' : 'Senior';
+String feeTierLabel(int tier) => tier == juniorFee ? 'Junior' : 'Senior';
 
 DateTime? _optionalDateFromWire(String? value) =>
     value == null ? null : parseWireDate(value);

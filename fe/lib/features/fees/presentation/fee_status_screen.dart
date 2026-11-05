@@ -141,7 +141,7 @@ class _FeeStatusRow extends ConsumerWidget {
   }
 }
 
-/// `Paid 1000 on 3 Nov`, `Partly paid 500 of 1000`, `Unpaid · 1000 due`, or the missing tier.
+/// `Paid 800 on 3 Nov`, `Partly paid 500 of 800`, `Unpaid · 800 due`, or the missing tier.
 String feeStatusSubtitle(FeeStatus status) {
   final tier = status.tierAmount;
   final paid = status.paidAmount;
