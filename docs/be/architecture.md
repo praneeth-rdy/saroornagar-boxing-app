@@ -6,7 +6,7 @@ change. Hosted applies are recorded here with the date.
 ## State (2026-11-05)
 
 `npx supabase init` only (`be/supabase/config.toml`, ports 563xx). No migrations, no tests,
-no seed. No hosted project yet (backlog S-04).
+no seed. Hosted project `qgqmnaxdxuezjlexlfpw` in ap-northeast-1 (Tokyo), empty; not yet linked (backlog S-04).
 
 ## Tables
 
