@@ -12,6 +12,32 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | S-03 | Requirements interview, broad to narrow, recorded in `product.md` | in progress |
 | S-04 | Hosted Supabase project: fill `fe/config/*.json`, add `project_ref` to `.mcp.json`, link the CLI | blocked on the owner (project ref, publishable key, access token or `supabase login`) |
 | S-05 | Android application id | blocked (D-04) |
+| S-06 | Hosted dashboard: disable public sign-ups, enable the Phone provider with confirmations off, create the first admin user | blocked on the owner |
+
+## Backend
+
+| ID | Item | Status |
+|---|---|---|
+| B-01 | Identity, helpers, profiles (`20261105074646_identity.sql`) | done (2026-11-05), not applied to hosted |
+| B-02 | Trainees, sessions, photo bucket (`20261105075401_trainees_sessions.sql`) | done (2026-11-05), not applied to hosted |
+| B-03 | Attendance, trial bookings (`20261105080014_attendance_trials.sql`) | done (2026-11-05), not applied to hosted |
+| B-04 | Fee payments, reports (`20261105080602_fees_reports.sql`) | done (2026-11-05), not applied to hosted |
+| B-05 | `book_trial`: refuse a batch that has already ended today; consider an anon rate limit | todo |
+| B-06 | Decide whether past rosters and reports should include trainees who are now inactive | todo (owner) |
+| B-07 | Edge Function `admin-staff` (create, reset_password, set_blocked) | done (2026-11-05), not deployed |
+| B-08 | Harden profile creation (app_metadata role) and revoke anon select | in progress |
+
+## App
+
+| ID | Item | Status |
+|---|---|---|
+| A-01 | Foundation: config, Supabase, errors, theme A, widget kit, proofs harness | in progress |
+| A-02 | Sign-in, blocked state, tab shell, guards | in progress |
+| A-03 | Today: sessions of the day, roster, mark attendance, mark remaining absent | todo (run 2) |
+| A-04 | Trainees: list, add, edit, status, photo, attendance history, fee history | todo (run 2) |
+| A-05 | Trials: public booking screen, staff list of upcoming bookings | todo (run 2) |
+| A-06 | Fees: record payment, fee status list; monthly attendance summary | todo (run 2) |
+| A-07 | Staff admin: create, edit, block, reset password (admin only) | todo (run 2) |
 
 ## Open decisions
 
