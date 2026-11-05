@@ -150,8 +150,8 @@ list, and for `be` packages the owner's approval date and the app impact.
   run, an `assistant` builds `flutter build apk --release --dart-define-from-file=config/prod.json
   --build-number=$(git rev-list --count HEAD)` from `fe/`, checks the signing certificate, and
   installs with `~/Library/Android/sdk/platform-tools/adb install -r` on the connected device,
-  deletes every `/sdcard/Download/boxing-club-*.apk` on the device, then pushes the new one as
-  `/sdcard/Download/boxing-club-<build>.apk` (owner, 2026-11-05: numbered, older ones deleted
+  deletes every `/sdcard/Download/saroornagar-boxing-*.apk` (and any older `boxing-club-*.apk`)
+  on the device, then pushes the new one as `/sdcard/Download/saroornagar-boxing-<build>.apk` (owner, 2026-11-05: numbered, older ones deleted
   every time), then launches the app (package `com.saroornagarboxing.app`). When another agent is editing `fe/`, build
   from `git archive HEAD` exported under `fe/build/export-head/` with the signing files copied in. The upload keystore lives in `fe/android/keystore/` with
   `fe/android/key.properties` (both gitignored); passwords are in `creds.md`. Back the keystore

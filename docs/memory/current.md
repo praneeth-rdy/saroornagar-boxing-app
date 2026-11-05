@@ -16,7 +16,7 @@ and reports defects in chat; each becomes an R3-nn row and a direct developer di
 |---|---|
 | `be/` | 12 migrations (through `backlog_sweep`), pgTAP 600, seed (email accounts), Edge Function `admin-staff` v2. All applied to hosted 2026-11-05 except `20261105160639_backlog_sweep` (apply blocked by the permission classifier; the app tolerates the old version). |
 | `fe/` | Theme A kit, config, errors, email auth + forgot password, shell, Today, Trainees, Trials, Fees (compact record screen, 500/800), Staff admin by email, brand badge + launcher icon. Baseline: analyze 0, `flutter test` 440 (incl. 57 proofs). Release signing with the upload keystore; app name "Boxing Club". |
-| Device | Build 41 installed and copied to `/sdcard/Download/boxing-club-41.apk`; this is the build the owner shares with the coaches (sign-in without the badge). Later builds install over it. | Reinstall after every landed app run. |
+| Device | Build 41 installed and copied to `/sdcard/Download/saroornagar-boxing-41.apk`; this is the build the owner shares with the coaches (sign-in without the badge). Later builds install over it. | Reinstall after every landed app run. |
 | Hosted | Project `qgqmnaxdxuezjlexlfpw`. Admin by email (login in `creds.md`). Advisors: no RLS gaps. Migration history uses MCP timestamps (B-10). Migration history uses MCP timestamps (B-10). |
 | `docs/` | Review log R1-01..R1-07, R2-01..R2-07 (all fixed except R1-03, R1-04 as backlog B-05, B-06). Backlog A-08..A-11, B-05, B-06, B-09, B-10 open. |
 
