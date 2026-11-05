@@ -7,12 +7,14 @@ import 'profiles.dart';
 class FixtureTrainee {
   const FixtureTrainee({
     required this.id,
+    required this.rollNo,
     required this.fullName,
     this.photoPath,
     this.isActive = true,
   });
 
   final String id;
+  final int rollNo;
   final String fullName;
   final String? photoPath;
   final bool isActive;
@@ -64,11 +66,12 @@ const _lastNames = [
   'Das',
 ];
 
-/// [count] active trainees with unique names, ids `trainee-001` upwards.
+/// [count] active trainees with unique names, ids `trainee-001` and roll numbers 1 upwards.
 List<FixtureTrainee> fixtureTrainees(int count) => [
   for (var i = 0; i < count; i++)
     FixtureTrainee(
       id: 'trainee-${(i + 1).toString().padLeft(3, '0')}',
+      rollNo: i + 1,
       fullName:
           '${_firstNames[i % _firstNames.length]} '
           '${_lastNames[(i + i ~/ _firstNames.length) % _lastNames.length]}',
@@ -84,6 +87,7 @@ final heavyTrainees = fixtureTrainees(60);
 /// Off the roster; marking them fails like the server does.
 const inactiveTrainee = FixtureTrainee(
   id: 'trainee-inactive',
+  rollNo: 90,
   fullName: 'Kiran Rao',
   isActive: false,
 );

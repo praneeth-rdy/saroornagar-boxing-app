@@ -5,11 +5,12 @@ import '../../../core/models/attendance_status.dart';
 part 'roster_entry.freezed.dart';
 part 'roster_entry.g.dart';
 
-/// One active trainee in a session's roster, from `public.session_roster`.
+/// One active trainee in a session's roster, from `public.session_roster` (by roll number).
 @freezed
 abstract class RosterEntry with _$RosterEntry {
   const factory RosterEntry({
     @JsonKey(name: 'trainee_id') required String traineeId,
+    @JsonKey(name: 'roll_no') required int rollNo,
     @JsonKey(name: 'full_name') required String fullName,
     @JsonKey(name: 'photo_path') String? photoPath,
 

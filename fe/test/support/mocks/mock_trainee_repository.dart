@@ -15,7 +15,7 @@ import '../scenario.dart';
 typedef MockPhotoUpload = ({String traineeId, String fileName, int size});
 
 /// In-memory [TraineeRepository] that follows the trainee migration's rules and messages
-/// (`20261105075401_trainees_sessions`, `20261105080014_attendance_trials`).
+/// (`20261105075401_trainees_sessions`, `20261105080014_attendance_trials`, `roll_numbers`).
 class MockTraineeRepository implements TraineeRepository {
   MockTraineeRepository({
     this.scenario = MockScenario.success,
@@ -50,7 +50,7 @@ class MockTraineeRepository implements TraineeRepository {
     scenario,
     success: () =>
         _trainees.values.where((trainee) => trainee.status == status).toList()
-          ..sort(_byName),
+          ..sort(_byRollNo),
     empty: () => const [],
   );
 
@@ -58,15 +58,31 @@ class MockTraineeRepository implements TraineeRepository {
   Future<Trainee> byId(String id) =>
       applyScenario(scenario, success: () => _trainee(id));
 
+  // Mirrors private.next_roll_no: the lowest number no active student has.
+  @override
+  Future<int> nextRollNo() => applyScenario(
+    scenario,
+    success: () {
+      final taken = _activeRollNos(exceptId: null);
+      var number = 1;
+      while (taken.contains(number)) {
+        number++;
+      }
+      return number;
+    },
+  );
+
   @override
   Future<Trainee> create(TraineeInput input) => applyScenario(
     scenario,
     success: () {
       final clean = _clean(input);
+      _checkRollNo(input.rollNo, exceptId: null, isActive: true);
       _createdCount++;
       final stamp = now();
       final trainee = Trainee(
         id: 'trainee-new-$_createdCount',
+        rollNo: input.rollNo,
         fullName: clean.fullName,
         phone: clean.phone,
         dateOfBirth: input.dateOfBirth,
@@ -87,8 +103,11 @@ class MockTraineeRepository implements TraineeRepository {
     success: () {
       final current = _trainee(id);
       final clean = _clean(input);
+      // An inactive row sits outside the active-only unique index.
+      _checkRollNo(input.rollNo, exceptId: id, isActive: current.isActive);
       return _store(
         current.copyWith(
+          rollNo: input.rollNo,
           fullName: clean.fullName,
           phone: clean.phone,
           dateOfBirth: input.dateOfBirth,
@@ -110,6 +129,12 @@ class MockTraineeRepository implements TraineeRepository {
       }
       // The same status is a no-op, so updated_at only moves on a real change.
       if (current.status == status) return current;
+      if (status == TraineeStatus.active &&
+          _activeRollNos(exceptId: id).contains(current.rollNo)) {
+        throw DuplicateException(
+          'Roll number ${current.rollNo} is already in use',
+        );
+      }
       return _store(current.copyWith(status: status, updatedAt: now()));
     },
   );
@@ -178,6 +203,25 @@ class MockTraineeRepository implements TraineeRepository {
 
   Trainee _store(Trainee trainee) => _trainees[trainee.id] = trainee;
 
+  Set<int> _activeRollNos({required String? exceptId}) => {
+    for (final trainee in _trainees.values)
+      if (trainee.isActive && trainee.id != exceptId) trainee.rollNo,
+  };
+
+  // Unique among active students only; an inactive student's number may be reused.
+  void _checkRollNo(
+    int rollNo, {
+    required String? exceptId,
+    required bool isActive,
+  }) {
+    if (rollNo <= 0) {
+      throw const ValidationException('Enter a roll number above 0');
+    }
+    if (isActive && _activeRollNos(exceptId: exceptId).contains(rollNo)) {
+      throw DuplicateException('Roll number $rollNo is already in use');
+    }
+  }
+
   // Mirrors private.clean_trainee_input: same checks, order and messages.
   ({String fullName, String? phone, String? notes}) _clean(TraineeInput input) {
     final today = dateOnly(toIndiaTime(now()));
@@ -221,8 +265,10 @@ class MockTraineeRepository implements TraineeRepository {
   }
 }
 
-// Same order as the server: lower(full_name), then id.
-int _byName(Trainee a, Trainee b) {
+// Same order as the list query: roll number, then lower(full_name), then id.
+int _byRollNo(Trainee a, Trainee b) {
+  final byRollNo = a.rollNo.compareTo(b.rollNo);
+  if (byRollNo != 0) return byRollNo;
   final byName = a.fullName.toLowerCase().compareTo(b.fullName.toLowerCase());
   return byName != 0 ? byName : a.id.compareTo(b.id);
 }

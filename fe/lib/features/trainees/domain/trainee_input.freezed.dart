@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TraineeInput {
 
- String get fullName; String? get phone; DateTime? get dateOfBirth; DateTime? get joinedOn; String? get notes;
+ int get rollNo; String get fullName; String? get phone; DateTime? get dateOfBirth; DateTime? get joinedOn; String? get notes;
 /// Create a copy of TraineeInput
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $TraineeInputCopyWith<TraineeInput> get copyWith => _$TraineeInputCopyWithImpl<T
 @override
 bool operator ==(Object other) {
   final _this = this as TraineeInput;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TraineeInput&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.dateOfBirth, _this.dateOfBirth) || other.dateOfBirth == _this.dateOfBirth)&&(identical(other.joinedOn, _this.joinedOn) || other.joinedOn == _this.joinedOn)&&(identical(other.notes, _this.notes) || other.notes == _this.notes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TraineeInput&&(identical(other.rollNo, _this.rollNo) || other.rollNo == _this.rollNo)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.dateOfBirth, _this.dateOfBirth) || other.dateOfBirth == _this.dateOfBirth)&&(identical(other.joinedOn, _this.joinedOn) || other.joinedOn == _this.joinedOn)&&(identical(other.notes, _this.notes) || other.notes == _this.notes));
 }
 
 
 @override
 int get hashCode {
   final _this = this as TraineeInput;
-  return Object.hash(runtimeType,_this.fullName,_this.phone,_this.dateOfBirth,_this.joinedOn,_this.notes);
+  return Object.hash(runtimeType,_this.rollNo,_this.fullName,_this.phone,_this.dateOfBirth,_this.joinedOn,_this.notes);
 }
 
 @override
 String toString() {
   final _this = this as TraineeInput;
-  return 'TraineeInput(fullName: ${_this.fullName}, phone: ${_this.phone}, dateOfBirth: ${_this.dateOfBirth}, joinedOn: ${_this.joinedOn}, notes: ${_this.notes})';
+  return 'TraineeInput(rollNo: ${_this.rollNo}, fullName: ${_this.fullName}, phone: ${_this.phone}, dateOfBirth: ${_this.dateOfBirth}, joinedOn: ${_this.joinedOn}, notes: ${_this.notes})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $TraineeInputCopyWith<$Res>  {
   factory $TraineeInputCopyWith(TraineeInput value, $Res Function(TraineeInput) _then) = _$TraineeInputCopyWithImpl;
 @useResult
 $Res call({
- String fullName, String? phone, DateTime? dateOfBirth, DateTime? joinedOn, String? notes
+ int rollNo, String fullName, String? phone, DateTime? dateOfBirth, DateTime? joinedOn, String? notes
 });
 
 
@@ -68,9 +68,10 @@ class _$TraineeInputCopyWithImpl<$Res>
 
 /// Create a copy of TraineeInput
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? fullName = null,Object? phone = freezed,Object? dateOfBirth = freezed,Object? joinedOn = freezed,Object? notes = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? rollNo = null,Object? fullName = null,Object? phone = freezed,Object? dateOfBirth = freezed,Object? joinedOn = freezed,Object? notes = freezed,}) {
   return _then(TraineeInput(
-fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+rollNo: null == rollNo ? _self.rollNo : rollNo // ignore: cast_nullable_to_non_nullable
+as int,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
 as DateTime?,joinedOn: freezed == joinedOn ? _self.joinedOn : joinedOn // ignore: cast_nullable_to_non_nullable
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fullName,  String? phone,  DateTime? dateOfBirth,  DateTime? joinedOn,  String? notes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int rollNo,  String fullName,  String? phone,  DateTime? dateOfBirth,  DateTime? joinedOn,  String? notes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TraineeInput() when $default != null:
-return $default(_that.fullName,_that.phone,_that.dateOfBirth,_that.joinedOn,_that.notes);case _:
+return $default(_that.rollNo,_that.fullName,_that.phone,_that.dateOfBirth,_that.joinedOn,_that.notes);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.fullName,_that.phone,_that.dateOfBirth,_that.joinedOn,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fullName,  String? phone,  DateTime? dateOfBirth,  DateTime? joinedOn,  String? notes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int rollNo,  String fullName,  String? phone,  DateTime? dateOfBirth,  DateTime? joinedOn,  String? notes)  $default,) {final _that = this;
 switch (_that) {
 case _TraineeInput():
-return $default(_that.fullName,_that.phone,_that.dateOfBirth,_that.joinedOn,_that.notes);case _:
+return $default(_that.rollNo,_that.fullName,_that.phone,_that.dateOfBirth,_that.joinedOn,_that.notes);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.fullName,_that.phone,_that.dateOfBirth,_that.joinedOn,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fullName,  String? phone,  DateTime? dateOfBirth,  DateTime? joinedOn,  String? notes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int rollNo,  String fullName,  String? phone,  DateTime? dateOfBirth,  DateTime? joinedOn,  String? notes)?  $default,) {final _that = this;
 switch (_that) {
 case _TraineeInput() when $default != null:
-return $default(_that.fullName,_that.phone,_that.dateOfBirth,_that.joinedOn,_that.notes);case _:
+return $default(_that.rollNo,_that.fullName,_that.phone,_that.dateOfBirth,_that.joinedOn,_that.notes);case _:
   return null;
 
 }
@@ -216,9 +217,10 @@ return $default(_that.fullName,_that.phone,_that.dateOfBirth,_that.joinedOn,_tha
 
 
 class _TraineeInput implements TraineeInput {
-  const _TraineeInput({required this.fullName, this.phone, this.dateOfBirth, this.joinedOn, this.notes});
+  const _TraineeInput({required this.rollNo, required this.fullName, this.phone, this.dateOfBirth, this.joinedOn, this.notes});
   
 
+@override final  int rollNo;
 @override final  String fullName;
 @override final  String? phone;
 @override final  DateTime? dateOfBirth;
@@ -235,18 +237,18 @@ _$TraineeInputCopyWith<_TraineeInput> get copyWith => __$TraineeInputCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TraineeInput&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.joinedOn, joinedOn) || other.joinedOn == joinedOn)&&(identical(other.notes, notes) || other.notes == notes));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TraineeInput&&(identical(other.rollNo, rollNo) || other.rollNo == rollNo)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.joinedOn, joinedOn) || other.joinedOn == joinedOn)&&(identical(other.notes, notes) || other.notes == notes));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,fullName,phone,dateOfBirth,joinedOn,notes);
+    return Object.hash(runtimeType,rollNo,fullName,phone,dateOfBirth,joinedOn,notes);
 }
 
 @override
 String toString() {
-    return 'TraineeInput(fullName: $fullName, phone: $phone, dateOfBirth: $dateOfBirth, joinedOn: $joinedOn, notes: $notes)';
+    return 'TraineeInput(rollNo: $rollNo, fullName: $fullName, phone: $phone, dateOfBirth: $dateOfBirth, joinedOn: $joinedOn, notes: $notes)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$TraineeInputCopyWith<$Res> implements $TraineeInputCopyWi
   factory _$TraineeInputCopyWith(_TraineeInput value, $Res Function(_TraineeInput) _then) = __$TraineeInputCopyWithImpl;
 @override @useResult
 $Res call({
- String fullName, String? phone, DateTime? dateOfBirth, DateTime? joinedOn, String? notes
+ int rollNo, String fullName, String? phone, DateTime? dateOfBirth, DateTime? joinedOn, String? notes
 });
 
 
@@ -274,9 +276,10 @@ class __$TraineeInputCopyWithImpl<$Res>
 
 /// Create a copy of TraineeInput
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? fullName = null,Object? phone = freezed,Object? dateOfBirth = freezed,Object? joinedOn = freezed,Object? notes = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? rollNo = null,Object? fullName = null,Object? phone = freezed,Object? dateOfBirth = freezed,Object? joinedOn = freezed,Object? notes = freezed,}) {
   return _then(_TraineeInput(
-fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+rollNo: null == rollNo ? _self.rollNo : rollNo // ignore: cast_nullable_to_non_nullable
+as int,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
 as DateTime?,joinedOn: freezed == joinedOn ? _self.joinedOn : joinedOn // ignore: cast_nullable_to_non_nullable

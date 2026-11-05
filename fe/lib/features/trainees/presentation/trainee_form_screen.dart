@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/errors/app_exception.dart';
 import '../../../core/router/routes.dart';
+import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/india_date.dart';
 import '../../../core/utils/phone_format.dart';
@@ -24,6 +25,9 @@ const _nameMaxLength = 80;
 const _notesMaxLength = 500;
 const _phoneDigits = 10;
 const _notesLines = 6;
+
+// Postgres integer tops out at ten digits; a club never needs more than six.
+const _rollNoMaxLength = 6;
 final _earliestDate = DateTime(1900, 1, 2);
 
 // A student may be added the evening before their first session.
@@ -68,6 +72,7 @@ class _TraineeForm extends ConsumerStatefulWidget {
 }
 
 class _TraineeFormState extends ConsumerState<_TraineeForm> {
+  late final TextEditingController rollNo;
   late final TextEditingController name;
   late final TextEditingController phone;
   late final TextEditingController notes;
@@ -84,6 +89,17 @@ class _TraineeFormState extends ConsumerState<_TraineeForm> {
   void initState() {
     super.initState();
     final initial = widget.initial;
+    rollNo = TextEditingController(text: initial?.rollNo.toString())
+      ..addListener(revalidate);
+    if (initial == null) {
+      ref.listenManual(nextRollNoProvider, (_, next) {
+        final suggested = next.value;
+        // Never overwrite a number the coach already typed.
+        if (suggested != null && rollNo.text.isEmpty) {
+          rollNo.text = '$suggested';
+        }
+      }, fireImmediately: true);
+    }
     name = TextEditingController(text: initial?.fullName)
       ..addListener(revalidate);
     phone = TextEditingController(text: _localDigits(initial?.phone))
@@ -99,6 +115,7 @@ class _TraineeFormState extends ConsumerState<_TraineeForm> {
 
   @override
   void dispose() {
+    rollNo.dispose();
     name.dispose();
     phone.dispose();
     notes.dispose();
@@ -138,12 +155,16 @@ class _TraineeFormState extends ConsumerState<_TraineeForm> {
 
   Future<void> submit() async {
     setState(() => isSubmitted = true);
-    if (_nameError(name.text) != null || _phoneError(phone.text) != null) {
+    final number = _parseRollNo(rollNo.text);
+    if (number == null ||
+        _nameError(name.text) != null ||
+        _phoneError(phone.text) != null) {
       return;
     }
     final initial = widget.initial;
     // Sent as typed: the server trims, normalizes and turns blanks into nulls.
     final input = TraineeInput(
+      rollNo: number,
       fullName: name.text,
       phone: phone.text,
       dateOfBirth: dateOfBirth,
@@ -166,6 +187,10 @@ class _TraineeFormState extends ConsumerState<_TraineeForm> {
     final today = dateOnly(ref.watch(clockProvider)());
     final submission = ref.watch(traineeFormControllerProvider);
     final failure = submission.isLoading ? null : submission.error;
+    final suggestion = widget.initial == null
+        ? ref.watch(nextRollNoProvider)
+        : null;
+    final failures = [?suggestion?.error, ?failure];
     final tier = feeTierFrom(dateOfBirth, today);
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -175,6 +200,20 @@ class _TraineeFormState extends ConsumerState<_TraineeForm> {
         AppSpacing.xl,
       ),
       children: [
+        AppTextField(
+          controller: rollNo,
+          label: 'Roll number',
+          isRequired: true,
+          enabled: !(suggestion?.isLoading ?? false),
+          suffix: (suggestion?.isLoading ?? false)
+              ? const _FieldSpinner()
+              : null,
+          keyboardType: TextInputType.number,
+          maxLength: _rollNoMaxLength,
+          textInputAction: TextInputAction.next,
+          errorText: isSubmitted ? _rollNoError(rollNo.text) : null,
+        ),
+        const SizedBox(height: AppSpacing.lg),
         AppTextField(
           controller: name,
           label: 'Name',
@@ -232,7 +271,7 @@ class _TraineeFormState extends ConsumerState<_TraineeForm> {
             ),
           ),
         ],
-        if (failure != null) ...[
+        for (final failure in failures) ...[
           const SizedBox(height: AppSpacing.md),
           InlineBanner(
             message: failure is AppException
@@ -251,6 +290,31 @@ class _TraineeFormState extends ConsumerState<_TraineeForm> {
     );
   }
 }
+
+/// A small spinner inside the roll number field while the suggestion loads.
+class _FieldSpinner extends StatelessWidget {
+  const _FieldSpinner();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(AppSpacing.md),
+      child: SizedBox.square(
+        dimension: AppSizes.spinner,
+        child: CircularProgressIndicator(strokeWidth: AppSizes.spinnerStroke),
+      ),
+    );
+  }
+}
+
+int? _parseRollNo(String value) {
+  final number = int.tryParse(value.trim());
+  return number != null && number > 0 ? number : null;
+}
+
+// Same message as the server's check.
+String? _rollNoError(String value) =>
+    _parseRollNo(value) == null ? 'Enter a roll number above 0' : null;
 
 String? _nameError(String value) {
   final length = value.trim().runes.length;

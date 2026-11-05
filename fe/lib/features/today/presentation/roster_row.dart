@@ -6,7 +6,6 @@ import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/india_date.dart';
-import '../../../core/widgets/avatar_initials.dart';
 import '../domain/roster_entry.dart';
 
 const _statusIconSize = 14.0;
@@ -48,7 +47,7 @@ class RosterRow extends StatelessWidget {
             ),
             child: Row(
               children: [
-                AvatarInitials(name: entry.fullName),
+                _RollBadge(rollNo: entry.rollNo),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
@@ -75,6 +74,46 @@ class RosterRow extends StatelessWidget {
                   onPressed: onTap,
                 ),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The roll number called out at roll call, in place of the avatar.
+class _RollBadge extends StatelessWidget {
+  const _RollBadge({required this.rollNo});
+
+  final int rollNo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: 'Roll number $rollNo',
+      excludeSemantics: true,
+      child: SizedBox.square(
+        dimension: AppSizes.avatar,
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+            color: AppColors.accentSoft,
+            shape: BoxShape.circle,
+          ),
+          // Shrinks a long number or a large text scale to fit the circle.
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.xs),
+            child: Center(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  '$rollNo',
+                  style: AppTypography.bodyStrong.copyWith(
+                    color: AppColors.accent,
+                  ),
+                  maxLines: 1,
+                ),
+              ),
             ),
           ),
         ),

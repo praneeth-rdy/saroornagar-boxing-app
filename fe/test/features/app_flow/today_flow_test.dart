@@ -6,6 +6,7 @@ import 'package:saroornagar_boxing/core/di/repository_providers.dart';
 import 'package:saroornagar_boxing/core/errors/app_exception.dart';
 import 'package:saroornagar_boxing/core/models/attendance_status.dart';
 import 'package:saroornagar_boxing/features/auth/domain/staff_profile.dart';
+import 'package:saroornagar_boxing/features/today/presentation/progress_card.dart';
 import 'package:saroornagar_boxing/features/today/presentation/today_providers.dart';
 
 import '../../helpers/pump_app.dart';
@@ -21,6 +22,10 @@ class _NoProfileAuthRepository extends MockAuthRepository {
   Future<StaffProfile> currentProfile() async =>
       throw const NotFoundException();
 }
+
+// Roll badges show numbers too, so a count is looked up inside the progress card.
+Finder _presentCount(String count) =>
+    find.descendant(of: find.byType(ProgressCard), matching: find.text(count));
 
 void main() {
   testWidgets('sign in, mark two trainees present, then undo one', (
@@ -53,7 +58,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('present-trainee-002')));
     await tester.pumpAndSettle();
-    expect(find.text('2'), findsOneWidget);
+    expect(_presentCount('2'), findsOneWidget);
     expect(find.text('of 5 students'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('present-trainee-002')));
@@ -61,7 +66,7 @@ void main() {
     await tester.tap(find.text('Remove'));
     await tester.pumpAndSettle();
 
-    expect(find.text('1'), findsOneWidget);
+    expect(_presentCount('1'), findsOneWidget);
     final morningId = morningSession(fixtureDay).id;
     expect(
       attendance.markFor(morningId, 'trainee-001')!.status,

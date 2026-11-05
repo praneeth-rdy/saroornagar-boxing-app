@@ -32,9 +32,10 @@ class SupabaseTraineeRepository implements TraineeRepository {
             .from('trainees')
             .select()
             .eq('status', status.wire)
+            .order('roll_no')
             .order('full_name');
-        // The server orders by lower(full_name); collation alone may not.
-        return rows.map(Trainee.fromJson).toList()..sort(_byName);
+        // Inactive students may share a number; lower(full_name) breaks the tie whatever the collation.
+        return rows.map(Trainee.fromJson).toList()..sort(_byRollNo);
       });
 
   @override
@@ -47,6 +48,11 @@ class SupabaseTraineeRepository implements TraineeRepository {
     if (row == null) throw const NotFoundException('Student not found');
     return Trainee.fromJson(row);
   });
+
+  @override
+  Future<int> nextRollNo() => guardSupabase(
+    () async => (await client.rpc<dynamic>('next_roll_no') as num).toInt(),
+  );
 
   @override
   Future<Trainee> create(TraineeInput input) =>
@@ -170,6 +176,7 @@ Map<String, dynamic> _inputParams(TraineeInput input) {
     'p_date_of_birth': dateOfBirth == null ? null : wireDate(dateOfBirth),
     'p_joined_on': joinedOn == null ? null : wireDate(joinedOn),
     'p_notes': input.notes,
+    'p_roll_no': input.rollNo,
   };
 }
 
@@ -198,7 +205,9 @@ Future<T> _storage<T>(Future<T> Function() run) async {
   return (extension: 'jpg', contentType: 'image/jpeg');
 }
 
-int _byName(Trainee a, Trainee b) {
+int _byRollNo(Trainee a, Trainee b) {
+  final byRollNo = a.rollNo.compareTo(b.rollNo);
+  if (byRollNo != 0) return byRollNo;
   final byName = a.fullName.toLowerCase().compareTo(b.fullName.toLowerCase());
   return byName != 0 ? byName : a.id.compareTo(b.id);
 }

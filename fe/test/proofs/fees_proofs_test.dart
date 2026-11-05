@@ -21,6 +21,7 @@ import 'proof_support.dart';
 // 28 on the fixture day, so the senior fee is preselected.
 final _seniorTrainee = Trainee(
   id: 'trainee-senior',
+  rollNo: 87,
   fullName: 'Rohit Verma',
   phone: '919876500001',
   dateOfBirth: DateTime(1998, 6, 2),

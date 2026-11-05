@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:saroornagar_boxing/core/di/repository_providers.dart';
 import 'package:saroornagar_boxing/core/models/attendance_status.dart';
 import 'package:saroornagar_boxing/core/theme/app_theme.dart';
+import 'package:saroornagar_boxing/features/today/presentation/progress_card.dart';
 import 'package:saroornagar_boxing/features/today/presentation/today_providers.dart';
 import 'package:saroornagar_boxing/features/today/presentation/today_screen.dart';
 
@@ -39,6 +40,10 @@ Future<void> _pump(
   await tester.pumpAndSettle();
 }
 
+// Roll badges show numbers too, so a count is looked up inside the progress card.
+Finder _presentCount(String count) =>
+    find.descendant(of: find.byType(ProgressCard), matching: find.text(count));
+
 void main() {
   testWidgets('marking a trainee present updates the count', (tester) async {
     final repository = MockAttendanceRepository(trainees: fixtureTrainees(4));
@@ -51,7 +56,7 @@ void main() {
     await tester.tap(find.byKey(const Key('present-trainee-001')));
     await tester.pumpAndSettle();
 
-    expect(find.text('1'), findsOneWidget);
+    expect(_presentCount('1'), findsOneWidget);
     expect(find.text('of 4 students'), findsOneWidget);
     expect(find.text('Reset attendance'), findsOneWidget);
     expect(
@@ -122,7 +127,7 @@ void main() {
 
     expect(repository.markFor(_morningId, trainees[0].id), isNull);
     expect(find.text('of 3 students'), findsOneWidget);
-    expect(find.text('1'), findsOneWidget);
+    expect(_presentCount('1'), findsOneWidget);
   });
 
   testWidgets('cancelling the remove dialog keeps the mark', (tester) async {
@@ -139,7 +144,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.markFor(_morningId, trainees[0].id), isNotNull);
-    expect(find.text('2'), findsOneWidget);
+    expect(_presentCount('2'), findsOneWidget);
   });
 
   testWidgets('a failed remove puts the mark back and shows a banner', (
@@ -158,7 +163,7 @@ void main() {
     await tester.tap(find.text('Remove'));
     await tester.pumpAndSettle();
 
-    expect(find.text('2'), findsOneWidget);
+    expect(_presentCount('2'), findsOneWidget);
     expect(find.text('Retry'), findsOneWidget);
     expect(repository.markFor(_morningId, trainees[0].id), isNotNull);
   });
@@ -199,7 +204,7 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
 
-    expect(find.text('3'), findsOneWidget);
+    expect(_presentCount('3'), findsOneWidget);
     expect(find.text('Attendance reset'), findsNothing);
     expect(repository.markFor(_morningId, trainees[0].id), isNotNull);
   });

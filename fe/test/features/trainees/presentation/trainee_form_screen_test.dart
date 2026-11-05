@@ -11,6 +11,7 @@ import 'package:saroornagar_boxing/features/trainees/presentation/trainee_form_s
 import '../../../helpers/pump_app.dart';
 import '../../../support/fixtures/trainees.dart';
 import '../../../support/mocks/mock_trainee_repository.dart';
+import '../../../support/scenario.dart';
 
 class _RejectingRepository extends MockTraineeRepository {
   @override
@@ -64,15 +65,59 @@ void main() {
 
   testWidgets('a short phone number shows the phone error', (tester) async {
     await _pump(tester, MockTraineeRepository());
-    await tester.enterText(find.byType(TextField).at(0), 'Asha Rao');
-    await tester.enterText(find.byType(TextField).at(1), '12345');
+    await tester.enterText(find.byType(TextField).at(1), 'Asha Rao');
+    await tester.enterText(find.byType(TextField).at(2), '12345');
     await _submit(tester);
     expect(find.text('Enter a 10-digit mobile number'), findsOneWidget);
   });
 
+  testWidgets('add prefills the suggested roll number, gaps first', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      MockTraineeRepository(
+        trainees: [
+          detailTrainee.copyWith(id: 'one', rollNo: 1),
+          detailTrainee,
+        ],
+      ),
+    );
+    expect(find.text('Roll number *'), findsOneWidget);
+    expect(find.widgetWithText(TextField, '2'), findsOneWidget);
+  });
+
+  testWidgets('a roll number in use shows the server message in a banner', (
+    tester,
+  ) async {
+    final repository = MockTraineeRepository(trainees: [detailTrainee]);
+    await _pump(tester, repository);
+    await tester.enterText(find.byType(TextField).at(0), '12');
+    await tester.enterText(find.byType(TextField).at(1), 'Asha Rao');
+    await _submit(tester);
+    expect(find.text('Roll number 12 is already in use'), findsOneWidget);
+    expect(repository.traineeFor('trainee-new-1'), isNull);
+  });
+
+  testWidgets('a roll number of 0 shows the field error', (tester) async {
+    await _pump(tester, MockTraineeRepository());
+    await tester.enterText(find.byType(TextField).at(0), '0');
+    await tester.enterText(find.byType(TextField).at(1), 'Asha Rao');
+    await _submit(tester);
+    expect(find.text('Enter a roll number above 0'), findsOneWidget);
+  });
+
+  testWidgets('a failed suggestion leaves the field empty with a banner', (
+    tester,
+  ) async {
+    await _pump(tester, MockTraineeRepository(scenario: MockScenario.offline));
+    expect(find.text(OfflineException.defaultMessage), findsOneWidget);
+    expect(find.widgetWithText(TextField, '1'), findsNothing);
+  });
+
   testWidgets('a server validation message shows in a banner', (tester) async {
     await _pump(tester, _RejectingRepository());
-    await tester.enterText(find.byType(TextField).at(0), 'Asha Rao');
+    await tester.enterText(find.byType(TextField).at(1), 'Asha Rao');
     await _submit(tester);
     expect(find.text('Enter a valid date of birth'), findsOneWidget);
   });
@@ -87,6 +132,7 @@ void main() {
     );
     expect(find.text('Edit student'), findsOneWidget);
     expect(find.text('Arjun Reddy'), findsOneWidget);
+    expect(find.text('12'), findsOneWidget);
     expect(find.text('9876543210'), findsOneWidget);
     expect(find.text('14 Mar 2012'), findsOneWidget);
     expect(find.text('Junior, 500 per month'), findsOneWidget);

@@ -6,6 +6,7 @@ part 'trainee_input.freezed.dart';
 @freezed
 abstract class TraineeInput with _$TraineeInput {
   const factory TraineeInput({
+    required int rollNo,
     required String fullName,
     String? phone,
     DateTime? dateOfBirth,

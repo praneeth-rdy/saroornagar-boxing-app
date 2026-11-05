@@ -31,6 +31,19 @@ void main() {
     expect(await repository.sessionsFor(fixtureSunday), hasLength(1));
   });
 
+  test('the roster is by roll number, not by name', () async {
+    final repository = MockAttendanceRepository(
+      trainees: const [
+        FixtureTrainee(id: 'a', rollNo: 3, fullName: 'Asha'),
+        FixtureTrainee(id: 'z', rollNo: 1, fullName: 'Zoya'),
+        FixtureTrainee(id: 'm', rollNo: 2, fullName: 'Meera'),
+      ],
+    );
+    await repository.sessionsFor(fixtureDay);
+    final roster = await repository.roster(morningId);
+    expect(roster.map((entry) => entry.rollNo), [1, 2, 3]);
+  });
+
   test('an extra session must end after it starts', () async {
     final repository = MockAttendanceRepository();
     expect(

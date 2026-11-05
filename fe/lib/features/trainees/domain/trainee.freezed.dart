@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Trainee {
 
- String get id;@JsonKey(name: 'full_name') String get fullName;/// Stored as `91XXXXXXXXXX`.
+ String get id;/// Called out at roll call; unique among active students, so an inactive one's may be reused.
+@JsonKey(name: 'roll_no') int get rollNo;@JsonKey(name: 'full_name') String get fullName;/// Stored as `91XXXXXXXXXX`.
  String? get phone;/// Object name in the `trainee-photos` bucket, not a URL.
 @JsonKey(name: 'photo_path') String? get photoPath;@JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) DateTime? get dateOfBirth;@JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) DateTime? get joinedOn;@JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire) TraineeStatus get status; String? get notes;@JsonKey(name: 'created_at') DateTime get createdAt;@JsonKey(name: 'updated_at') DateTime get updatedAt;
 /// Create a copy of Trainee
@@ -32,20 +33,20 @@ $TraineeCopyWith<Trainee> get copyWith => _$TraineeCopyWithImpl<Trainee>(this as
 @override
 bool operator ==(Object other) {
   final _this = this as Trainee;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Trainee&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.photoPath, _this.photoPath) || other.photoPath == _this.photoPath)&&(identical(other.dateOfBirth, _this.dateOfBirth) || other.dateOfBirth == _this.dateOfBirth)&&(identical(other.joinedOn, _this.joinedOn) || other.joinedOn == _this.joinedOn)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.notes, _this.notes) || other.notes == _this.notes)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Trainee&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.rollNo, _this.rollNo) || other.rollNo == _this.rollNo)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.photoPath, _this.photoPath) || other.photoPath == _this.photoPath)&&(identical(other.dateOfBirth, _this.dateOfBirth) || other.dateOfBirth == _this.dateOfBirth)&&(identical(other.joinedOn, _this.joinedOn) || other.joinedOn == _this.joinedOn)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.notes, _this.notes) || other.notes == _this.notes)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as Trainee;
-  return Object.hash(runtimeType,_this.id,_this.fullName,_this.phone,_this.photoPath,_this.dateOfBirth,_this.joinedOn,_this.status,_this.notes,_this.createdAt,_this.updatedAt);
+  return Object.hash(runtimeType,_this.id,_this.rollNo,_this.fullName,_this.phone,_this.photoPath,_this.dateOfBirth,_this.joinedOn,_this.status,_this.notes,_this.createdAt,_this.updatedAt);
 }
 
 @override
 String toString() {
   final _this = this as Trainee;
-  return 'Trainee(id: ${_this.id}, fullName: ${_this.fullName}, phone: ${_this.phone}, photoPath: ${_this.photoPath}, dateOfBirth: ${_this.dateOfBirth}, joinedOn: ${_this.joinedOn}, status: ${_this.status}, notes: ${_this.notes}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt})';
+  return 'Trainee(id: ${_this.id}, rollNo: ${_this.rollNo}, fullName: ${_this.fullName}, phone: ${_this.phone}, photoPath: ${_this.photoPath}, dateOfBirth: ${_this.dateOfBirth}, joinedOn: ${_this.joinedOn}, status: ${_this.status}, notes: ${_this.notes}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt})';
 }
 
 
@@ -56,7 +57,7 @@ abstract mixin class $TraineeCopyWith<$Res>  {
   factory $TraineeCopyWith(Trainee value, $Res Function(Trainee) _then) = _$TraineeCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'full_name') String fullName, String? phone,@JsonKey(name: 'photo_path') String? photoPath,@JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) DateTime? dateOfBirth,@JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) DateTime? joinedOn,@JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire) TraineeStatus status, String? notes,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'updated_at') DateTime updatedAt
+ String id,@JsonKey(name: 'roll_no') int rollNo,@JsonKey(name: 'full_name') String fullName, String? phone,@JsonKey(name: 'photo_path') String? photoPath,@JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) DateTime? dateOfBirth,@JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) DateTime? joinedOn,@JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire) TraineeStatus status, String? notes,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'updated_at') DateTime updatedAt
 });
 
 
@@ -73,10 +74,11 @@ class _$TraineeCopyWithImpl<$Res>
 
 /// Create a copy of Trainee
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fullName = null,Object? phone = freezed,Object? photoPath = freezed,Object? dateOfBirth = freezed,Object? joinedOn = freezed,Object? status = null,Object? notes = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? rollNo = null,Object? fullName = null,Object? phone = freezed,Object? photoPath = freezed,Object? dateOfBirth = freezed,Object? joinedOn = freezed,Object? status = null,Object? notes = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(Trainee(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String,rollNo: null == rollNo ? _self.rollNo : rollNo // ignore: cast_nullable_to_non_nullable
+as int,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
 as String?,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
@@ -170,10 +172,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName,  String? phone, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? dateOfBirth, @JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? joinedOn, @JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire)  TraineeStatus status,  String? notes, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'roll_no')  int rollNo, @JsonKey(name: 'full_name')  String fullName,  String? phone, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? dateOfBirth, @JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? joinedOn, @JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire)  TraineeStatus status,  String? notes, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Trainee() when $default != null:
-return $default(_that.id,_that.fullName,_that.phone,_that.photoPath,_that.dateOfBirth,_that.joinedOn,_that.status,_that.notes,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.rollNo,_that.fullName,_that.phone,_that.photoPath,_that.dateOfBirth,_that.joinedOn,_that.status,_that.notes,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -191,10 +193,10 @@ return $default(_that.id,_that.fullName,_that.phone,_that.photoPath,_that.dateOf
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName,  String? phone, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? dateOfBirth, @JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? joinedOn, @JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire)  TraineeStatus status,  String? notes, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'roll_no')  int rollNo, @JsonKey(name: 'full_name')  String fullName,  String? phone, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? dateOfBirth, @JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? joinedOn, @JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire)  TraineeStatus status,  String? notes, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Trainee():
-return $default(_that.id,_that.fullName,_that.phone,_that.photoPath,_that.dateOfBirth,_that.joinedOn,_that.status,_that.notes,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.rollNo,_that.fullName,_that.phone,_that.photoPath,_that.dateOfBirth,_that.joinedOn,_that.status,_that.notes,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -211,10 +213,10 @@ return $default(_that.id,_that.fullName,_that.phone,_that.photoPath,_that.dateOf
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'full_name')  String fullName,  String? phone, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? dateOfBirth, @JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? joinedOn, @JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire)  TraineeStatus status,  String? notes, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'roll_no')  int rollNo, @JsonKey(name: 'full_name')  String fullName,  String? phone, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? dateOfBirth, @JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire)  DateTime? joinedOn, @JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire)  TraineeStatus status,  String? notes, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Trainee() when $default != null:
-return $default(_that.id,_that.fullName,_that.phone,_that.photoPath,_that.dateOfBirth,_that.joinedOn,_that.status,_that.notes,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.rollNo,_that.fullName,_that.phone,_that.photoPath,_that.dateOfBirth,_that.joinedOn,_that.status,_that.notes,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -226,10 +228,12 @@ return $default(_that.id,_that.fullName,_that.phone,_that.photoPath,_that.dateOf
 @JsonSerializable()
 
 class _Trainee extends Trainee {
-  const _Trainee({required this.id, @JsonKey(name: 'full_name') required this.fullName, this.phone, @JsonKey(name: 'photo_path') this.photoPath, @JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) this.dateOfBirth, @JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) this.joinedOn, @JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire) required this.status, this.notes, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'updated_at') required this.updatedAt}): super._();
+  const _Trainee({required this.id, @JsonKey(name: 'roll_no') required this.rollNo, @JsonKey(name: 'full_name') required this.fullName, this.phone, @JsonKey(name: 'photo_path') this.photoPath, @JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) this.dateOfBirth, @JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) this.joinedOn, @JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire) required this.status, this.notes, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'updated_at') required this.updatedAt}): super._();
   factory _Trainee.fromJson(Map<String, dynamic> json) => _$TraineeFromJson(json);
 
 @override final  String id;
+/// Called out at roll call; unique among active students, so an inactive one's may be reused.
+@override@JsonKey(name: 'roll_no') final  int rollNo;
 @override@JsonKey(name: 'full_name') final  String fullName;
 /// Stored as `91XXXXXXXXXX`.
 @override final  String? phone;
@@ -255,18 +259,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Trainee&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.joinedOn, joinedOn) || other.joinedOn == joinedOn)&&(identical(other.status, status) || other.status == status)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Trainee&&(identical(other.id, id) || other.id == id)&&(identical(other.rollNo, rollNo) || other.rollNo == rollNo)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.joinedOn, joinedOn) || other.joinedOn == joinedOn)&&(identical(other.status, status) || other.status == status)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,fullName,phone,photoPath,dateOfBirth,joinedOn,status,notes,createdAt,updatedAt);
+    return Object.hash(runtimeType,id,rollNo,fullName,phone,photoPath,dateOfBirth,joinedOn,status,notes,createdAt,updatedAt);
 }
 
 @override
 String toString() {
-    return 'Trainee(id: $id, fullName: $fullName, phone: $phone, photoPath: $photoPath, dateOfBirth: $dateOfBirth, joinedOn: $joinedOn, status: $status, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Trainee(id: $id, rollNo: $rollNo, fullName: $fullName, phone: $phone, photoPath: $photoPath, dateOfBirth: $dateOfBirth, joinedOn: $joinedOn, status: $status, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -277,7 +281,7 @@ abstract mixin class _$TraineeCopyWith<$Res> implements $TraineeCopyWith<$Res> {
   factory _$TraineeCopyWith(_Trainee value, $Res Function(_Trainee) _then) = __$TraineeCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'full_name') String fullName, String? phone,@JsonKey(name: 'photo_path') String? photoPath,@JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) DateTime? dateOfBirth,@JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) DateTime? joinedOn,@JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire) TraineeStatus status, String? notes,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'updated_at') DateTime updatedAt
+ String id,@JsonKey(name: 'roll_no') int rollNo,@JsonKey(name: 'full_name') String fullName, String? phone,@JsonKey(name: 'photo_path') String? photoPath,@JsonKey(name: 'date_of_birth', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) DateTime? dateOfBirth,@JsonKey(name: 'joined_on', fromJson: _optionalDateFromWire, toJson: _optionalDateToWire) DateTime? joinedOn,@JsonKey(fromJson: TraineeStatus.fromWire, toJson: _statusToWire) TraineeStatus status, String? notes,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'updated_at') DateTime updatedAt
 });
 
 
@@ -294,10 +298,11 @@ class __$TraineeCopyWithImpl<$Res>
 
 /// Create a copy of Trainee
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fullName = null,Object? phone = freezed,Object? photoPath = freezed,Object? dateOfBirth = freezed,Object? joinedOn = freezed,Object? status = null,Object? notes = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? rollNo = null,Object? fullName = null,Object? phone = freezed,Object? photoPath = freezed,Object? dateOfBirth = freezed,Object? joinedOn = freezed,Object? status = null,Object? notes = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(_Trainee(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String,rollNo: null == rollNo ? _self.rollNo : rollNo // ignore: cast_nullable_to_non_nullable
+as int,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
 as String?,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable

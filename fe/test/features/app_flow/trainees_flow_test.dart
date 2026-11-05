@@ -40,7 +40,7 @@ void main() {
 
       await tester.tap(find.text('Add').first);
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).at(0), 'Asha Rao');
+      await tester.enterText(find.byType(TextField).at(1), 'Asha Rao');
       await tester.tap(find.byType(PrimaryButton));
       await tester.pumpAndSettle();
 
@@ -50,7 +50,7 @@ void main() {
 
       await tester.tap(find.text('Edit'));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).at(0), 'Asha Reddy');
+      await tester.enterText(find.byType(TextField).at(1), 'Asha Reddy');
       await tester.tap(find.byType(PrimaryButton));
       await tester.pumpAndSettle();
       expect(find.text('Asha Reddy'), findsOneWidget);

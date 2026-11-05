@@ -174,10 +174,8 @@ class _HeaderCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(trainee.fullName, style: AppTypography.title),
-                if (details.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(details, style: AppTypography.caption),
-                ],
+                const SizedBox(height: AppSpacing.xs),
+                Text(details, style: AppTypography.caption),
                 if (joinedOn != null)
                   Text(
                     'Joined ${DateFormat('d MMM yyyy').format(joinedOn)}',
@@ -194,12 +192,13 @@ class _HeaderCard extends ConsumerWidget {
   }
 }
 
-/// `+91 98765 43210 · Age 14 · Junior`, leaving out what is not known.
+/// `Roll no. 12 · +91 98765 43210 · Age 14 · Junior`, leaving out what is not known.
 String _detailsOf(Trainee trainee, DateTime today) {
   final phone = trainee.phone;
   final age = trainee.ageOn(today);
   final tier = trainee.feeTierOn(today);
   return [
+    'Roll no. ${trainee.rollNo}',
     if (phone != null) formatPhone(phone),
     if (age != null) 'Age $age',
     if (tier != null) feeTierLabel(tier),

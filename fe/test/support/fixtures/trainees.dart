@@ -9,7 +9,7 @@ import 'sessions.dart';
 
 final _created = DateTime.utc(2026, 1, 10, 4, 30);
 
-/// [count] trainees with the roster fixture's ids and names; most have a phone and a
+/// [count] trainees with the roster fixture's ids, roll numbers and names; most have a phone and a
 /// date of birth (ages 8 to 29 on the fixture day), every fourth has no phone and every
 /// third no date of birth.
 List<Trainee> fixtureTraineeRows(
@@ -19,6 +19,7 @@ List<Trainee> fixtureTraineeRows(
   for (final (i, trainee) in fixtureTrainees(count).indexed)
     Trainee(
       id: trainee.id,
+      rollNo: trainee.rollNo,
       fullName: trainee.fullName,
       phone: i % 4 == 3 ? null : '91987650${(1000 + i).toString()}',
       dateOfBirth: i % 3 == 2
@@ -40,6 +41,7 @@ final heavyTraineeRows = fixtureTraineeRows(80);
 /// Only the name: no phone, date of birth, joining date or notes.
 final bareTrainee = Trainee(
   id: 'trainee-bare',
+  rollNo: 85,
   fullName: 'Kiran Rao',
   status: TraineeStatus.active,
   createdAt: _created,
@@ -49,6 +51,7 @@ final bareTrainee = Trainee(
 /// Every field set; 14 on the fixture day, so a junior.
 final detailTrainee = Trainee(
   id: 'trainee-detail',
+  rollNo: 12,
   fullName: 'Arjun Reddy',
   phone: '919876543210',
   dateOfBirth: DateTime(2012, 3, 14),
@@ -62,6 +65,7 @@ final detailTrainee = Trainee(
 /// A long name and notes at the 500 character limit.
 final longNotesTrainee = Trainee(
   id: 'trainee-long-notes',
+  rollNo: 86,
   fullName: 'Venkata Satya Narayana Chowdary',
   phone: '919123456789',
   dateOfBirth: DateTime(1998, 7, 21),
@@ -79,6 +83,7 @@ final longNotesTrainee = Trainee(
 /// Off the roster.
 final inactiveTraineeRow = Trainee(
   id: 'trainee-inactive',
+  rollNo: 90,
   fullName: 'Kiran Rao',
   phone: '919000011111',
   status: TraineeStatus.inactive,

@@ -38,6 +38,11 @@ final traineeListProvider = FutureProvider.autoDispose
           ref.watch(traineeRepositoryProvider).list(status: status),
     );
 
+/// The add form's default roll number, from `next_roll_no`.
+final nextRollNoProvider = FutureProvider.autoDispose<int>(
+  (ref) => ref.watch(traineeRepositoryProvider).nextRollNo(),
+);
+
 final traineeProvider = FutureProvider.autoDispose.family<Trainee, String>(
   (ref, id) => ref.watch(traineeRepositoryProvider).byId(id),
 );
@@ -86,7 +91,8 @@ final traineePhotoControllerProvider = NotifierProvider.autoDispose
       TraineePhotoController.new,
     );
 
-/// Trainees whose name contains [query] in any case, or whose phone contains its digits.
+/// Trainees whose name contains [query] in any case, whose phone contains its digits, or
+/// whose roll number equals them.
 List<Trainee> filterTrainees(List<Trainee> trainees, String query) {
   final text = query.trim().toLowerCase();
   if (text.isEmpty) return trainees;
@@ -94,7 +100,9 @@ List<Trainee> filterTrainees(List<Trainee> trainees, String query) {
   return [
     for (final trainee in trainees)
       if (trainee.fullName.toLowerCase().contains(text) ||
-          (digits.isNotEmpty && (trainee.phone ?? '').contains(digits)))
+          (digits.isNotEmpty &&
+              ((trainee.phone ?? '').contains(digits) ||
+                  '${trainee.rollNo}' == digits)))
         trainee,
   ];
 }
@@ -215,6 +223,8 @@ void _refreshTrainee(Ref ref, String traineeId) {
   ref.invalidate(traineeProvider(traineeId));
   ref.invalidate(traineeListProvider);
   ref.invalidate(rosterProvider);
+  // A status change frees or takes a number, so the next suggestion moves.
+  ref.invalidate(nextRollNoProvider);
 }
 
 AppException _appError(Object error) =>

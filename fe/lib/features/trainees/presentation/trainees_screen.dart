@@ -26,7 +26,7 @@ const _statusOptions = [
   ChoiceOption(value: TraineeStatus.inactive, label: 'Inactive'),
 ];
 
-/// The roster: search by name or phone, active or inactive, tap for the detail.
+/// The roster: search by name, phone or roll number, active or inactive, tap for the detail.
 class TraineesScreen extends ConsumerStatefulWidget {
   const TraineesScreen({super.key});
 
@@ -87,7 +87,7 @@ class _TraineesScreenState extends ConsumerState<TraineesScreen> {
                 AppTextField(
                   controller: search,
                   label: 'Search',
-                  hint: 'Name or phone',
+                  hint: 'Name, phone or roll number',
                   textInputAction: TextInputAction.search,
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -141,7 +141,7 @@ class _TraineeList extends StatelessWidget {
     if (trainees.isEmpty) {
       return EmptyView(
         title: 'No one matches',
-        message: 'Try another name or phone number.',
+        message: 'Try another name, phone or roll number.',
         actionLabel: 'Clear search',
         onAction: onClearSearch,
       );
@@ -179,7 +179,8 @@ class _TraineeRow extends StatelessWidget {
     final row = ListRow(
       leading: TraineeAvatar(trainee: trainee),
       title: trainee.fullName,
-      subtitle: phone == null ? 'No phone' : formatPhone(phone),
+      subtitle:
+          '#${trainee.rollNo} · ${phone == null ? 'No phone' : formatPhone(phone)}',
       trailing: const Icon(Icons.chevron_right, color: AppColors.muted),
       onTap: () => context.push(Routes.traineeDetailOf(trainee.id)),
     );

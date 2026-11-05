@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RosterEntry {
 
-@JsonKey(name: 'trainee_id') String get traineeId;@JsonKey(name: 'full_name') String get fullName;@JsonKey(name: 'photo_path') String? get photoPath;/// Null while the trainee is not marked for the session.
+@JsonKey(name: 'trainee_id') String get traineeId;@JsonKey(name: 'roll_no') int get rollNo;@JsonKey(name: 'full_name') String get fullName;@JsonKey(name: 'photo_path') String? get photoPath;/// Null while the trainee is not marked for the session.
 @JsonKey(fromJson: _statusFromWire, toJson: _statusToWire) AttendanceStatus? get status;@JsonKey(name: 'marked_at') DateTime? get markedAt;
 /// Create a copy of RosterEntry
 /// with the given fields replaced by the non-null parameter values.
@@ -31,20 +31,20 @@ $RosterEntryCopyWith<RosterEntry> get copyWith => _$RosterEntryCopyWithImpl<Rost
 @override
 bool operator ==(Object other) {
   final _this = this as RosterEntry;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RosterEntry&&(identical(other.traineeId, _this.traineeId) || other.traineeId == _this.traineeId)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.photoPath, _this.photoPath) || other.photoPath == _this.photoPath)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.markedAt, _this.markedAt) || other.markedAt == _this.markedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RosterEntry&&(identical(other.traineeId, _this.traineeId) || other.traineeId == _this.traineeId)&&(identical(other.rollNo, _this.rollNo) || other.rollNo == _this.rollNo)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.photoPath, _this.photoPath) || other.photoPath == _this.photoPath)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.markedAt, _this.markedAt) || other.markedAt == _this.markedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as RosterEntry;
-  return Object.hash(runtimeType,_this.traineeId,_this.fullName,_this.photoPath,_this.status,_this.markedAt);
+  return Object.hash(runtimeType,_this.traineeId,_this.rollNo,_this.fullName,_this.photoPath,_this.status,_this.markedAt);
 }
 
 @override
 String toString() {
   final _this = this as RosterEntry;
-  return 'RosterEntry(traineeId: ${_this.traineeId}, fullName: ${_this.fullName}, photoPath: ${_this.photoPath}, status: ${_this.status}, markedAt: ${_this.markedAt})';
+  return 'RosterEntry(traineeId: ${_this.traineeId}, rollNo: ${_this.rollNo}, fullName: ${_this.fullName}, photoPath: ${_this.photoPath}, status: ${_this.status}, markedAt: ${_this.markedAt})';
 }
 
 
@@ -55,7 +55,7 @@ abstract mixin class $RosterEntryCopyWith<$Res>  {
   factory $RosterEntryCopyWith(RosterEntry value, $Res Function(RosterEntry) _then) = _$RosterEntryCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'trainee_id') String traineeId,@JsonKey(name: 'full_name') String fullName,@JsonKey(name: 'photo_path') String? photoPath,@JsonKey(fromJson: _statusFromWire, toJson: _statusToWire) AttendanceStatus? status,@JsonKey(name: 'marked_at') DateTime? markedAt
+@JsonKey(name: 'trainee_id') String traineeId,@JsonKey(name: 'roll_no') int rollNo,@JsonKey(name: 'full_name') String fullName,@JsonKey(name: 'photo_path') String? photoPath,@JsonKey(fromJson: _statusFromWire, toJson: _statusToWire) AttendanceStatus? status,@JsonKey(name: 'marked_at') DateTime? markedAt
 });
 
 
@@ -72,10 +72,11 @@ class _$RosterEntryCopyWithImpl<$Res>
 
 /// Create a copy of RosterEntry
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? traineeId = null,Object? fullName = null,Object? photoPath = freezed,Object? status = freezed,Object? markedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? traineeId = null,Object? rollNo = null,Object? fullName = null,Object? photoPath = freezed,Object? status = freezed,Object? markedAt = freezed,}) {
   return _then(RosterEntry(
 traineeId: null == traineeId ? _self.traineeId : traineeId // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String,rollNo: null == rollNo ? _self.rollNo : rollNo // ignore: cast_nullable_to_non_nullable
+as int,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
 as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as AttendanceStatus?,markedAt: freezed == markedAt ? _self.markedAt : markedAt // ignore: cast_nullable_to_non_nullable
@@ -164,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'trainee_id')  String traineeId, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(fromJson: _statusFromWire, toJson: _statusToWire)  AttendanceStatus? status, @JsonKey(name: 'marked_at')  DateTime? markedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'trainee_id')  String traineeId, @JsonKey(name: 'roll_no')  int rollNo, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(fromJson: _statusFromWire, toJson: _statusToWire)  AttendanceStatus? status, @JsonKey(name: 'marked_at')  DateTime? markedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RosterEntry() when $default != null:
-return $default(_that.traineeId,_that.fullName,_that.photoPath,_that.status,_that.markedAt);case _:
+return $default(_that.traineeId,_that.rollNo,_that.fullName,_that.photoPath,_that.status,_that.markedAt);case _:
   return orElse();
 
 }
@@ -185,10 +186,10 @@ return $default(_that.traineeId,_that.fullName,_that.photoPath,_that.status,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'trainee_id')  String traineeId, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(fromJson: _statusFromWire, toJson: _statusToWire)  AttendanceStatus? status, @JsonKey(name: 'marked_at')  DateTime? markedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'trainee_id')  String traineeId, @JsonKey(name: 'roll_no')  int rollNo, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(fromJson: _statusFromWire, toJson: _statusToWire)  AttendanceStatus? status, @JsonKey(name: 'marked_at')  DateTime? markedAt)  $default,) {final _that = this;
 switch (_that) {
 case _RosterEntry():
-return $default(_that.traineeId,_that.fullName,_that.photoPath,_that.status,_that.markedAt);case _:
+return $default(_that.traineeId,_that.rollNo,_that.fullName,_that.photoPath,_that.status,_that.markedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +206,10 @@ return $default(_that.traineeId,_that.fullName,_that.photoPath,_that.status,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'trainee_id')  String traineeId, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(fromJson: _statusFromWire, toJson: _statusToWire)  AttendanceStatus? status, @JsonKey(name: 'marked_at')  DateTime? markedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'trainee_id')  String traineeId, @JsonKey(name: 'roll_no')  int rollNo, @JsonKey(name: 'full_name')  String fullName, @JsonKey(name: 'photo_path')  String? photoPath, @JsonKey(fromJson: _statusFromWire, toJson: _statusToWire)  AttendanceStatus? status, @JsonKey(name: 'marked_at')  DateTime? markedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _RosterEntry() when $default != null:
-return $default(_that.traineeId,_that.fullName,_that.photoPath,_that.status,_that.markedAt);case _:
+return $default(_that.traineeId,_that.rollNo,_that.fullName,_that.photoPath,_that.status,_that.markedAt);case _:
   return null;
 
 }
@@ -220,10 +221,11 @@ return $default(_that.traineeId,_that.fullName,_that.photoPath,_that.status,_tha
 @JsonSerializable()
 
 class _RosterEntry implements RosterEntry {
-  const _RosterEntry({@JsonKey(name: 'trainee_id') required this.traineeId, @JsonKey(name: 'full_name') required this.fullName, @JsonKey(name: 'photo_path') this.photoPath, @JsonKey(fromJson: _statusFromWire, toJson: _statusToWire) this.status, @JsonKey(name: 'marked_at') this.markedAt});
+  const _RosterEntry({@JsonKey(name: 'trainee_id') required this.traineeId, @JsonKey(name: 'roll_no') required this.rollNo, @JsonKey(name: 'full_name') required this.fullName, @JsonKey(name: 'photo_path') this.photoPath, @JsonKey(fromJson: _statusFromWire, toJson: _statusToWire) this.status, @JsonKey(name: 'marked_at') this.markedAt});
   factory _RosterEntry.fromJson(Map<String, dynamic> json) => _$RosterEntryFromJson(json);
 
 @override@JsonKey(name: 'trainee_id') final  String traineeId;
+@override@JsonKey(name: 'roll_no') final  int rollNo;
 @override@JsonKey(name: 'full_name') final  String fullName;
 @override@JsonKey(name: 'photo_path') final  String? photoPath;
 /// Null while the trainee is not marked for the session.
@@ -243,18 +245,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RosterEntry&&(identical(other.traineeId, traineeId) || other.traineeId == traineeId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.status, status) || other.status == status)&&(identical(other.markedAt, markedAt) || other.markedAt == markedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RosterEntry&&(identical(other.traineeId, traineeId) || other.traineeId == traineeId)&&(identical(other.rollNo, rollNo) || other.rollNo == rollNo)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.status, status) || other.status == status)&&(identical(other.markedAt, markedAt) || other.markedAt == markedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,traineeId,fullName,photoPath,status,markedAt);
+    return Object.hash(runtimeType,traineeId,rollNo,fullName,photoPath,status,markedAt);
 }
 
 @override
 String toString() {
-    return 'RosterEntry(traineeId: $traineeId, fullName: $fullName, photoPath: $photoPath, status: $status, markedAt: $markedAt)';
+    return 'RosterEntry(traineeId: $traineeId, rollNo: $rollNo, fullName: $fullName, photoPath: $photoPath, status: $status, markedAt: $markedAt)';
 }
 
 
@@ -265,7 +267,7 @@ abstract mixin class _$RosterEntryCopyWith<$Res> implements $RosterEntryCopyWith
   factory _$RosterEntryCopyWith(_RosterEntry value, $Res Function(_RosterEntry) _then) = __$RosterEntryCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'trainee_id') String traineeId,@JsonKey(name: 'full_name') String fullName,@JsonKey(name: 'photo_path') String? photoPath,@JsonKey(fromJson: _statusFromWire, toJson: _statusToWire) AttendanceStatus? status,@JsonKey(name: 'marked_at') DateTime? markedAt
+@JsonKey(name: 'trainee_id') String traineeId,@JsonKey(name: 'roll_no') int rollNo,@JsonKey(name: 'full_name') String fullName,@JsonKey(name: 'photo_path') String? photoPath,@JsonKey(fromJson: _statusFromWire, toJson: _statusToWire) AttendanceStatus? status,@JsonKey(name: 'marked_at') DateTime? markedAt
 });
 
 
@@ -282,10 +284,11 @@ class __$RosterEntryCopyWithImpl<$Res>
 
 /// Create a copy of RosterEntry
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? traineeId = null,Object? fullName = null,Object? photoPath = freezed,Object? status = freezed,Object? markedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? traineeId = null,Object? rollNo = null,Object? fullName = null,Object? photoPath = freezed,Object? status = freezed,Object? markedAt = freezed,}) {
   return _then(_RosterEntry(
 traineeId: null == traineeId ? _self.traineeId : traineeId // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String,rollNo: null == rollNo ? _self.rollNo : rollNo // ignore: cast_nullable_to_non_nullable
+as int,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
 as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as AttendanceStatus?,markedAt: freezed == markedAt ? _self.markedAt : markedAt // ignore: cast_nullable_to_non_nullable

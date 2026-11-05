@@ -17,8 +17,9 @@ import '../../../support/scenario.dart';
 final _clock = DateTime.utc(2026, 11, 5, 7);
 final _created = DateTime.utc(2026, 1, 10, 4, 30);
 
-Trainee _trainee(String id, String name, DateTime? dob) => Trainee(
+Trainee _trainee(int rollNo, String id, String name, DateTime? dob) => Trainee(
   id: id,
+  rollNo: rollNo,
   fullName: name,
   dateOfBirth: dob,
   status: TraineeStatus.active,
@@ -71,10 +72,10 @@ void main() {
     (tester) async {
       final repository = MockFeeRepository(
         trainees: [
-          _trainee('a', 'Asha Paid', DateTime(1998, 1, 1)),
-          _trainee('b', 'Bala Partly', DateTime(1998, 1, 1)),
-          _trainee('c', 'Chitra Unpaid', DateTime(1998, 1, 1)),
-          _trainee('d', 'Dev Unknown', null),
+          _trainee(1, 'a', 'Asha Paid', DateTime(1998, 1, 1)),
+          _trainee(2, 'b', 'Bala Partly', DateTime(1998, 1, 1)),
+          _trainee(3, 'c', 'Chitra Unpaid', DateTime(1998, 1, 1)),
+          _trainee(4, 'd', 'Dev Unknown', null),
         ],
         payments: [
           fixturePayment(
@@ -110,11 +111,11 @@ void main() {
   ) async {
     final repository = MockFeeRepository(
       trainees: [
-        _trainee('a', 'Asha Paid', DateTime(1998, 1, 1)),
-        _trainee('b', 'Bala Partly', DateTime(1998, 1, 1)),
-        _trainee('c', 'Chitra Unpaid', DateTime(1998, 1, 1)),
-        _trainee('d', 'Dev Tierless Paid', null),
-        _trainee('e', 'Esha Tierless Unpaid', null),
+        _trainee(1, 'a', 'Asha Paid', DateTime(1998, 1, 1)),
+        _trainee(2, 'b', 'Bala Partly', DateTime(1998, 1, 1)),
+        _trainee(3, 'c', 'Chitra Unpaid', DateTime(1998, 1, 1)),
+        _trainee(4, 'd', 'Dev Tierless Paid', null),
+        _trainee(5, 'e', 'Esha Tierless Unpaid', null),
       ],
       payments: [
         fixturePayment(id: 'p1', traineeId: 'a', amount: 800),
@@ -144,7 +145,7 @@ void main() {
     await _pump(
       tester,
       MockFeeRepository(
-        trainees: [_trainee('a', 'Asha Paid', DateTime(1998, 1, 1))],
+        trainees: [_trainee(1, 'a', 'Asha Paid', DateTime(1998, 1, 1))],
         clock: () => _clock,
       ),
     );

@@ -33,6 +33,14 @@ Future<void> _pump(WidgetTester tester, RosterEntry entry) async {
 }
 
 void main() {
+  testWidgets('the row leads with the roll number', (tester) async {
+    await _pump(
+      tester,
+      const RosterEntry(traineeId: 't1', rollNo: 12, fullName: 'Arjun Reddy'),
+    );
+    expect(find.text('12'), findsOneWidget);
+  });
+
   for (final status in [
     null,
     AttendanceStatus.present,
@@ -45,6 +53,7 @@ void main() {
           tester,
           RosterEntry(
             traineeId: 't1',
+            rollNo: 1,
             fullName: 'Venkata Subrahmanya Lakshmi Narasimha Reddy',
             status: status,
             markedAt: status == null ? null : DateTime.utc(2026, 11, 5, 1, 2),

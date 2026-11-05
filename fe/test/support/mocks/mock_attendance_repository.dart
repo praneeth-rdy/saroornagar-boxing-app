@@ -16,7 +16,7 @@ import '../scenario.dart';
 
 /// In-memory [AttendanceRepository] that follows the attendance migration's rules and
 /// messages (`20261105075401_trainees_sessions`, `20261105080014_attendance_trials`,
-/// `20261105114625_unmark_attendance`).
+/// `20261105114625_unmark_attendance`, `roll_numbers`; the roster is by roll number).
 class MockAttendanceRepository implements AttendanceRepository {
   MockAttendanceRepository({
     this.scenario = MockScenario.success,
@@ -123,11 +123,12 @@ class MockAttendanceRepository implements AttendanceRepository {
     success: () {
       _session(sessionId);
       final active = trainees.where((trainee) => trainee.isActive).toList()
-        ..sort(_byName);
+        ..sort((a, b) => a.rollNo.compareTo(b.rollNo));
       return [
         for (final trainee in active)
           RosterEntry(
             traineeId: trainee.id,
+            rollNo: trainee.rollNo,
             fullName: trainee.fullName,
             photoPath: trainee.photoPath,
             status: markFor(sessionId, trainee.id)?.status,
@@ -256,12 +257,6 @@ String _wireTime(TimeOfDay time) =>
 int _byTime(ClubSession a, ClubSession b) {
   final byStart = a.startsAt.compareTo(b.startsAt);
   return byStart != 0 ? byStart : a.endsAt.compareTo(b.endsAt);
-}
-
-// Same order as the server: lower(full_name), then id.
-int _byName(FixtureTrainee a, FixtureTrainee b) {
-  final byName = a.fullName.toLowerCase().compareTo(b.fullName.toLowerCase());
-  return byName != 0 ? byName : a.id.compareTo(b.id);
 }
 
 // Same order as the server: date, batch (enum order), created_at.

@@ -20,6 +20,34 @@ Future<void> _pump(WidgetTester tester, MockTraineeRepository repository) {
 }
 
 void main() {
+  testWidgets('rows lead with the roll number and sort by it', (tester) async {
+    await _pump(
+      tester,
+      MockTraineeRepository(
+        trainees: [detailTrainee.copyWith(rollNo: 90), bareTrainee],
+      ),
+    );
+    expect(find.text('#85 · No phone'), findsOneWidget);
+    expect(find.text('#90 · +91 98765 43210'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Kiran Rao')).dy,
+      lessThan(tester.getTopLeft(find.text('Arjun Reddy')).dy),
+    );
+  });
+
+  testWidgets('search by roll number digits finds that student', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      MockTraineeRepository(trainees: [detailTrainee, bareTrainee]),
+    );
+    await tester.enterText(find.byType(TextField), '12');
+    await tester.pumpAndSettle();
+    expect(find.text('Arjun Reddy'), findsOneWidget);
+    expect(find.text('Kiran Rao'), findsNothing);
+  });
+
   testWidgets('search filters by name and by phone digits', (tester) async {
     await _pump(
       tester,
@@ -27,7 +55,7 @@ void main() {
     );
     expect(find.text('Arjun Reddy'), findsOneWidget);
     expect(find.text('Kiran Rao'), findsOneWidget);
-    expect(find.text('No phone'), findsOneWidget);
+    expect(find.text('#85 · No phone'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField), 'arj');
     await tester.pumpAndSettle();

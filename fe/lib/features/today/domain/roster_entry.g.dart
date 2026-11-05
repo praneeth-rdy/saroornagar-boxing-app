@@ -8,6 +8,7 @@ part of 'roster_entry.dart';
 
 _RosterEntry _$RosterEntryFromJson(Map<String, dynamic> json) => _RosterEntry(
   traineeId: json['trainee_id'] as String,
+  rollNo: (json['roll_no'] as num).toInt(),
   fullName: json['full_name'] as String,
   photoPath: json['photo_path'] as String?,
   status: _statusFromWire(json['status'] as String?),
@@ -19,6 +20,7 @@ _RosterEntry _$RosterEntryFromJson(Map<String, dynamic> json) => _RosterEntry(
 Map<String, dynamic> _$RosterEntryToJson(_RosterEntry instance) =>
     <String, dynamic>{
       'trainee_id': instance.traineeId,
+      'roll_no': instance.rollNo,
       'full_name': instance.fullName,
       'photo_path': instance.photoPath,
       'status': _statusToWire(instance.status),

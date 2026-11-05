@@ -22,6 +22,9 @@ abstract class Trainee with _$Trainee {
 
   const factory Trainee({
     required String id,
+
+    /// Called out at roll call; unique among active students, so an inactive one's may be reused.
+    @JsonKey(name: 'roll_no') required int rollNo,
     @JsonKey(name: 'full_name') required String fullName,
 
     /// Stored as `91XXXXXXXXXX`.

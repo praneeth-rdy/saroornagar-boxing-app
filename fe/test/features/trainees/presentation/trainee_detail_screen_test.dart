@@ -46,7 +46,10 @@ void main() {
       detailTrainee.id,
     );
     expect(find.text('Arjun Reddy'), findsOneWidget);
-    expect(find.text('+91 98765 43210 · Age 14 · Junior'), findsOneWidget);
+    expect(
+      find.text('Roll no. 12 · +91 98765 43210 · Age 14 · Junior'),
+      findsOneWidget,
+    );
     expect(find.text('Joined 3 Mar 2026'), findsOneWidget);
     expect(find.text('Active'), findsOneWidget);
     expect(find.text('NOTES'), findsOneWidget);
@@ -60,6 +63,7 @@ void main() {
       bareTrainee.id,
     );
     expect(find.text('Kiran Rao'), findsOneWidget);
+    expect(find.text('Roll no. 85'), findsOneWidget);
     expect(find.textContaining('Joined'), findsNothing);
     expect(find.textContaining('Age'), findsNothing);
     expect(find.text('NOTES'), findsNothing);

@@ -8,6 +8,7 @@ part of 'trainee.dart';
 
 _Trainee _$TraineeFromJson(Map<String, dynamic> json) => _Trainee(
   id: json['id'] as String,
+  rollNo: (json['roll_no'] as num).toInt(),
   fullName: json['full_name'] as String,
   phone: json['phone'] as String?,
   photoPath: json['photo_path'] as String?,
@@ -21,6 +22,7 @@ _Trainee _$TraineeFromJson(Map<String, dynamic> json) => _Trainee(
 
 Map<String, dynamic> _$TraineeToJson(_Trainee instance) => <String, dynamic>{
   'id': instance.id,
+  'roll_no': instance.rollNo,
   'full_name': instance.fullName,
   'phone': instance.phone,
   'photo_path': instance.photoPath,
