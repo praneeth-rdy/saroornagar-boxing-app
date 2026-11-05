@@ -152,6 +152,34 @@ void main() {
       expect(result, isA<AuthFailedException>());
     });
 
+    test('phone_provider_disabled maps to ValidationException', () {
+      final result = mapSupabaseError(
+        const AuthApiException(
+          'Unsupported phone provider',
+          statusCode: '400',
+          code: 'phone_provider_disabled',
+        ),
+      );
+
+      expect(result, isA<ValidationException>());
+      expect(
+        result.message,
+        'Phone sign-in is not enabled on the server yet. Ask the club admin.',
+      );
+    });
+
+    test('a "Phone logins are disabled" message maps to Validation', () {
+      final result = mapSupabaseError(
+        const AuthException('Phone logins are disabled', statusCode: '400'),
+      );
+
+      expect(result, isA<ValidationException>());
+      expect(
+        result.message,
+        'Phone sign-in is not enabled on the server yet. Ask the club admin.',
+      );
+    });
+
     test('status 400 maps to AuthFailedException', () {
       final result = mapSupabaseError(
         const AuthException('bad request', statusCode: '400'),

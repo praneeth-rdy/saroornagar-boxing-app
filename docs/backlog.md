@@ -53,3 +53,4 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | D-02 | First scope | Guest trial booking + coach/staff/admin app; no trainee view | decided 2026-11-05 |
 | D-03 | Hosted Supabase project | Owner creates it and shares the project ref and publishable key | decided 2026-11-05, waiting on the owner |
 | D-04 | Android application id (currently the Flutter default `com.example.saroornagar_boxing`) | | open |
+| D-05 | Logo and app name | Six options on the logo canvas; launcher label "Boxing Club" until the owner picks | open, waiting on the owner |

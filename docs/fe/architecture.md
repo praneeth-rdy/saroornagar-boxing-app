@@ -66,3 +66,5 @@ status, photo, history); task-03 Trials (public booking form, booked screen, sta
 | Item | Where | Notes |
 |---|---|---|
 | Release signing | `android/app/build.gradle.kts` (`signingConfigs.release`) | Reads `android/key.properties` (`storePassword`, `keyPassword`, `keyAlias=upload`, `storeFile=keystore/upload-keystore.jks`, relative to `android/`); keystore at `android/keystore/upload-keystore.jks`. Both gitignored, passwords in `creds.md`. Without `key.properties` a release build is debug-signed and Gradle warns (visible only with `flutter build -v`). Certificate `CN=Saroornagar Boxing Club`. |
+| Network permission | `android/app/src/main/AndroidManifest.xml` | `INTERNET` declared in the main manifest so release builds reach Supabase (the template grants it only in debug and profile). |
+| App name | `android/app/src/main/AndroidManifest.xml` | Boxing Club (`android:label` in the main manifest). |

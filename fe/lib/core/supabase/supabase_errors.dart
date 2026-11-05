@@ -53,11 +53,26 @@ AppException _fromFunction(FunctionException error) {
   return const UnknownException();
 }
 
+const _phoneProviderDisabledMessage =
+    'Phone sign-in is not enabled on the server yet. Ask the club admin.';
+
 AppException _fromAuth(AuthException error) {
+  // Checked before the generic 400 rule: a disabled phone provider also answers 400,
+  // but retyping the password will never fix it.
+  if (_isPhoneProviderDisabled(error)) {
+    return const ValidationException(_phoneProviderDisabledMessage);
+  }
   if (error.code == 'invalid_credentials' || error.statusCode == '400') {
     return const AuthFailedException();
   }
   return const UnknownException();
+}
+
+bool _isPhoneProviderDisabled(AuthException error) {
+  if (error.code == 'phone_provider_disabled') return true;
+  final message = error.message.toLowerCase();
+  return message.contains('phone logins are disabled') ||
+      message.contains('phone provider');
 }
 
 /// The BX codes raised by `private.fail` and returned by Edge Functions.

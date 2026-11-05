@@ -19,3 +19,4 @@ to the fix. Read before reviewing; never re-report an item already here.
 | R2-05 | 2026-11-05 | fe | Today: the last roster row sits flush against the sticky bulk-absent bar (no bottom padding). | fixed 2026-11-05, run-2 task-08 |
 | R2-06 | 2026-11-05 | fe | Book trial: "YOUR AGE" eyebrow plus an "Age" field label, and the note eyebrow plus a "Note" label, label each field twice. | fixed 2026-11-05, run-2 task-08 |
 | R2-07 | 2026-11-05 | fe | Book trial subtitle leaves a one-word orphan; the trials fixture repeats the same three bookings every day and books a Sunday. | fixed 2026-11-05, run-2 task-08 |
+| R3-01 | 2026-11-05 | fe | Release APK had no INTERNET permission (the Flutter template grants it only in debug and profile manifests), so every call failed as "offline". Found by the owner on the device. | fixed 2026-11-05 (main manifest) |

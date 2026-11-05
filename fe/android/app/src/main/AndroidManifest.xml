@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Release builds talk to Supabase; the template grants this only in debug and profile. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="saroornagar_boxing"
+        android:label="Boxing Club"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
