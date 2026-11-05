@@ -33,8 +33,8 @@ Guest trial-slot booking plus the coach / staff / admin app. **No trainee view i
 trainees do not sign in; their attendance and fee records are kept by staff. The trainee
 view (own attendance, fee updates) is a later release; nothing in release 1 may depend on it.
 
-- Trainee record (round 3): name; optional photo, phone and joining date; active/inactive
-  status.
+- Trainee record (round 3): name; optional photo, phone, date of birth and joining date;
+  active/inactive status. No "arrived" tick on trial bookings.
 - Trial booking: no confirmation step. A guest's booking only informs the coach that someone
   is arriving for that session.
 - Sessions: morning generally 6:00 to 8:30 am, evening 5:30 to 8:00 pm, every day except
@@ -59,10 +59,10 @@ Confirmed section with its date.
 1. (answered) Users and roles: owner/admin above coaches, same powers for now.
 2. (answered) Coach marks a session list.
 3. (answered) One club, two sessions daily except Sunday; any trainee may attend any session. Still open: roughly how many trainees; session timings.
-4. (answered) In the app, no account, no confirmation. Still open: what the guest fills in (name, phone, session, date); whether a slot has a capacity; whether the guest can cancel; any trial fee; what the coach does when the guest arrives (mark as attended? convert to trainee?).
+4. (answered) In the app, no account, no confirmation, no arrived tick. Still open: whether a slot has a capacity; whether the guest can cancel; any trial fee. Left out of release 1 until answered.
 5. (answered) Phone and password; admin creates and manages staff accounts, resets passwords, blocks access. Still open: how the first admin account is created (seeded by us with a password handed over).
 6. (answered) Trainee record fields.
-7. (answered) Monthly fee by age tier, record only. Still open: does the trainee record carry a date of birth (needed to pick the tier), and should the fee status list show "last paid month" only or also flag months with no payment.
+7. (answered) Monthly fee by age tier, record only; date of birth optional on the trainee record. Still open: should the fee status list only show the last paid month, or also flag months with no payment.
 8. Notifications (reminders, confirmations): in scope or not; channel.
 9. (answered) Reports: per-trainee history, monthly summary, fee status list.
 10. (answered) Hosted Supabase: the owner creates it. Still open: the Android application id (needs the club's name or domain); how the first admin account is created (proposal: seeded by a migration with a password the owner changes).
