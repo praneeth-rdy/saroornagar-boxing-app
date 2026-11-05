@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction A Today screen</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}a{color:#0A5FD6}a:hover{color:#084BAA}</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#F5F5F7;color:#1D1D1F;display:flex;flex-direction:column;overflow:hidden">
+  <div style="padding:60px 20px 10px;display:flex;flex-direction:column;gap:2px">
+    <div style="font-size:13px;font-weight:600;color:#6E6E73;letter-spacing:0.3px">THURSDAY 5 NOVEMBER</div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <h1 style="margin:0;font-size:34px;font-weight:700;letter-spacing:-0.6px">Today</h1>
+      <button aria-label="Search trainees" style="width:44px;height:44px;border-radius:22px;border:0;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    </div>
+  </div>
+
+  <div style="margin:6px 20px 0;padding:3px;background:#E5E5EA;border-radius:10px;display:flex">
+    <button style="flex:1;height:34px;border:0;border-radius:8px;background:#FFFFFF;font:600 14px Inter,sans-serif;color:#1D1D1F;box-shadow:0 1px 2px rgba(0,0,0,0.08)">Morning batch</button>
+    <button style="flex:1;height:34px;border:0;border-radius:8px;background:transparent;font:500 14px Inter,sans-serif;color:#1D1D1F">Evening batch</button>
+  </div>
+
+  <div style="margin:16px 20px 0;background:#FFFFFF;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <div style="font-size:15px;font-weight:600">Marked</div>
+      <div style="font-size:13px;color:#6E6E73">6 to go</div>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:32px;font-weight:700;letter-spacing:-0.5px">14</span><span style="font-size:15px;color:#6E6E73">of 20</span></div>
+    <div style="height:6px;border-radius:3px;background:#E5E5EA;overflow:hidden"><div style="width:70%;height:6px;background:#0A5FD6;border-radius:3px"></div></div>
+  </div>
+
+  <div style="margin:16px 20px 0;background:#FFFFFF;border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #EDEDF0">
+      <div style="width:36px;height:36px;border-radius:18px;background:#E5E5EA;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">AR</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="font-size:15px;font-weight:500">Arjun Reddy</div><div style="font-size:12px;color:#6E6E73">Present, 6:02 am</div></div>
+      <button aria-label="Present" style="width:36px;height:36px;border-radius:18px;border:0;background:#0A5FD6;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+      <button aria-label="Absent" style="width:36px;height:36px;border-radius:18px;border:0;background:#F2F2F7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #EDEDF0">
+      <div style="width:36px;height:36px;border-radius:18px;background:#E5E5EA;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">SK</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="font-size:15px;font-weight:500">Sana Khan</div><div style="font-size:12px;color:#6E6E73">Present, 6:05 am</div></div>
+      <button aria-label="Present" style="width:36px;height:36px;border-radius:18px;border:0;background:#0A5FD6;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+      <button aria-label="Absent" style="width:36px;height:36px;border-radius:18px;border:0;background:#F2F2F7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #EDEDF0">
+      <div style="width:36px;height:36px;border-radius:18px;background:#E5E5EA;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">VT</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="font-size:15px;font-weight:500">Vikram Thakur</div><div style="font-size:12px;color:#6E6E73">Absent</div></div>
+      <button aria-label="Present" style="width:36px;height:36px;border-radius:18px;border:0;background:#F2F2F7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+      <button aria-label="Absent" style="width:36px;height:36px;border-radius:18px;border:0;background:#1D1D1F;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #EDEDF0">
+      <div style="width:36px;height:36px;border-radius:18px;background:#E5E5EA;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">MS</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="font-size:15px;font-weight:500">Meera Sharma</div><div style="font-size:12px;color:#6E6E73">Present, 6:11 am</div></div>
+      <button aria-label="Present" style="width:36px;height:36px;border-radius:18px;border:0;background:#0A5FD6;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+      <button aria-label="Absent" style="width:36px;height:36px;border-radius:18px;border:0;background:#F2F2F7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #EDEDF0">
+      <div style="width:36px;height:36px;border-radius:18px;background:#E5E5EA;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">RB</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="font-size:15px;font-weight:500">Rohit Bose</div><div style="font-size:12px;color:#6E6E73">Not marked</div></div>
+      <button aria-label="Present" style="width:36px;height:36px;border-radius:18px;border:0;background:#F2F2F7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+      <button aria-label="Absent" style="width:36px;height:36px;border-radius:18px;border:0;background:#F2F2F7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px">
+      <div style="width:36px;height:36px;border-radius:18px;background:#E5E5EA;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">AM</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="font-size:15px;font-weight:500">Ayesha Mirza</div><div style="font-size:12px;color:#6E6E73">Not marked</div></div>
+      <button aria-label="Present" style="width:36px;height:36px;border-radius:18px;border:0;background:#F2F2F7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+      <button aria-label="Absent" style="width:36px;height:36px;border-radius:18px;border:0;background:#F2F2F7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+  </div>
+
+  <div style="margin:12px 20px 0;display:flex;justify-content:center"><a href="#remaining" style="font-size:14px;font-weight:500;text-decoration:none">Mark the remaining 6 absent</a></div>
+
+  <div style="margin-top:auto;height:84px;background:#FFFFFF;border-top:1px solid #E5E5EA;display:flex;align-items:flex-start;padding:10px 12px 0">
+    <a href="#today" aria-current="page" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:#0A5FD6"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg><span style="font-size:10px;font-weight:600">Today</span></a>
+    <a href="#trainees" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:#8E8E93"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-5-6.7"/></svg><span style="font-size:10px;font-weight:500">Trainees</span></a>
+    <a href="#trials" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:#8E8E93"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/><path d="M12 6v12"/></svg><span style="font-size:10px;font-weight:500">Trials</span></a>
+    <a href="#more" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:#8E8E93"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span style="font-size:10px;font-weight:500">More</span></a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

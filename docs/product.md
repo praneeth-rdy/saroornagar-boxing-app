@@ -11,19 +11,26 @@ the date) or marked as an open question. Nothing is built from an assumption.
 - Android mobile app built with Flutter; Supabase on the free tier as the only backend.
 - Design: modern and classy, Apple-like, probably two colours; the owner picks from the
   design-directions canvas (see `decisions.md` once chosen).
+- Users (interview round 1): coaches / club staff, trainees, and public visitors (not yet
+  members) who book a trial. Trainees never check themselves in; they can see their own
+  attendance and their fee payment updates (cash or UPI), among other things.
+- Attendance is captured by a coach marking a session list: present or absent per trainee.
+- One club, one location. Two sessions every day, morning and evening, except Sunday. A coach
+  or staff member can add an extra session on a day when needed.
+- Trial booking happens in the app, with no account needed for the visitor.
 
 ## Open questions
 
 Gathered through the requirements interview, broad to narrow. Each answer moves to the
 Confirmed section with its date.
 
-1. Who uses the app: coaches or staff only, trainees too, the public for trial booking?
-2. How attendance is captured: the coach marks a list, the trainee checks in, or both?
-3. One club or several branches; number of trainees and batches, roughly; batch timings.
-4. Trial booking: inside the app, on a public web page, or both; who confirms a trial; any fee.
+1. (answered) Users. Still open: is there an owner/admin role above coaches, and what can it do that a coach cannot?
+2. (answered) Coach marks a session list.
+3. (answered) One club, two sessions daily except Sunday. Still open: roughly how many trainees; do trainees belong to one session (morning or evening) or can they come to either; session timings.
+4. (answered) In the app, no account. Still open: who confirms a trial and how the visitor hears back; any trial fee; what the coach sees and does with a trial booking.
 5. Sign-in: phone OTP, email, or no account for visitors; who is allowed in.
 6. Trainee records: what is stored (name, phone, joining date, plan, fees?).
-7. Membership and fees: in scope or not.
+7. Fees: trainees see their fee payment updates (cash or UPI). Still open: what a fee record is (monthly? plan?), who records a payment, whether UPI is collected in the app or only recorded.
 8. Notifications (reminders, confirmations): in scope or not; channel.
 9. Reports: what the owner wants to see (per trainee, per batch, per month).
 10. Hosted Supabase: which organisation, region and project name; the Android application id.

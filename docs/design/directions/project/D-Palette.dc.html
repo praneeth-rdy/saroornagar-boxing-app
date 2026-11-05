@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction D palette and kit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:'Space Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}a{color:#C8F531}a:hover{color:#DBFF66}input::placeholder,textarea::placeholder{color:#9AA3B2}</style>
+</helmet>
+<div style="width:520px;height:844px;box-sizing:border-box;background:#0F1115;color:#F2F4F7;padding:36px;display:flex;flex-direction:column;gap:28px;overflow:hidden">
+  <div style="display:flex;align-items:center;gap:14px">
+    <div style="width:44px;height:44px;border-radius:8px;background:#C8F531;color:#0F1115;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700">D</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;letter-spacing:-1px">Slate and Volt</div>
+      <div style="font-size:13px;color:#9AA3B2">Dark slate, one electric accent, tight geometric type. Gym-floor energy.</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(5, minmax(0, 1fr));gap:10px">
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:12px;background:#0F1115;border:1px solid #262B35"></div><div style="font-size:11px;font-weight:600">Ground</div><div style="font-size:11px;color:#9AA3B2">#0F1115</div></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:12px;background:#171A21"></div><div style="font-size:11px;font-weight:600">Surface</div><div style="font-size:11px;color:#9AA3B2">#171A21</div></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:12px;background:#F2F4F7"></div><div style="font-size:11px;font-weight:600">Ink</div><div style="font-size:11px;color:#9AA3B2">#F2F4F7</div></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:12px;background:#9AA3B2"></div><div style="font-size:11px;font-weight:600">Muted</div><div style="font-size:11px;color:#9AA3B2">#9AA3B2</div></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:12px;background:#C8F531"></div><div style="font-size:11px;font-weight:600">Accent</div><div style="font-size:11px;color:#9AA3B2">#C8F531</div></div>
+  </div>
+
+  <div style="background:#171A21;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px">
+    <div style="font-size:11px;font-weight:600;color:#9AA3B2;letter-spacing:1.5px">SPACE GROTESK</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:34px;font-weight:700;letter-spacing:-1px;line-height:1.1">Today</div>
+    <div style="font-size:20px;font-weight:700;letter-spacing:-0.5px">Morning batch</div>
+    <div style="font-size:15px;line-height:1.4">Fourteen of twenty trainees marked so far.</div>
+    <div style="font-size:13px;font-weight:500;color:#9AA3B2">Marked at 6:02 am</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;gap:10px">
+      <button style="flex:1;height:48px;border:0;border-radius:8px;background:#C8F531;color:#0F1115;text-transform:uppercase;letter-spacing:0.5px;font:600 15px 'Space Grotesk',sans-serif">Book trial</button>
+      <button style="flex:1;height:48px;border:0;border-radius:8px;background:#171A21;color:#C8F531;font:600 15px 'Space Grotesk',sans-serif">Mark all present</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button style="height:36px;padding:0 14px;border:0;border-radius:8px;background:#C8F531;color:#0F1115;font:500 13px 'Space Grotesk',sans-serif">Fri 6</button>
+      <button style="height:36px;padding:0 14px;border:0;border-radius:8px;background:#171A21;color:#F2F4F7;font:500 13px 'Space Grotesk',sans-serif">Sat 7</button>
+      <button style="height:36px;padding:0 14px;border:0;border-radius:8px;background:#171A21;color:#F2F4F7;font:500 13px 'Space Grotesk',sans-serif">Mon 9</button>
+      <button style="height:36px;padding:0 14px;border:0;border-radius:8px;background:#171A21;color:#F2F4F7;font:500 13px 'Space Grotesk',sans-serif">Tue 10</button>
+    </div>
+    <div style="background:#171A21;border-radius:12px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #262B35">
+        <div style="width:36px;height:36px;border-radius:18px;background:#222733;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#F2F4F7">AR</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="font-size:15px;font-weight:500">Arjun Reddy</div><div style="font-size:12px;color:#9AA3B2">Present, 6:02 am</div></div>
+        <button aria-label="Present" style="width:36px;height:36px;border-radius:18px;border:0;background:#C8F531;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0F1115" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+        <button aria-label="Absent" style="width:36px;height:36px;border-radius:18px;border:0;background:#222733;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9AA3B2" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px">
+        <label for="d-phone" style="font-size:13px;color:#9AA3B2;width:52px">Phone</label>
+        <input id="d-phone" type="tel" value="98480 12345" style="flex:1;height:40px;border:0;border-radius:8px;background:#222733;padding:0 12px;font:400 15px 'Space Grotesk',sans-serif;color:#F2F4F7">
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:auto;font-size:12px;color:#9AA3B2;line-height:1.5">Radius 8 and 12. Uppercase labels, tight headings. Volt for the action, the selected state and the progress bar.</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":520,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

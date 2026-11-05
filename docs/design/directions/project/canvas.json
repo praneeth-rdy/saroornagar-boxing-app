@@ -1,0 +1,151 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-05T07:00:00Z"
+ },
+ "title": "Boxing Club App Design Directions",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "A-Palette.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 520,
+   "h": 844,
+   "title": "A  Ivory and Graphite  /  palette and kit"
+  },
+  "A-Today.dc.html": {
+   "x": 600,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "A  Today (coach marks attendance)"
+  },
+  "A-Trial.dc.html": {
+   "x": 1070,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "A  Book a trial (visitor)"
+  },
+  "B-Palette.dc.html": {
+   "x": 0,
+   "y": 1200,
+   "w": 520,
+   "h": 844,
+   "title": "B  Graphite and Signal  /  palette and kit"
+  },
+  "B-Today.dc.html": {
+   "x": 600,
+   "y": 1200,
+   "w": 390,
+   "h": 844,
+   "title": "B  Today (coach marks attendance)"
+  },
+  "B-Trial.dc.html": {
+   "x": 1070,
+   "y": 1200,
+   "w": 390,
+   "h": 844,
+   "title": "B  Book a trial (visitor)"
+  },
+  "C-Palette.dc.html": {
+   "x": 0,
+   "y": 2400,
+   "w": 520,
+   "h": 844,
+   "title": "C  Paper and Oxblood  /  palette and kit"
+  },
+  "C-Today.dc.html": {
+   "x": 600,
+   "y": 2400,
+   "w": 390,
+   "h": 844,
+   "title": "C  Today (coach marks attendance)"
+  },
+  "C-Trial.dc.html": {
+   "x": 1070,
+   "y": 2400,
+   "w": 390,
+   "h": 844,
+   "title": "C  Book a trial (visitor)"
+  },
+  "D-Palette.dc.html": {
+   "x": 0,
+   "y": 3600,
+   "w": 520,
+   "h": 844,
+   "title": "D  Slate and Volt  /  palette and kit"
+  },
+  "D-Today.dc.html": {
+   "x": 600,
+   "y": 3600,
+   "w": 390,
+   "h": 844,
+   "title": "D  Today (coach marks attendance)"
+  },
+  "D-Trial.dc.html": {
+   "x": 1070,
+   "y": 3600,
+   "w": 390,
+   "h": 844,
+   "title": "D  Book a trial (visitor)"
+  }
+ },
+ "order": [
+  "A-Palette.dc.html",
+  "A-Today.dc.html",
+  "A-Trial.dc.html",
+  "B-Palette.dc.html",
+  "B-Today.dc.html",
+  "B-Trial.dc.html",
+  "C-Palette.dc.html",
+  "C-Today.dc.html",
+  "C-Trial.dc.html",
+  "D-Palette.dc.html",
+  "D-Today.dc.html",
+  "D-Trial.dc.html"
+ ],
+ "notes": {
+  "intro": {
+   "x": 1540,
+   "y": 0,
+   "w": 420,
+   "text": "How to compare\n\nEach row is one direction: a palette and kit card, the coach's Today screen (marking attendance for a batch) and the visitor's Book-a-trial screen.\n\nNames, batches and counts are sample data. The club name is a placeholder until you confirm it.\n\nA is the Apple-like two-colour brief. B is its dark twin. C and D are the alternatives: warm editorial, and sporty.",
+   "size": "m",
+   "fill": "gray"
+  },
+  "tA": {
+   "x": 0,
+   "y": -240,
+   "text": "A  Ivory and Graphite: Apple-like, light, two colours",
+   "kind": "title1",
+   "maxW": 1460
+  },
+  "tB": {
+   "x": 0,
+   "y": 960,
+   "text": "B  Graphite and Signal: Apple-like, dark, one warm accent",
+   "kind": "title1",
+   "maxW": 1460
+  },
+  "tC": {
+   "x": 0,
+   "y": 2160,
+   "text": "C  Paper and Oxblood: warm, editorial, serif headings",
+   "kind": "title1",
+   "maxW": 1460
+  },
+  "tD": {
+   "x": 0,
+   "y": 3360,
+   "text": "D  Slate and Volt: sporty, high contrast, geometric type",
+   "kind": "title1",
+   "maxW": 1460
+  }
+ },
+ "designSystems": []
+}
