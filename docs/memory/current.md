@@ -14,7 +14,7 @@ and reports defects in chat; each becomes an R3-nn row and a direct developer di
 
 | Area | State |
 |---|---|
-| `be/` | 12 migrations (through `backlog_sweep`), pgTAP 600, seed (email accounts), Edge Function `admin-staff` v2. All applied to hosted 2026-11-05 except `20261105160639_backlog_sweep` (apply blocked by the permission classifier; the app tolerates the old version). |
+| `be/` | 12 migrations (through `backlog_sweep`), pgTAP 600, seed (email accounts), Edge Function `admin-staff` v2. All 12 applied to hosted 2026-11-05. |
 | `fe/` | Theme A kit, config, errors, email auth + forgot password, shell, Today, Trainees, Trials, Fees (compact record screen, 500/800), Staff admin by email, brand badge + launcher icon. Baseline: analyze 0, `flutter test` 440 (incl. 57 proofs). Release signing with the upload keystore; app name "Boxing Club". |
 | Device | Build 41 installed and copied to `/sdcard/Download/saroornagar-boxing-41.apk`; this is the build the owner shares with the coaches (sign-in without the badge). Later builds install over it. | Reinstall after every landed app run. |
 | Hosted | Project `qgqmnaxdxuezjlexlfpw`. Admin by email (login in `creds.md`). Advisors: no RLS gaps. Migration history uses MCP timestamps (B-10). Migration history uses MCP timestamps (B-10). |
@@ -24,7 +24,6 @@ and reports defects in chat; each becomes an R3-nn row and a direct developer di
 
 1. Hosted dashboard: turn off "Allow new users to sign up". (The reset-password template
    step is dropped: the forgot-password entry point is hidden; admins reset from Staff.)
-1b. Apply `20261105160639_backlog_sweep.sql` to hosted (blocked; owner says "retry now").
 1c. (settled) Application id `com.saroornagarboxing.app`.
 2. Android application id (D-04): still `com.example.saroornagar_boxing`. Changing it later
    means uninstalling the current build on the phone.
