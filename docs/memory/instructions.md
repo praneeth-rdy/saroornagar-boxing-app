@@ -8,6 +8,8 @@ each was applied. Newest first. Settled instructions are promoted into the relev
 
 | Instruction (owner's words, condensed) | Applied in |
 |---|---|
+| "Let's use L5a classic" | Decision D-05: logo = L5a Classic badge (name on the upper arc, blue glove centre), app icon = the glove emblem. `docs/decisions.md`; run-3 task-07 (launcher icon, in-app mark). |
+| "Use [the owner's gmail address] for the email account" / "admin" | Hosted admin re-created by email with role admin (2026-11-05); login in `creds.md`. |
 | "Let's remove club text from the logo" (after "Can you show me variations for L5?") | Logo canvas: every artboard reads "Saroornagar Boxing"; five L5 badge variations added (L5a..L5e). The launcher label stays "Boxing Club" until the owner picks a name. |
 | "Can we do an email-password sign-in instead and add a forgot password option too?" / "Phone sign-in is disabled." | `docs/product.md` Confirmed, `docs/decisions.md`; run 3 packages (`.claude/handoffs/2026-11-05-release-1-run-3/`): profiles by email, Edge Function by email, sign-in and forgot-password screens, staff admin by email. |
 | "Please also add a cleaner, readable & short name" (the app name on the device) | Launcher label set to "Boxing Club" in the main Android manifest (2026-11-05); alternatives shown on the logo canvas; the owner can rename when picking a logo. |

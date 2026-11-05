@@ -116,3 +116,6 @@ see the files as unapplied unless `supabase migration repair` is run first.
 | 2026-11-05 | `20261105081756_harden_profiles` | Architect through the MCP |
 | 2026-11-05 | Edge Function `admin-staff` version 1 deployed (verify_jwt on) | Architect through the MCP |
 | 2026-11-05 | First admin user inserted (phone identity, app_metadata role admin); login in `creds.md` | Architect through the MCP |
+| 2026-11-05 | `20261105105121_email_sign_in` and `20261105110147_profile_on_metadata` applied; the phone-based admin user deleted first (no email to backfill) | Architect through the MCP, on the owner's word |
+| 2026-11-05 | Edge Function `admin-staff` version 2 (create by email) | Architect through the MCP |
+| 2026-11-05 | First admin re-created with an email identity (login in `creds.md`) | Architect through the MCP |

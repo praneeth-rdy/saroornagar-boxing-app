@@ -53,4 +53,4 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | D-02 | First scope | Guest trial booking + coach/staff/admin app; no trainee view | decided 2026-11-05 |
 | D-03 | Hosted Supabase project | Owner creates it and shares the project ref and publishable key | decided 2026-11-05, waiting on the owner |
 | D-04 | Android application id (currently the Flutter default `com.example.saroornagar_boxing`) | | open |
-| D-05 | Logo and app name | Six options on the logo canvas; launcher label "Boxing Club" until the owner picks | open, waiting on the owner |
+| D-05 | Logo and app name | L5a Classic badge chosen 2026-11-05 (canvas https://claude.ai/artifact/FL6oyLDsUSpT7RSx7hQcbb, source `docs/design/logos/project/L5a-Classic.dc.html`); launcher label stays "Boxing Club" | decided 2026-11-05 |

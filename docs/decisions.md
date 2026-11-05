@@ -4,6 +4,13 @@ Newest first. Short: the decision, the reason, the alternatives considered.
 
 ## 2026-11-05
 
+- **Logo: L5a Classic badge** (owner's pick from the logo canvas
+  https://claude.ai/artifact/FL6oyLDsUSpT7RSx7hQcbb; source `docs/design/logos/project/
+  L5a-Classic.dc.html`): double ring, "SAROORNAGAR BOXING" on the upper arc, three dots on
+  the lower arc, a blue glove at the centre; no "Club" anywhere. The app icon and small
+  uses carry only the glove emblem, because ring text is unreadable below 48 px. Masters
+  live in `docs/design/logos/final/`, app copies under `fe/assets/brand/`.
+
 - **Staff sign in by email and password; forgot password by emailed code.** Phone sign-in
   needed the hosted Phone provider and had no self-service reset; email auth is on by
   default and the recovery OTP needs no deep link. The built-in sender's free-tier rate
