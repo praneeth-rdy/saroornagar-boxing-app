@@ -1,6 +1,6 @@
 # Current state
 
-Last updated 2026-11-05 (afternoon). Session history is in `log.md`; this file is the snapshot.
+Last updated 2026-11-05 (evening, end of the first session). Session history is in `log.md`; this file is the snapshot.
 
 ## Where the product stands
 
@@ -28,7 +28,11 @@ OAuth is the owner's step); no `gh`. Xcode incomplete (irrelevant, Android only)
    2026-11-05). Publishable key in `fe/config/*.json`. CLI logged in and `be/` linked (2026-11-05). Still needed: the DB password (for `db push`), MCP approval after a relaunch. Credentials live in `creds.md` (gitignored).
 2. Remaining open points in `docs/product.md` (DOB on the trainee record, trial slot
    details, Android application id, first admin creation).
-3. Approval of the first schema proposal (sent in chat 2026-11-05).
+3. Approval of the first schema proposal: `notes/schema-proposal-release-1.md` (re-present
+   it in chat at the start of the next session if not yet approved).
+5. Supabase MCP: configured in `.mcp.json` and enabled in `settings.local.json`, but the
+   session that wrote it could not load it; the owner relaunches, approves the `supabase`
+   server and finishes its OAuth via `/mcp`. Verify by listing tables through the MCP.
 4. (settled) Credentials in the gitignored `creds.md` at the repo root.
 
 ## Resume checklist

@@ -14,4 +14,11 @@ Newest first. One entry per work session: what changed, what it means for the ne
   `.mcp.json.example` committed).
 - Design-directions canvas published (four directions, each with a palette card, a Today
   attendance screen and a Book-a-trial screen).
-- Requirements interview opened with the broad questions; answers go to `docs/product.md`.
+- Requirements interview rounds 1 to 4 done and recorded in `docs/product.md` (release 1 =
+  guest trial booking + staff app, no trainee view; phone + password sign-in; admin manages
+  staff; monthly fee tiers by age, record only; design direction A).
+- Hosted Supabase project `qgqmnaxdxuezjlexlfpw` created by the owner; publishable key in
+  `fe/config/*.json`; CLI logged in and `be/` linked. `creds.md` (gitignored) holds the
+  details. MCP needs a relaunch and OAuth.
+- Next session: get the schema yes (`notes/schema-proposal-release-1.md`) and the DB
+  password, then write the run-1 packages and start `tiered-build`.
