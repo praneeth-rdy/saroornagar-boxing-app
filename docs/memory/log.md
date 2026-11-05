@@ -17,8 +17,10 @@ Newest first. One entry per work session: what changed, what it means for the ne
 - Roll numbers added (unique among active students, gap-first suggestion, editable; roster
   and list ordered by them); hosted data reset (marks cleared, one test student removed,
   Praneeth Reddy = roll 10). Build 34 on the device.
-- Open: B-12 (server messages say trainee), B-13 (extra session time in logs), A-08..A-11,
-  B-05, B-06, B-09; dashboard steps (sign-ups off, {{ .Token }} in the reset template).
+- Backlog sweep done (B-05, B-06, B-09, B-12, B-13, A-08..A-11); the be migration waits for
+  the hosted apply. Build 37 on the device; the owner will share the APK with coaches.
+- Open: hosted apply of the sweep, D-04 application id, dashboard steps (sign-ups off,
+  {{ .Token }} in the reset template).
 
 ## 2026-11-05 (second session, late): email sign-in, logo, compact payments
 
