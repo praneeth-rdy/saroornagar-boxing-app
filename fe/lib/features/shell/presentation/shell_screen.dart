@@ -63,7 +63,7 @@ class _TabScaffold extends StatelessWidget {
           ),
           NavigationDestination(
             icon: Icon(Icons.group_outlined),
-            label: 'Trainees',
+            label: 'Students',
           ),
           NavigationDestination(
             icon: Icon(Icons.event_available_outlined),

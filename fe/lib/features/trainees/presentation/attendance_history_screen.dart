@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/models/attendance_status.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -12,15 +11,23 @@ import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/list_row.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../today/presentation/today_providers.dart';
+import '../domain/attendance_day.dart';
 import '../domain/attendance_record.dart';
-import 'attendance_record_row.dart';
+import 'attendance_day_row.dart';
 import 'trainee_providers.dart';
 
-/// One trainee's marks a month at a time, up to the current month.
+/// One student's attended dates a month at a time, up to the current month.
 class AttendanceHistoryScreen extends ConsumerStatefulWidget {
-  const AttendanceHistoryScreen({super.key, required this.traineeId});
+  const AttendanceHistoryScreen({
+    super.key,
+    required this.traineeId,
+    this.month,
+  });
 
   final String traineeId;
+
+  /// The month to open on; null or a future month opens the current month.
+  final DateTime? month;
 
   @override
   ConsumerState<AttendanceHistoryScreen> createState() =>
@@ -37,7 +44,10 @@ class _AttendanceHistoryScreenState
     super.initState();
     final today = ref.read(clockProvider)();
     currentMonth = DateTime(today.year, today.month);
-    month = currentMonth;
+    final requested = widget.month;
+    month = requested == null || requested.isAfter(currentMonth)
+        ? currentMonth
+        : DateTime(requested.year, requested.month);
   }
 
   void showPrevious() =>
@@ -65,11 +75,11 @@ class _AttendanceHistoryScreenState
             child: AsyncValueView<List<AttendanceRecord>>(
               value: ref.watch(monthAttendanceProvider(key)),
               onRetry: () => ref.invalidate(monthAttendanceProvider(key)),
-              isEmpty: (records) => records.isEmpty,
+              isEmpty: (records) => groupAttendanceByDate(records).isEmpty,
               empty: EmptyView(
-                title: 'No sessions this month',
+                title: 'No classes this month',
                 message:
-                    'No attendance was marked for this trainee in '
+                    'This student attended no classes in '
                     '${DateFormat('MMMM yyyy').format(month)}.',
                 actionLabel: 'Previous month',
                 onAction: showPrevious,
@@ -146,12 +156,8 @@ class _MonthRecords extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final present = records
-        .where((record) => record.status == AttendanceStatus.present)
-        .length;
-    final absent = records
-        .where((record) => record.status == AttendanceStatus.absent)
-        .length;
+    final days = groupAttendanceByDate(records);
+    final classes = days.fold(0, (total, day) => total + day.slots.length);
     return ListView(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.gutter,
@@ -160,13 +166,16 @@ class _MonthRecords extends StatelessWidget {
         AppSpacing.xl,
       ),
       children: [
-        Text('$present present, $absent absent', style: AppTypography.caption),
+        Text(
+          classes == 1 ? '1 class attended' : '$classes classes attended',
+          style: AppTypography.caption,
+        ),
         const SizedBox(height: AppSpacing.sm),
         AppCard(
           padding: EdgeInsets.zero,
           child: Column(
             children: ListRow.divide([
-              for (final record in records) AttendanceRecordRow(record: record),
+              for (final day in days) AttendanceDayRow(day: day),
             ]),
           ),
         ),

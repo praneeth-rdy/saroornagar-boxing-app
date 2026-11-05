@@ -11,7 +11,12 @@ import 'package:saroornagar_boxing/features/trainees/presentation/trainee_detail
 import 'package:saroornagar_boxing/features/trainees/presentation/trainee_form_screen.dart';
 import 'package:saroornagar_boxing/features/trainees/presentation/trainees_screen.dart';
 
+import 'package:saroornagar_boxing/core/models/attendance_status.dart';
+import 'package:saroornagar_boxing/core/models/session_slot.dart';
+import 'package:saroornagar_boxing/features/trainees/domain/attendance_record.dart';
+
 import '../support/fixtures/fees.dart';
+import '../support/fixtures/sessions.dart';
 import '../support/fixtures/trainees.dart';
 import '../support/mocks/mock_fee_repository.dart';
 import '../support/mocks/mock_trainee_repository.dart';
@@ -52,6 +57,24 @@ Future<void> _proof(
     interact: interact,
   );
   expect(file.existsSync(), isTrue);
+}
+
+// Morning marks plus an evening present mark on the newest date, so one row reads
+// "Morning and evening".
+List<AttendanceRecord> _historyWithEvening({int days = 60}) {
+  final records = fixtureAttendanceHistory(days: days);
+  final first = records.first;
+  return [
+    first.copyWith(status: AttendanceStatus.present),
+    AttendanceRecord(
+      sessionId: regularSessionId(first.sessionDate, SessionSlot.evening),
+      sessionDate: first.sessionDate,
+      slot: SessionSlot.evening,
+      status: AttendanceStatus.present,
+      markedAt: first.markedAt.add(const Duration(hours: 10)),
+    ),
+    ...records.skip(1),
+  ];
 }
 
 void main() {
@@ -99,7 +122,7 @@ void main() {
       TraineeDetailScreen(traineeId: detailTrainee.id),
       MockTraineeRepository(
         trainees: [detailTrainee],
-        history: {detailTrainee.id: fixtureAttendanceHistory(days: 10)},
+        history: {detailTrainee.id: _historyWithEvening(days: 10)},
       ),
       feeTrainees: [detailTrainee],
     );
@@ -124,6 +147,20 @@ void main() {
       'trainee_form_empty',
       const TraineeFormScreen(),
       MockTraineeRepository(),
+    );
+  });
+
+  testWidgets('trainee form expanded proof', (tester) async {
+    await _proof(
+      tester,
+      'trainee_form_expanded',
+      const TraineeFormScreen(),
+      MockTraineeRepository(),
+      interact: (tester) async {
+        await tester.ensureVisible(find.text('Add more details'));
+        await tester.tap(find.text('Add more details'));
+        await tester.pumpAndSettle();
+      },
     );
   });
 
@@ -158,7 +195,7 @@ void main() {
       AttendanceHistoryScreen(traineeId: detailTrainee.id),
       MockTraineeRepository(
         trainees: [detailTrainee],
-        history: {detailTrainee.id: fixtureAttendanceHistory()},
+        history: {detailTrainee.id: _historyWithEvening()},
       ),
     );
   });

@@ -25,7 +25,13 @@ abstract final class Routes {
 
   static String traineeDetailOf(String id) => '$trainees/$id';
   static String traineeEditOf(String id) => '$trainees/$id/edit';
-  static String traineeHistoryOf(String id) => '$trainees/$id/history';
+
+  /// [month] (a first of the month) travels as `?month=YYYY-MM-DD` to open on that month.
+  static String traineeHistoryOf(String id, {DateTime? month}) => Uri(
+    path: '$trainees/$id/history',
+    queryParameters: month == null ? null : {'month': wireDate(month)},
+  ).toString();
+
   static String staffDetailOf(String id) => '$staff/$id';
   static String staffEditOf(String id) => '$staff/$id/edit';
 

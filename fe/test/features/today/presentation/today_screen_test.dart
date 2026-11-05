@@ -221,8 +221,8 @@ void main() {
   testWidgets('an empty roster points to Trainees', (tester) async {
     await _pump(tester, MockAttendanceRepository(trainees: const []));
 
-    expect(find.text('No active trainees'), findsOneWidget);
-    expect(find.text('Go to Trainees'), findsOneWidget);
+    expect(find.text('No active students'), findsOneWidget);
+    expect(find.text('Go to Students'), findsOneWidget);
   });
 
   testWidgets('trial visitors show for the matching slot only', (tester) async {

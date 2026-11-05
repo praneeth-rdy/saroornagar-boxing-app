@@ -85,7 +85,7 @@ void main() {
       MockTraineeRepository(trainees: [detailTrainee]),
       traineeId: detailTrainee.id,
     );
-    expect(find.text('Edit trainee'), findsOneWidget);
+    expect(find.text('Edit student'), findsOneWidget);
     expect(find.text('Arjun Reddy'), findsOneWidget);
     expect(find.text('9876543210'), findsOneWidget);
     expect(find.text('14 Mar 2012'), findsOneWidget);
@@ -101,5 +101,58 @@ void main() {
       traineeId: senior.id,
     );
     expect(find.text('Senior, 800 per month'), findsOneWidget);
+  });
+  testWidgets('add shows name and phone with the details collapsed', (
+    tester,
+  ) async {
+    await _pump(tester, MockTraineeRepository());
+
+    expect(find.text('Name *'), findsOneWidget);
+    expect(find.text('Phone'), findsOneWidget);
+    expect(find.text('Add more details'), findsOneWidget);
+    expect(find.text('Date of birth'), findsNothing);
+    expect(find.text('Joined on'), findsNothing);
+    expect(find.text('Notes'), findsNothing);
+  });
+
+  testWidgets('add more details reveals date of birth, joined on and notes', (
+    tester,
+  ) async {
+    await _pump(tester, MockTraineeRepository());
+
+    await tester.tap(find.text('Add more details'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Date of birth'), findsOneWidget);
+    expect(find.text('Joined on'), findsOneWidget);
+    expect(find.text('Notes'), findsOneWidget);
+    expect(find.text('Add more details'), findsNothing);
+  });
+
+  testWidgets(
+    'edit opens with the details expanded when a date of birth is set',
+    (tester) async {
+      await _pump(
+        tester,
+        MockTraineeRepository(trainees: [detailTrainee]),
+        traineeId: detailTrainee.id,
+      );
+
+      expect(find.text('Date of birth'), findsOneWidget);
+      expect(find.text('Add more details'), findsNothing);
+    },
+  );
+
+  testWidgets('edit of a student with no details keeps them collapsed', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      MockTraineeRepository(trainees: [bareTrainee]),
+      traineeId: bareTrainee.id,
+    );
+
+    expect(find.text('Add more details'), findsOneWidget);
+    expect(find.text('Date of birth'), findsNothing);
   });
 }

@@ -72,7 +72,7 @@ Confirmed section with its date.
 
 ## Glossary
 
-- Trainee: a person who trains at the club. Member is used in the same sense until the owner
-  says otherwise.
+- Student: a person who trains at the club (the app's word since 2026-11-05; code and tables
+  still say trainee). Member is used in the same sense.
 - Coach / staff: the people who run sessions and manage trainees.
 - Trial: a first session booked by someone who is not yet a trainee.

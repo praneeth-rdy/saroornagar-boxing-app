@@ -63,9 +63,9 @@ class _FeeStatusScreenState extends ConsumerState<FeeStatusScreen> {
               onRetry: () => ref.invalidate(feeStatusProvider(month)),
               isEmpty: (statuses) => statuses.isEmpty,
               empty: EmptyView(
-                title: 'No active trainees',
-                message: 'Fee status lists active trainees.',
-                actionLabel: 'Go to Trainees',
+                title: 'No active students',
+                message: 'Fee status lists active students.',
+                actionLabel: 'Go to Students',
                 onAction: () => context.go(Routes.trainees),
               ),
               data: (statuses) =>

@@ -67,12 +67,12 @@ void main() {
     tester,
   ) async {
     await _pump(tester, MockTraineeRepository());
-    expect(find.text('No trainees yet'), findsOneWidget);
+    expect(find.text('No students yet'), findsOneWidget);
     expect(
-      find.text('Add the first trainee to start marking attendance.'),
+      find.text('Add the first student to start marking attendance.'),
       findsOneWidget,
     );
-    expect(find.text('Add trainee'), findsOneWidget);
+    expect(find.text('Add student'), findsOneWidget);
   });
 
   testWidgets('permission denied shows the denied view', (tester) async {
@@ -80,7 +80,7 @@ void main() {
       tester,
       MockTraineeRepository(scenario: MockScenario.permissionDenied),
     );
-    expect(find.text('Trainees'), findsOneWidget);
+    expect(find.text('Students'), findsOneWidget);
     expect(find.text('Arjun Reddy'), findsNothing);
   });
 }

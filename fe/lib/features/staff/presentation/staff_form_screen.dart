@@ -143,6 +143,7 @@ class _StaffFormState extends ConsumerState<_StaffForm> {
         AppTextField(
           controller: name,
           label: 'Name',
+          isRequired: true,
           maxLength: _nameMaxLength,
           textInputAction: TextInputAction.next,
           errorText: isSubmitted ? _nameError(name.text) : null,
@@ -152,6 +153,7 @@ class _StaffFormState extends ConsumerState<_StaffForm> {
           AppTextField(
             controller: email,
             label: 'Email',
+            isRequired: true,
             keyboardType: TextInputType.emailAddress,
             autocorrect: false,
             textInputAction: TextInputAction.next,
@@ -186,7 +188,7 @@ class _StaffFormState extends ConsumerState<_StaffForm> {
         const SizedBox(height: AppSpacing.lg),
         AppTextField(
           controller: phone,
-          label: 'Phone (optional)',
+          label: 'Phone',
           prefixText: '+91',
           keyboardType: TextInputType.phone,
           maxLength: _phoneDigits,
@@ -234,6 +236,7 @@ class _PasswordField extends StatelessWidget {
         AppTextField(
           controller: controller,
           label: 'Password',
+          isRequired: true,
           obscureText: !isVisible,
           maxLength: _passwordMaxLength,
           textInputAction: TextInputAction.done,

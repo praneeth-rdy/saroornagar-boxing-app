@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 
+/// Ends the label of a field that must be filled.
+const requiredMark = ' *';
+
 /// A labelled input: label above, filled field, error text below in the negative colour.
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -22,6 +25,7 @@ class AppTextField extends StatelessWidget {
     this.showCounter = false,
     this.enabled = true,
     this.autocorrect = true,
+    this.isRequired = false,
   });
 
   final TextEditingController? controller;
@@ -50,6 +54,9 @@ class AppTextField extends StatelessWidget {
   /// Off for emails, codes and other values that are not words.
   final bool autocorrect;
 
+  /// Appends ` *` to the label, the app's mark for a field that must be filled.
+  final bool isRequired;
+
   @override
   Widget build(BuildContext context) {
     final prefix = prefixText;
@@ -59,7 +66,10 @@ class AppTextField extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (labelText != null) ...[
-          Text(labelText, style: AppTypography.label),
+          Text(
+            isRequired ? '$labelText$requiredMark' : labelText,
+            style: AppTypography.label,
+          ),
           const SizedBox(height: AppSpacing.sm),
         ],
         TextField(

@@ -197,6 +197,7 @@ class _BookTrialScreenState extends ConsumerState<BookTrialScreen> {
             AppTextField(
               controller: name,
               label: 'Name',
+              isRequired: true,
               maxLength: _nameMaxLength,
               textInputAction: TextInputAction.next,
               errorText: isSubmitted ? _nameError(name.text) : null,
@@ -205,6 +206,7 @@ class _BookTrialScreenState extends ConsumerState<BookTrialScreen> {
             AppTextField(
               controller: phone,
               label: 'Phone',
+              isRequired: true,
               prefixText: '+91 ',
               keyboardType: TextInputType.phone,
               maxLength: _phoneDigits,
@@ -213,7 +215,7 @@ class _BookTrialScreenState extends ConsumerState<BookTrialScreen> {
             ),
             const SizedBox(height: AppSpacing.xl),
             _ChoiceSection<DateTime>(
-              title: 'DAY',
+              title: 'DAY$requiredMark',
               options: [
                 for (final date in trialDaysFrom(today))
                   ChoiceOption(
@@ -228,14 +230,14 @@ class _BookTrialScreenState extends ConsumerState<BookTrialScreen> {
             ),
             const SizedBox(height: AppSpacing.xl),
             _ChoiceSection<SessionSlot>(
-              title: 'BATCH',
+              title: 'BATCH$requiredMark',
               options: _batchOptions,
               selected: slot,
               onSelected: (batch) => setState(() => slot = batch),
               errorText: isSubmitted ? _slotError(slot) : null,
             ),
             const SizedBox(height: AppSpacing.xl),
-            const Eyebrow('YOUR AGE'),
+            const Eyebrow('YOUR AGE$requiredMark'),
             const SizedBox(height: AppSpacing.sm),
             if (usesDateOfBirth)
               DateField(
@@ -263,7 +265,7 @@ class _BookTrialScreenState extends ConsumerState<BookTrialScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Eyebrow('ANYTHING WE SHOULD KNOW (OPTIONAL)'),
+            const Eyebrow('ANYTHING WE SHOULD KNOW'),
             const SizedBox(height: AppSpacing.sm),
             AppTextField(
               controller: note,

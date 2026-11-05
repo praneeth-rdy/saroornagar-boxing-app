@@ -193,9 +193,9 @@ class _RosterSection extends ConsumerWidget {
       onRetry: () => ref.invalidate(rosterProvider(sessionId)),
       isEmpty: (entries) => entries.isEmpty,
       empty: EmptyView(
-        title: 'No active trainees',
-        message: 'Add trainees to start marking attendance.',
-        actionLabel: 'Go to Trainees',
+        title: 'No active students',
+        message: 'Add students to start marking attendance.',
+        actionLabel: 'Go to Students',
         onAction: () => context.go(Routes.trainees),
       ),
       data: (entries) => _RosterBody(

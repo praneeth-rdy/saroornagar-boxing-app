@@ -34,9 +34,9 @@ void main() {
         ],
       );
 
-      await tester.tap(find.text('Trainees').last);
+      await tester.tap(find.text('Students').last);
       await tester.pumpAndSettle();
-      expect(find.text('No trainees yet'), findsOneWidget);
+      expect(find.text('No students yet'), findsOneWidget);
 
       await tester.tap(find.text('Add').first);
       await tester.pumpAndSettle();

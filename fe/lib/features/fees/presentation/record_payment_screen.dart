@@ -171,7 +171,7 @@ class _PaymentFormState extends ConsumerState<_PaymentForm> {
             children: [
               _TraineeHeader(trainee: widget.trainee, today: today),
               const SizedBox(height: AppSpacing.xl),
-              const Eyebrow('Amount'),
+              const Eyebrow('Amount$requiredMark'),
               const SizedBox(height: AppSpacing.sm),
               ChoiceRow<int>(
                 options: _amounts,
@@ -181,7 +181,7 @@ class _PaymentFormState extends ConsumerState<_PaymentForm> {
               if (isSubmitted && amount == null)
                 const _FieldError(_amountMessage),
               const SizedBox(height: AppSpacing.lg),
-              const Eyebrow('Method'),
+              const Eyebrow('Method$requiredMark'),
               const SizedBox(height: AppSpacing.sm),
               ChoiceRow<PaymentMethod>(
                 options: _methods,

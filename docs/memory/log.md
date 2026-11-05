@@ -2,6 +2,21 @@
 
 Newest first. One entry per work session: what changed, what it means for the next session.
 
+## 2026-11-05 (second session, evening): device feedback round
+
+- Owner's device report (double mark, 4 sessions) led to R3-03 (session selection keyed by
+  date, off-day marks refused; trigger not reproduced in tests) and R3-04 (summary counts
+  held sessions only).
+- Product changes from the owner, all shipped: presence-only marking with confirmed unmark
+  and per-session reset (`unmark_attendance`, `reset_session_attendance`); monthly
+  attendance shows classes attended, tap opens the log; logs grouped by date; "Student"
+  wording; student form with "Add more details"; required marks instead of "(optional)";
+  app named "Saroornagar Boxing"; senior tier 800; compact payment screen.
+- Hosted: three migrations applied after the owner's "retry now" (the classifier had
+  blocked one apply). Build 32 on the device and in Downloads.
+- Open: B-12 (server messages say trainee), B-13 (extra session time in logs), A-08..A-11,
+  B-05, B-06, B-09; dashboard steps (sign-ups off, {{ .Token }} in the reset template).
+
 ## 2026-11-05 (second session, late): email sign-in, logo, compact payments
 
 - Release build had no INTERNET permission (R3-01); fixed, app named "Boxing Club".

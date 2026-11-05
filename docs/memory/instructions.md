@@ -8,6 +8,7 @@ each was applied. Newest first. Settled instructions are promoted into the relev
 
 | Instruction (owner's words, condensed) | Applied in |
 |---|---|
+| "Rename the app to just Saroornagar Boxing" | Launcher label "Saroornagar Boxing" (run-3 task-12); `docs/backlog.md` D-05. |
 | "Let's use a numbering, but delete the older ones everytime" (the Downloads APK copy) | `.claude/CLAUDE.md` Toolchain: delete `boxing-club-*.apk`, push `boxing-club-<build>.apk`. |
 | "Replace with latest apk after every run" | `.claude/CLAUDE.md` Toolchain: the Downloads copy is always `/sdcard/Download/boxing-club.apk`, overwritten on each install. |
 | "Install on the device & copy the release apk to the connected device's downloads folder" | `.claude/CLAUDE.md` Toolchain: every install also pushes the APK to `/sdcard/Download/boxing-club-<build>.apk`. |

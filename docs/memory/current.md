@@ -5,16 +5,18 @@ Last updated 2026-11-05 (end of the second session, late). History in `log.md`.
 ## Where the product stands
 
 Release 1 is built, applied to the hosted project and installed on the owner's phone
-(build 27). Staff sign in by email with a forgot-password flow; the L5a Classic badge is the
-logo and launcher icon; the record-payment screen offers 500 or 800. The owner has signed
-in on the device; a full walkthrough against hosted is still the next step.
+(build 32, "Saroornagar Boxing"). Staff sign in by email with a forgot-password flow; L5a
+Classic badge and icon; presence-only attendance with confirmed unmark and session reset;
+logs grouped by date; monthly attendance = classes attended per student; the app says
+"Student" everywhere; compact record-payment with 500 / 800. The owner tests on the device
+and reports defects in chat; each becomes an R3-nn row and a direct developer dispatch.
 
 | Area | State |
 |---|---|
-| `be/` | 8 migrations (`identity`, `trainees_sessions`, `attendance_trials`, `fees_reports`, `harden_profiles`, `email_sign_in`, `profile_on_metadata`, `fee_tier_800`), pgTAP 523, seed (email accounts), Edge Function `admin-staff` v2 (by email). All on hosted except `fee_tier_800` (B-11). |
-| `fe/` | Theme A kit, config, errors, email auth + forgot password, shell, Today, Trainees, Trials, Fees (compact record screen, 500/800), Staff admin by email, brand badge + launcher icon. Baseline: analyze 0, `flutter test` 383 (+54 proofs). Release signing with the upload keystore; app name "Boxing Club". |
-| Device | Build 27 installed (model I2214, wireless adb). Reinstall after every landed app run. |
-| Hosted | Project `qgqmnaxdxuezjlexlfpw`. Admin by email (login in `creds.md`). Advisors: no RLS gaps. Migration history uses MCP timestamps (B-10). `fee_tier_800` not applied (B-11). |
+| `be/` | 10 migrations (through `summary_held_sessions`, `unmark_attendance`), pgTAP 550, seed (email accounts), Edge Function `admin-staff` v2. All applied to hosted 2026-11-05. |
+| `fe/` | Theme A kit, config, errors, email auth + forgot password, shell, Today, Trainees, Trials, Fees (compact record screen, 500/800), Staff admin by email, brand badge + launcher icon. Baseline: analyze 0, `flutter test` 411 (incl. 57 proofs). Release signing with the upload keystore; app name "Boxing Club". |
+| Device | Build 32 installed and copied to `/sdcard/Download/boxing-club-32.apk` (older copies deleted). Reinstall after every landed app run. |
+| Hosted | Project `qgqmnaxdxuezjlexlfpw`. Admin by email (login in `creds.md`). Advisors: no RLS gaps. Migration history uses MCP timestamps (B-10). Migration history uses MCP timestamps (B-10). |
 | `docs/` | Review log R1-01..R1-07, R2-01..R2-07 (all fixed except R1-03, R1-04 as backlog B-05, B-06). Backlog A-08..A-11, B-05, B-06, B-09, B-10 open. |
 
 ## Blocked on the owner
@@ -22,7 +24,8 @@ in on the device; a full walkthrough against hosted is still the next step.
 1. Hosted dashboard: turn off "Allow new users to sign up"; in Email Templates, "Reset
    Password" must include {{ .Token }} so the forgot-password code arrives (otherwise the
    mail carries a link the app cannot use). Phone provider is no longer needed.
-1b. Approve the blocked MCP apply of `20261105111738_fee_tier_800.sql` (B-11).
+1b. The MCP `apply_migration` can be blocked by the permission classifier; the owner says
+   "retry now" and approves the prompt.
 2. Android application id (D-04): still `com.example.saroornagar_boxing`. Changing it later
    means uninstalling the current build on the phone.
 3. Product calls: B-05 (today's ended batch still bookable), B-06 (inactive trainees drop off

@@ -40,7 +40,7 @@ void main() {
         ],
       );
 
-      await tester.tap(find.text('Trainees').last);
+      await tester.tap(find.text('Students').last);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Arjun Reddy'));
       await tester.pumpAndSettle();

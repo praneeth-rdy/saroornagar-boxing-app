@@ -23,16 +23,17 @@ import '../../../core/widgets/secondary_button.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../fees/presentation/fee_history_section.dart';
 import '../../today/presentation/today_providers.dart';
+import '../domain/attendance_day.dart';
 import '../domain/attendance_record.dart';
 import '../domain/trainee.dart';
-import 'attendance_record_row.dart';
+import 'attendance_day_row.dart';
 import 'trainee_avatar.dart';
 import 'trainee_photo_picker.dart';
 import 'trainee_providers.dart';
 
 const _badgeIconSize = 14.0;
 
-/// One trainee: profile, status, notes and recent attendance.
+/// One student: profile, status, notes and recent attendance.
 class TraineeDetailScreen extends ConsumerWidget {
   const TraineeDetailScreen({super.key, required this.traineeId});
 
@@ -41,7 +42,7 @@ class TraineeDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Trainee')),
+      appBar: AppBar(title: const Text('Student')),
       body: AsyncValueView<Trainee>(
         value: ref.watch(traineeProvider(traineeId)),
         onRetry: () => ref.invalidate(traineeProvider(traineeId)),
@@ -342,16 +343,17 @@ class _RecordsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (records.isEmpty) {
+    final days = groupAttendanceByDate(records);
+    if (days.isEmpty) {
       return const AppCard(
-        child: Text('No sessions marked yet', style: AppTypography.caption),
+        child: Text('No classes attended', style: AppTypography.caption),
       );
     }
     return AppCard(
       padding: EdgeInsets.zero,
       child: Column(
         children: ListRow.divide([
-          for (final record in records) AttendanceRecordRow(record: record),
+          for (final day in days) AttendanceDayRow(day: day),
         ]),
       ),
     );

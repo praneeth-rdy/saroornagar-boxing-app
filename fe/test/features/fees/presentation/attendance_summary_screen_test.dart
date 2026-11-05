@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:saroornagar_boxing/core/di/repository_providers.dart';
+import 'package:saroornagar_boxing/core/router/routes.dart';
+import 'package:saroornagar_boxing/core/theme/app_theme.dart';
 import 'package:saroornagar_boxing/features/fees/presentation/attendance_summary_screen.dart';
 import 'package:saroornagar_boxing/features/today/presentation/today_providers.dart';
 
@@ -27,7 +31,7 @@ Future<void> _pump(WidgetTester tester, MockFeeRepository repository) {
 }
 
 void main() {
-  testWidgets('lists present and absent counts over the session count', (
+  testWidgets('lists classes attended per row and no session total', (
     tester,
   ) async {
     final trainees = fixtureTraineeRows(3);
@@ -42,13 +46,67 @@ void main() {
 
     expect(find.text('Monthly attendance'), findsOneWidget);
     expect(find.text('November 2026'), findsOneWidget);
-    expect(find.text('24 sessions this month'), findsOneWidget);
-    final first = rows.first;
-    expect(
-      find.text('${first.presentCount} present · ${first.absentCount} absent'),
-      findsWidgets,
+    expect(find.textContaining('sessions this month'), findsNothing);
+    expect(find.textContaining('/24'), findsNothing);
+    expect(find.textContaining('absent'), findsNothing);
+    for (final row in rows) {
+      expect(find.text('${row.presentCount} classes attended'), findsWidgets);
+    }
+  });
+
+  testWidgets('tapping a student pushes their history for the month', (
+    tester,
+  ) async {
+    final trainees = fixtureTraineeRows(2);
+    final repository = MockFeeRepository(
+      trainees: trainees,
+      attendance: fixtureMonthAttendance(trainees, last: DateTime(2026, 11, 5)),
+      clock: () => _clock,
     );
-    expect(find.text('${first.presentCount}/24'), findsWidgets);
+    final rows = await repository.attendanceSummary(DateTime(2026, 11));
+    final pushed = <String>[];
+    final router = GoRouter(
+      initialLocation: Routes.attendanceSummary,
+      routes: [
+        GoRoute(
+          path: Routes.attendanceSummary,
+          builder: (_, _) => const AttendanceSummaryScreen(),
+        ),
+        GoRoute(
+          path: Routes.traineeHistory,
+          builder: (_, state) {
+            pushed.add(state.uri.toString());
+            return const Text('History');
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    tester.view.physicalSize = const Size(1600, 3000);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          feeRepositoryProvider.overrideWithValue(repository),
+          clockProvider.overrideWithValue(() => _clock),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.light(),
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(rows.first.fullName));
+    await tester.pumpAndSettle();
+
+    expect(find.text('History'), findsOneWidget);
+    expect(pushed, [
+      Routes.traineeHistoryOf(rows.first.traineeId, month: DateTime(2026, 11)),
+    ]);
+    expect(pushed.single, endsWith('?month=2026-11-01'));
   });
 
   testWidgets('no sessions in the month shows its empty state', (tester) async {
@@ -60,13 +118,13 @@ void main() {
     expect(find.text('Previous month'), findsWidgets);
   });
 
-  testWidgets('no active trainees shows its empty state', (tester) async {
+  testWidgets('no active students shows its empty state', (tester) async {
     await _pump(
       tester,
       MockFeeRepository(scenario: MockScenario.empty, clock: () => _clock),
     );
-    expect(find.text('No active trainees'), findsOneWidget);
-    expect(find.text('Go to Trainees'), findsOneWidget);
+    expect(find.text('No active students'), findsOneWidget);
+    expect(find.text('Go to Students'), findsOneWidget);
   });
 
   testWidgets('next month is disabled on the current month', (tester) async {

@@ -27,6 +27,7 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | B-07 | Edge Function `admin-staff` (create, reset_password, set_blocked) | done (2026-11-05), deployed 2026-11-05 (version 1) |
 | B-08 | Harden profile creation (app_metadata role) and revoke anon select (`20261105081756_harden_profiles.sql`) | done (2026-11-05), applied to hosted |
 | B-09 | Merge `profiles_select_own` and `profiles_select_staff` into one policy (performance advisor: multiple permissive policies) | todo |
+| B-13 | `trainee_attendance_history` returns no `starts_at`, so grouped logs show an extra session as "extra" without its time; add the time in a migration and show it in the app | todo |
 | B-12 | Server messages say "trainee" ("This trainee is inactive", "Trainee not found"); the app now says Student. Reword in a migration. | todo |
 | B-11 | Apply `fee_tier_800`, `summary_held_sessions`, `unmark_attendance` to hosted | done (2026-11-05) |
 | B-10 | Hosted migration history carries MCP timestamps, not file names; run `supabase migration repair` before any `db push` | todo (only if db push is ever used) |
@@ -55,4 +56,4 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | D-02 | First scope | Guest trial booking + coach/staff/admin app; no trainee view | decided 2026-11-05 |
 | D-03 | Hosted Supabase project | Owner creates it and shares the project ref and publishable key | decided 2026-11-05, waiting on the owner |
 | D-04 | Android application id (currently the Flutter default `com.example.saroornagar_boxing`) | | open |
-| D-05 | Logo and app name | L5a Classic badge chosen 2026-11-05 (canvas https://claude.ai/artifact/FL6oyLDsUSpT7RSx7hQcbb, source `docs/design/logos/project/L5a-Classic.dc.html`); launcher label stays "Boxing Club" | decided 2026-11-05 |
+| D-05 | Logo and app name | L5a Classic badge chosen 2026-11-05 (canvas https://claude.ai/artifact/FL6oyLDsUSpT7RSx7hQcbb, source `docs/design/logos/project/L5a-Classic.dc.html`); launcher label "Saroornagar Boxing" (owner, 2026-11-05) | decided 2026-11-05 |

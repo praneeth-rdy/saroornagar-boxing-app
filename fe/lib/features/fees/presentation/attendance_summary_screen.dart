@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/router/routes.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/avatar_initials.dart';
@@ -17,7 +17,7 @@ import '../domain/attendance_summary_row.dart';
 import 'fee_providers.dart';
 import 'month_navigator.dart';
 
-/// Every active trainee's present and absent counts for a month.
+/// Every active student's attended classes for a month; a row opens their log.
 class AttendanceSummaryScreen extends ConsumerStatefulWidget {
   const AttendanceSummaryScreen({super.key});
 
@@ -67,9 +67,9 @@ class _AttendanceSummaryScreenState
               onRetry: () => ref.invalidate(attendanceSummaryProvider(month)),
               isEmpty: (rows) => rows.isEmpty,
               empty: EmptyView(
-                title: 'No active trainees',
-                message: 'Monthly attendance lists active trainees.',
-                actionLabel: 'Go to Trainees',
+                title: 'No active students',
+                message: 'Monthly attendance lists active students.',
+                actionLabel: 'Go to Students',
                 onAction: () => context.go(Routes.trainees),
               ),
               data: (rows) => rows.first.sessionCount == 0
@@ -81,7 +81,7 @@ class _AttendanceSummaryScreenState
                       actionLabel: 'Previous month',
                       onAction: showPrevious,
                     )
-                  : _SummaryList(rows: rows),
+                  : _SummaryList(rows: rows, month: month),
             ),
           ),
         ],
@@ -91,13 +91,13 @@ class _AttendanceSummaryScreenState
 }
 
 class _SummaryList extends StatelessWidget {
-  const _SummaryList({required this.rows});
+  const _SummaryList({required this.rows, required this.month});
 
   final List<AttendanceSummaryRow> rows;
+  final DateTime month;
 
   @override
   Widget build(BuildContext context) {
-    final sessions = rows.first.sessionCount;
     return ListView(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.gutter,
@@ -106,18 +106,11 @@ class _SummaryList extends StatelessWidget {
         AppSpacing.xl,
       ),
       children: [
-        Text(
-          sessions == 1
-              ? '1 session this month'
-              : '$sessions sessions this month',
-          style: AppTypography.caption,
-        ),
-        const SizedBox(height: AppSpacing.sm),
         AppCard(
           padding: EdgeInsets.zero,
           child: Column(
             children: ListRow.divide([
-              for (final row in rows) _SummaryRow(row: row),
+              for (final row in rows) _SummaryRow(row: row, month: month),
             ]),
           ),
         ),
@@ -127,9 +120,10 @@ class _SummaryList extends StatelessWidget {
 }
 
 class _SummaryRow extends ConsumerWidget {
-  const _SummaryRow({required this.row});
+  const _SummaryRow({required this.row, required this.month});
 
   final AttendanceSummaryRow row;
+  final DateTime month;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -140,10 +134,12 @@ class _SummaryRow extends ConsumerWidget {
     return ListRow(
       leading: AvatarInitials(name: row.fullName, photoUrl: photoUrl),
       title: row.fullName,
-      subtitle: '${row.presentCount} present · ${row.absentCount} absent',
-      trailing: Text(
-        '${row.presentCount}/${row.sessionCount}',
-        style: AppTypography.label,
+      subtitle: row.presentCount == 1
+          ? '1 class attended'
+          : '${row.presentCount} classes attended',
+      trailing: const Icon(Icons.chevron_right, color: AppColors.muted),
+      onTap: () => context.push(
+        Routes.traineeHistoryOf(row.traineeId, month: month),
       ),
     );
   }

@@ -62,7 +62,7 @@ class _TraineesScreenState extends ConsumerState<TraineesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trainees'),
+        title: const Text('Students'),
         actions: [
           LinkButton(
             label: 'Add',
@@ -106,16 +106,16 @@ class _TraineesScreenState extends ConsumerState<TraineesScreen> {
               isEmpty: (trainees) => trainees.isEmpty,
               empty: status == TraineeStatus.inactive
                   ? EmptyView(
-                      title: 'No inactive trainees',
-                      message: 'Trainees you set inactive are listed here.',
+                      title: 'No inactive students',
+                      message: 'Students you set inactive are listed here.',
                       actionLabel: 'Show active',
                       onAction: () => selectStatus(TraineeStatus.active),
                     )
                   : EmptyView(
-                      title: 'No trainees yet',
+                      title: 'No students yet',
                       message:
-                          'Add the first trainee to start marking attendance.',
-                      actionLabel: 'Add trainee',
+                          'Add the first student to start marking attendance.',
+                      actionLabel: 'Add student',
                       onAction: () => context.push(Routes.traineeNew),
                     ),
               data: (trainees) => _TraineeList(

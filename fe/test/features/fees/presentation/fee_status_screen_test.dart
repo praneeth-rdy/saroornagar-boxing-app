@@ -167,9 +167,9 @@ void main() {
       tester,
       MockFeeRepository(scenario: MockScenario.empty, clock: () => _clock),
     );
-    expect(find.text('No active trainees'), findsOneWidget);
-    expect(find.text('Fee status lists active trainees.'), findsOneWidget);
-    expect(find.text('Go to Trainees'), findsOneWidget);
+    expect(find.text('No active students'), findsOneWidget);
+    expect(find.text('Fee status lists active students.'), findsOneWidget);
+    expect(find.text('Go to Students'), findsOneWidget);
   });
 
   testWidgets('a failed load shows a retry', (tester) async {

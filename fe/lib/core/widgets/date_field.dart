@@ -5,6 +5,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 import 'app_card.dart';
+import 'app_text_field.dart';
 import 'list_row.dart';
 
 /// A labelled date row that opens a picker; empty, it shows a hint like a text field.
@@ -18,6 +19,7 @@ class DateField extends StatelessWidget {
     this.clearLabel = 'Clear date',
     this.helper,
     this.errorText,
+    this.isRequired = false,
   });
 
   static const placeholder = 'Choose a date';
@@ -34,6 +36,9 @@ class DateField extends StatelessWidget {
   /// Shown in place of [helper] when set.
   final String? errorText;
 
+  /// Appends ` *` to the label, as [AppTextField] does.
+  final bool isRequired;
+
   // The same look as the theme's text field hint.
   static final _hintStyle = AppTypography.body.copyWith(color: AppColors.muted);
 
@@ -46,7 +51,10 @@ class DateField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(label, style: AppTypography.label),
+        Text(
+          isRequired ? '$label$requiredMark' : label,
+          style: AppTypography.label,
+        ),
         const SizedBox(height: AppSpacing.sm),
         AppCard(
           padding: EdgeInsets.zero,

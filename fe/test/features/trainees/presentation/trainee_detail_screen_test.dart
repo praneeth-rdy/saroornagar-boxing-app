@@ -50,7 +50,7 @@ void main() {
     expect(find.text('Joined 3 Mar 2026'), findsOneWidget);
     expect(find.text('Active'), findsOneWidget);
     expect(find.text('NOTES'), findsOneWidget);
-    expect(find.text('No sessions marked yet'), findsOneWidget);
+    expect(find.text('No classes attended'), findsOneWidget);
   });
 
   testWidgets('a bare trainee omits the missing parts', (tester) async {

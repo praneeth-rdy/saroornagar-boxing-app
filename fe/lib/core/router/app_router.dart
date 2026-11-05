@@ -48,6 +48,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       _resetPasswordRoute,
       _trialRoute,
       _recordPaymentRoute,
+      _attendanceHistoryRoute,
       StatefulShellRoute.indexedStack(
         builder: (_, _, navigationShell) =>
             ShellScreen(navigationShell: navigationShell),
@@ -71,8 +72,8 @@ StatefulShellBranch _branch(String path, Widget screen) => StatefulShellBranch(
   routes: [GoRoute(path: path, builder: (_, _) => screen)],
 );
 
-// Nested so a detail, form or history screen keeps the list beneath it; the full paths
-// are Routes.traineeNew, traineeDetail, traineeEdit and traineeHistory.
+// Nested so a detail or form screen keeps the list beneath it; the full paths are
+// Routes.traineeNew, traineeDetail and traineeEdit.
 final _traineesBranch = StatefulShellBranch(
   routes: [
     GoRoute(
@@ -90,12 +91,6 @@ final _traineesBranch = StatefulShellBranch(
               path: 'edit',
               builder: (_, state) =>
                   TraineeFormScreen(traineeId: state.pathParameters['id']),
-            ),
-            GoRoute(
-              path: 'history',
-              builder: (_, state) => AttendanceHistoryScreen(
-                traineeId: state.pathParameters['id']!,
-              ),
             ),
           ],
         ),
@@ -147,6 +142,16 @@ final _moreBranch = StatefulShellBranch(
 final _recordPaymentRoute = GoRoute(
   path: Routes.recordPayment,
   builder: (_, state) => RecordPaymentScreen(
+    traineeId: state.pathParameters['id']!,
+    month: _monthParameter(state.uri.queryParameters['month']),
+  ),
+);
+
+// Outside the shell for the same reason: the detail (Trainees tab) and the monthly
+// attendance report (More tab) both push it.
+final _attendanceHistoryRoute = GoRoute(
+  path: Routes.traineeHistory,
+  builder: (_, state) => AttendanceHistoryScreen(
     traineeId: state.pathParameters['id']!,
     month: _monthParameter(state.uri.queryParameters['month']),
   ),

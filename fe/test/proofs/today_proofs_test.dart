@@ -50,12 +50,7 @@ void main() {
       'today_typical',
       MockAttendanceRepository(
         trainees: typicalTrainees,
-        marks: fixtureMarks(
-          _morningId,
-          typicalTrainees,
-          present: 12,
-          absent: 2,
-        ),
+        marks: fixtureMarks(_morningId, typicalTrainees, present: 14),
         trials: fixtureTrials(fixtureDay).take(2).toList(),
       ),
     );
@@ -67,7 +62,7 @@ void main() {
       'today_heavy',
       MockAttendanceRepository(
         trainees: heavyTrainees,
-        marks: fixtureMarks(_morningId, heavyTrainees, present: 30, absent: 6),
+        marks: fixtureMarks(_morningId, heavyTrainees, present: 30),
         trials: fixtureTrials(fixtureDay),
       ),
     );
@@ -107,6 +102,38 @@ void main() {
       interact: (tester) async {
         repository.scenario = MockScenario.offline;
         await tester.tap(find.byKey(const Key('present-trainee-006')));
+        await tester.pumpAndSettle();
+      },
+    );
+  });
+
+  testWidgets('today reset dialog proof', (tester) async {
+    await _proof(
+      tester,
+      'today_reset_dialog',
+      MockAttendanceRepository(
+        trainees: typicalTrainees,
+        marks: fixtureMarks(_morningId, typicalTrainees, present: 14),
+      ),
+      interact: (tester) async {
+        await tester.tap(find.text('Reset attendance'));
+        await tester.pumpAndSettle();
+      },
+    );
+  });
+
+  testWidgets('today unmark dialog proof', (tester) async {
+    await _proof(
+      tester,
+      'today_unmark_dialog',
+      MockAttendanceRepository(
+        trainees: typicalTrainees,
+        marks: fixtureMarks(_morningId, typicalTrainees, present: 14),
+      ),
+      interact: (tester) async {
+        await tester.tap(
+          find.byKey(Key('present-${typicalTrainees.first.id}')),
+        );
         await tester.pumpAndSettle();
       },
     );

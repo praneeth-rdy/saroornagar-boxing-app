@@ -44,7 +44,7 @@ class SupabaseTraineeRepository implements TraineeRepository {
         .select()
         .eq('id', id)
         .maybeSingle();
-    if (row == null) throw const NotFoundException('Trainee not found');
+    if (row == null) throw const NotFoundException('Student not found');
     return Trainee.fromJson(row);
   });
 
