@@ -25,7 +25,7 @@ OAuth is the owner's step); no `gh`. Xcode incomplete (irrelevant, Android only)
 ## Blocked on the owner
 
 1. Hosted Supabase project `qgqmnaxdxuezjlexlfpw` (region ap-northeast-1, Tokyo; created by the owner
-   2026-11-05). Still needed: publishable key, an access token or `supabase login`, the DB
+   2026-11-05). Publishable key in `fe/config/*.json`. Still needed: an access token or `supabase login`, the DB
    password, MCP approval after a relaunch. Credentials live in `creds.md` (gitignored).
 2. Remaining open points in `docs/product.md` (DOB on the trainee record, trial slot
    details, Android application id, first admin creation).
