@@ -152,6 +152,107 @@ void main() {
       expect(result, isA<AuthFailedException>());
     });
 
+    for (final code in ['otp_expired', 'otp_disabled']) {
+      test('$code maps to the wrong-code message', () {
+        final result = mapSupabaseError(
+          AuthApiException('x', statusCode: '403', code: code),
+        );
+
+        expect(result, isA<ValidationException>());
+        expect(result.message, 'That code is wrong or has expired.');
+      });
+    }
+
+    test('an invalid token message maps to the wrong-code message', () {
+      final result = mapSupabaseError(
+        const AuthException(
+          'Token has expired or is invalid',
+          statusCode: '400',
+        ),
+      );
+
+      expect(result, isA<ValidationException>());
+      expect(result.message, 'That code is wrong or has expired.');
+    });
+
+    for (final code in [
+      'over_email_send_rate_limit',
+      'over_request_rate_limit',
+    ]) {
+      test('$code maps to the rate-limit message', () {
+        final result = mapSupabaseError(
+          AuthApiException('x', statusCode: '429', code: code),
+        );
+
+        expect(result, isA<ValidationException>());
+        expect(
+          result.message,
+          'Too many emails were sent. Try again in a few minutes.',
+        );
+      });
+    }
+
+    test('email_not_confirmed maps to the not-confirmed message', () {
+      final result = mapSupabaseError(
+        const AuthApiException(
+          'Email not confirmed',
+          statusCode: '400',
+          code: 'email_not_confirmed',
+        ),
+      );
+
+      expect(result, isA<ValidationException>());
+      expect(
+        result.message,
+        'This account is not confirmed yet. Ask the club admin.',
+      );
+    });
+
+    test('weak_password maps to the stronger-password message', () {
+      final result = mapSupabaseError(
+        const AuthApiException(
+          'Password should be at least 8 characters.',
+          statusCode: '422',
+          code: 'weak_password',
+        ),
+      );
+
+      expect(result, isA<ValidationException>());
+      expect(
+        result.message,
+        'Choose a stronger password: at least 8 characters.',
+      );
+    });
+
+    test('AuthWeakPasswordException maps to the stronger-password message', () {
+      final result = mapSupabaseError(
+        AuthWeakPasswordException(
+          message: 'Password is known to be weak',
+          statusCode: '422',
+          reasons: const ['pwned'],
+        ),
+      );
+
+      expect(result, isA<ValidationException>());
+      expect(
+        result.message,
+        'Choose a stronger password: at least 8 characters.',
+      );
+    });
+
+    test('same_password maps to the unused-password message', () {
+      final result = mapSupabaseError(
+        const AuthApiException(
+          'New password should be different from the old password.',
+          statusCode: '422',
+          code: 'same_password',
+        ),
+      );
+
+      expect(result, isA<ValidationException>());
+      expect(result.message, 'Choose a password you have not used before.');
+    });
+
     test('phone_provider_disabled maps to ValidationException', () {
       final result = mapSupabaseError(
         const AuthApiException(

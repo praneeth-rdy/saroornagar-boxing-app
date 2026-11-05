@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/auth_providers.dart';
+import '../../features/auth/presentation/forgot_password_screen.dart';
+import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/auth/presentation/sign_in_screen.dart';
 import '../../features/fees/presentation/attendance_summary_screen.dart';
 import '../../features/fees/presentation/fee_status_screen.dart';
@@ -42,6 +44,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         redirectFor(hasSession: session.value, location: state.uri.path),
     routes: [
       GoRoute(path: Routes.signIn, builder: (_, _) => const SignInScreen()),
+      _forgotPasswordRoute,
+      _resetPasswordRoute,
       _trialRoute,
       _recordPaymentRoute,
       StatefulShellRoute.indexedStack(
@@ -152,6 +156,21 @@ DateTime? _monthParameter(String? value) {
   final date = value == null ? null : DateTime.tryParse(value);
   return date == null ? null : DateTime(date.year, date.month);
 }
+
+// Public; the sign-in screen passes what was typed in its email field as `extra`.
+final _forgotPasswordRoute = GoRoute(
+  path: Routes.forgotPassword,
+  builder: (_, state) => ForgotPasswordScreen(
+    initialEmail: state.extra is String ? state.extra! as String : null,
+  ),
+);
+
+// Public; the email travels as `extra`, which a cold start or deep link does not carry.
+final _resetPasswordRoute = GoRoute(
+  path: Routes.resetPassword,
+  redirect: (_, state) => state.extra is String ? null : Routes.forgotPassword,
+  builder: (_, state) => ResetPasswordScreen(email: state.extra! as String),
+);
 
 // Public, outside the shell; the full path of 'booked' is Routes.trialBooked.
 final _trialRoute = GoRoute(

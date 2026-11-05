@@ -22,16 +22,18 @@ class SupabaseStaffRepository implements StaffRepository {
   @override
   Future<StaffProfile> create({
     required String fullName,
-    required String phone,
+    required String email,
     required String password,
     required StaffRole role,
+    String? phone,
   }) => _profileFromFunction({
     'action': 'create',
     'full_name': fullName,
-    'phone': phone,
+    'email': email,
     'password': password,
     // The function answers an unknown role with its own message.
     'role': role.wire,
+    if (phone != null && phone.trim().isNotEmpty) 'phone': phone,
   });
 
   @override
@@ -39,6 +41,7 @@ class SupabaseStaffRepository implements StaffRepository {
     String userId, {
     required String fullName,
     required StaffRole role,
+    String? phone,
   }) => guardSupabase(() async {
     // A function returning one composite row comes back as a single JSON object.
     final row = await client.rpc<dynamic>(
@@ -48,6 +51,8 @@ class SupabaseStaffRepository implements StaffRepository {
         'p_full_name': fullName,
         // An unknown role would fail the enum cast; null lets the server answer.
         'p_role': role == StaffRole.unknown ? null : role.wire,
+        // Null or blank clears the phone on the server.
+        'p_phone': phone,
       },
     );
     return StaffProfile.fromJson(Map<String, dynamic>.from(row as Map));

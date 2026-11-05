@@ -4,6 +4,9 @@ import 'phone_format.dart';
 
 const _passwordMinLength = 8;
 
+// Same pattern as the profiles.email check on the server.
+final _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
 // Auth hashes with bcrypt, which reads at most 72 bytes, so the upper bound is in bytes.
 const _passwordMaxBytes = 72;
 
@@ -16,6 +19,16 @@ String? requiredText(String? value, {String label = 'a value'}) {
 String? phoneText(String? value) {
   if (value == null || normalizePhone(value) == null) {
     return 'Enter a 10-digit mobile number';
+  }
+  return null;
+}
+
+/// Same rule as `private.normalize_email`: trimmed and lower-cased.
+String normalizeEmail(String value) => value.trim().toLowerCase();
+
+String? emailText(String? value) {
+  if (value == null || !_emailPattern.hasMatch(normalizeEmail(value))) {
+    return 'Enter a valid email address';
   }
   return null;
 }

@@ -20,11 +20,13 @@ Future<void> _expectRejected<T extends AppException>(
 Future<StaffProfile> _create(
   MockStaffRepository repository, {
   String fullName = 'New Coach',
-  String phone = '9876500001',
+  String email = 'asha@local.test',
+  String? phone,
   String password = 'long-enough-1',
   StaffRole role = StaffRole.coach,
 }) => repository.create(
   fullName: fullName,
+  email: email,
   phone: phone,
   password: password,
   role: role,
@@ -37,9 +39,15 @@ void main() {
       () async {
         final repository = MockStaffRepository();
 
-        final created = await _create(repository, fullName: '  Asha Rao  ');
+        final created = await _create(
+          repository,
+          fullName: '  Asha Rao  ',
+          email: '  Asha@Local.Test ',
+          phone: '9876500001',
+        );
 
         expect(created.fullName, 'Asha Rao');
+        expect(created.email, 'asha@local.test');
         expect(created.phone, '919876500001');
         expect(created.role, StaffRole.coach);
         expect(created.isBlocked, isFalse);
@@ -63,6 +71,10 @@ void main() {
         'Enter a name between 2 and 80 characters',
       );
       await _expectRejected<ValidationException>(
+        _create(repository, email: 'not-an-email'),
+        'Enter a valid email address',
+      );
+      await _expectRejected<ValidationException>(
         _create(repository, phone: '12345'),
         'Enter a 10-digit mobile number',
       );
@@ -80,12 +92,35 @@ void main() {
       );
     });
 
+    test('no phone is stored as null', () async {
+      final repository = MockStaffRepository();
+
+      final created = await _create(repository);
+      final blank = await _create(
+        repository,
+        email: 'b@local.test',
+        phone: ' ',
+      );
+
+      expect(created.phone, isNull);
+      expect(blank.phone, isNull);
+    });
+
     test('a duplicate phone is a DuplicateException', () async {
       final repository = MockStaffRepository();
 
       await _expectRejected<DuplicateException>(
-        _create(repository, phone: '9000000002'),
-        'A staff member with this number already exists',
+        _create(repository, phone: '9000000001'),
+        'This number belongs to another staff member',
+      );
+    });
+
+    test('a duplicate email is a DuplicateException', () async {
+      final repository = MockStaffRepository();
+
+      await _expectRejected<DuplicateException>(
+        _create(repository, email: ' COACH@local.test '),
+        'A staff member with this email already exists',
       );
     });
 
@@ -111,6 +146,62 @@ void main() {
 
       expect(updated.fullName, 'Sana B');
       expect(updated.role, StaffRole.admin);
+    });
+
+    test('sets, replaces and clears the phone', () async {
+      final repository = MockStaffRepository();
+
+      final added = await repository.update(
+        coachProfile.id,
+        fullName: 'Sana Begum',
+        role: StaffRole.coach,
+        phone: '9876500002',
+      );
+      expect(added.phone, '919876500002');
+
+      final cleared = await repository.update(
+        coachProfile.id,
+        fullName: 'Sana Begum',
+        role: StaffRole.coach,
+      );
+      expect(cleared.phone, isNull);
+      expect(repository.memberFor(coachProfile.id)!.phone, isNull);
+    });
+
+    test('a phone owned by someone else is a duplicate', () async {
+      final repository = MockStaffRepository();
+
+      await _expectRejected<DuplicateException>(
+        repository.update(
+          coachProfile.id,
+          fullName: 'Sana Begum',
+          role: StaffRole.coach,
+          phone: '9000000001',
+        ),
+        'This number belongs to another staff member',
+      );
+      await _expectRejected<ValidationException>(
+        repository.update(
+          coachProfile.id,
+          fullName: 'Sana Begum',
+          role: StaffRole.coach,
+          phone: '123',
+        ),
+        'Enter a 10-digit mobile number',
+      );
+    });
+
+    test('keeping your own phone is not a duplicate', () async {
+      final repository = MockStaffRepository();
+
+      final updated = await repository.update(
+        adminProfile.id,
+        fullName: 'Ravi Kumar',
+        role: StaffRole.admin,
+        phone: '9000000001',
+      );
+
+      expect(updated.phone, '919000000001');
     });
 
     test('an admin cannot change their own role', () async {

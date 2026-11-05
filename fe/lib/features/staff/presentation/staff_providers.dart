@@ -34,7 +34,7 @@ final resetPasswordControllerProvider = NotifierProvider.autoDispose
       ResetPasswordController.new,
     );
 
-/// Adds a staff member or saves an edit of their name and role.
+/// Adds a staff member or saves an edit of their name, role and phone.
 class StaffFormController extends Notifier<AsyncValue<void>> {
   @override
   AsyncValue<void> build() => const AsyncData(null);
@@ -48,14 +48,16 @@ class StaffFormController extends Notifier<AsyncValue<void>> {
       final saved = userId == null
           ? await repository.create(
               fullName: input.fullName,
-              phone: input.phone ?? '',
+              email: input.email ?? '',
               password: input.password ?? '',
               role: input.role,
+              phone: input.phone,
             )
           : await repository.update(
               userId,
               fullName: input.fullName,
               role: input.role,
+              phone: input.phone,
             );
       if (!ref.mounted) return saved;
       state = const AsyncData(null);

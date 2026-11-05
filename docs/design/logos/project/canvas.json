@@ -1,0 +1,114 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-05T10:50:38Z"
+ },
+ "title": "Boxing Club Logo Options",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "L1-Monogram.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 640,
+   "h": 420,
+   "title": "L1 Monogram"
+  },
+  "L2-Glove.dc.html": {
+   "x": 720,
+   "y": 0,
+   "w": 640,
+   "h": 420,
+   "title": "L2 Glove"
+  },
+  "L3-Ropes.dc.html": {
+   "x": 1440,
+   "y": 0,
+   "w": 640,
+   "h": 420,
+   "title": "L3 Ropes"
+  },
+  "L4-Hook.dc.html": {
+   "x": 0,
+   "y": 540,
+   "w": 640,
+   "h": 420,
+   "title": "L4 Hook"
+  },
+  "L5-Badge.dc.html": {
+   "x": 720,
+   "y": 540,
+   "w": 640,
+   "h": 420,
+   "title": "L5 Badge"
+  },
+  "L6-Wordmark.dc.html": {
+   "x": 1440,
+   "y": 540,
+   "w": 640,
+   "h": 420,
+   "title": "L6 Wordmark"
+  },
+  "L5a-Classic.dc.html": {
+   "x": 0,
+   "y": 1080,
+   "w": 640,
+   "h": 420,
+   "title": "L5a Classic"
+  },
+  "L5b-Shield.dc.html": {
+   "x": 720,
+   "y": 1080,
+   "w": 640,
+   "h": 420,
+   "title": "L5b Shield"
+  },
+  "L5c-Seal.dc.html": {
+   "x": 1440,
+   "y": 1080,
+   "w": 640,
+   "h": 420,
+   "title": "L5c Seal"
+  },
+  "L5d-Square.dc.html": {
+   "x": 0,
+   "y": 1620,
+   "w": 640,
+   "h": 420,
+   "title": "L5d Square"
+  },
+  "L5e-Inverted.dc.html": {
+   "x": 720,
+   "y": 1620,
+   "w": 640,
+   "h": 420,
+   "title": "L5e Inverted"
+  }
+ },
+ "order": [
+  "L1-Monogram.dc.html",
+  "L2-Glove.dc.html",
+  "L3-Ropes.dc.html",
+  "L4-Hook.dc.html",
+  "L5-Badge.dc.html",
+  "L6-Wordmark.dc.html",
+  "L5a-Classic.dc.html",
+  "L5b-Shield.dc.html",
+  "L5c-Seal.dc.html",
+  "L5d-Square.dc.html",
+  "L5e-Inverted.dc.html"
+ ],
+ "notes": {
+  "intro": {
+   "x": 0,
+   "y": -300,
+   "text": "Logo options, direction A palette",
+   "kind": "title1",
+   "maxW": 1360
+  }
+ },
+ "designSystems": []
+}

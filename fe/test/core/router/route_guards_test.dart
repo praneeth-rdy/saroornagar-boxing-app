@@ -26,11 +26,30 @@ void main() {
         isNull,
       );
       expect(redirectFor(hasSession: false, location: Routes.signIn), isNull);
+      expect(
+        redirectFor(hasSession: false, location: Routes.forgotPassword),
+        isNull,
+      );
+      expect(
+        redirectFor(hasSession: false, location: Routes.resetPassword),
+        isNull,
+      );
     });
 
     test('sends a signed-in user on sign-in to today', () {
       expect(
         redirectFor(hasSession: true, location: Routes.signIn),
+        Routes.today,
+      );
+    });
+
+    test('sends a signed-in user on the recovery routes to today', () {
+      expect(
+        redirectFor(hasSession: true, location: Routes.forgotPassword),
+        Routes.today,
+      );
+      expect(
+        redirectFor(hasSession: true, location: Routes.resetPassword),
         Routes.today,
       );
     });

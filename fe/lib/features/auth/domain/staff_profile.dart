@@ -13,7 +13,10 @@ abstract class StaffProfile with _$StaffProfile {
   const factory StaffProfile({
     required String id,
     @JsonKey(name: 'full_name') required String fullName,
-    required String phone,
+    required String email,
+
+    /// Optional; the stored `91XXXXXXXXXX` form when present.
+    String? phone,
     @JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire)
     required StaffRole role,
     @JsonKey(name: 'is_blocked') required bool isBlocked,

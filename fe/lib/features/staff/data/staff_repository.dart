@@ -9,16 +9,18 @@ abstract class StaffRepository {
   /// Creates the sign-in account and its profile through the `admin-staff` function.
   Future<StaffProfile> create({
     required String fullName,
-    required String phone,
+    required String email,
     required String password,
     required StaffRole role,
+    String? phone,
   });
 
-  /// Renames a staff member and sets their role (`update_staff`).
+  /// Sets a staff member's name, role and phone (`update_staff`); a null phone clears it.
   Future<StaffProfile> update(
     String userId, {
     required String fullName,
     required StaffRole role,
+    String? phone,
   });
 
   Future<void> resetPassword(String userId, String password);

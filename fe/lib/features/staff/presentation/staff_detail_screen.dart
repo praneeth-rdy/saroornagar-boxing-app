@@ -162,7 +162,8 @@ class _HeaderCard extends StatelessWidget {
               children: [
                 Text(member.fullName, style: AppTypography.title),
                 const SizedBox(height: AppSpacing.xs),
-                Text(formatPhone(member.phone), style: AppTypography.caption),
+                Text(member.email, style: AppTypography.caption),
+                Text(_phoneLabel(member.phone), style: AppTypography.caption),
                 if (isSelf)
                   const Text('This is you', style: AppTypography.caption),
                 const SizedBox(height: AppSpacing.sm),
@@ -182,3 +183,6 @@ class _HeaderCard extends StatelessWidget {
     );
   }
 }
+
+String _phoneLabel(String? phone) =>
+    phone == null ? 'No phone' : formatPhone(phone);

@@ -28,7 +28,7 @@ const _roleOptions = [
   ChoiceOption(value: StaffRole.admin, label: 'Admin'),
 ];
 
-/// Adds a staff member, or edits one's name and role when [userId] is set.
+/// Adds a staff member, or edits one's name, role and phone when [userId] is set.
 class StaffFormScreen extends ConsumerWidget {
   const StaffFormScreen({super.key, this.userId});
 
@@ -67,7 +67,8 @@ class _StaffForm extends ConsumerStatefulWidget {
 
 class _StaffFormState extends ConsumerState<_StaffForm> {
   late final TextEditingController name;
-  final phone = TextEditingController();
+  late final TextEditingController phone;
+  final email = TextEditingController();
   final password = TextEditingController();
   late StaffRole role;
   var isPasswordVisible = false;
@@ -82,7 +83,9 @@ class _StaffFormState extends ConsumerState<_StaffForm> {
     super.initState();
     name = TextEditingController(text: widget.initial?.fullName)
       ..addListener(revalidate);
-    phone.addListener(revalidate);
+    phone = TextEditingController(text: _localDigits(widget.initial?.phone))
+      ..addListener(revalidate);
+    email.addListener(revalidate);
     password.addListener(revalidate);
     role = widget.initial?.role ?? StaffRole.coach;
   }
@@ -91,6 +94,7 @@ class _StaffFormState extends ConsumerState<_StaffForm> {
   void dispose() {
     name.dispose();
     phone.dispose();
+    email.dispose();
     password.dispose();
     super.dispose();
   }
@@ -101,18 +105,21 @@ class _StaffFormState extends ConsumerState<_StaffForm> {
 
   bool get hasFieldErrors =>
       _nameError(name.text) != null ||
+      _phoneError(phone.text) != null ||
       (isNew &&
-          (phoneText(phone.text) != null ||
+          (emailText(email.text) != null ||
               passwordText(password.text) != null));
 
   Future<void> submit() async {
     setState(() => isSubmitted = true);
     if (hasFieldErrors) return;
-    // Sent as typed: the server trims the name and normalizes the phone.
+    // Sent as typed: the server trims the name and normalizes the email and phone.
     final input = StaffInput(
       fullName: name.text,
       role: role,
-      phone: isNew ? phone.text : null,
+      email: isNew ? email.text : null,
+      // An emptied field clears the phone.
+      phone: phone.text.trim().isEmpty ? null : phone.text,
       password: isNew ? password.text : null,
     );
     final saved = await ref
@@ -143,13 +150,12 @@ class _StaffFormState extends ConsumerState<_StaffForm> {
         if (isNew) ...[
           const SizedBox(height: AppSpacing.lg),
           AppTextField(
-            controller: phone,
-            label: 'Phone',
-            prefixText: '+91',
-            keyboardType: TextInputType.phone,
-            maxLength: _phoneDigits,
+            controller: email,
+            label: 'Email',
+            keyboardType: TextInputType.emailAddress,
+            autocorrect: false,
             textInputAction: TextInputAction.next,
-            errorText: isSubmitted ? phoneText(phone.text) : null,
+            errorText: isSubmitted ? emailText(email.text) : null,
           ),
           const SizedBox(height: AppSpacing.lg),
           _PasswordField(
@@ -177,6 +183,16 @@ class _StaffFormState extends ConsumerState<_StaffForm> {
             style: AppTypography.caption,
           ),
         ],
+        const SizedBox(height: AppSpacing.lg),
+        AppTextField(
+          controller: phone,
+          label: 'Phone (optional)',
+          prefixText: '+91',
+          keyboardType: TextInputType.phone,
+          maxLength: _phoneDigits,
+          textInputAction: TextInputAction.done,
+          errorText: isSubmitted ? _phoneError(phone.text) : null,
+        ),
         if (failure != null) ...[
           const SizedBox(height: AppSpacing.md),
           InlineBanner(
@@ -248,4 +264,16 @@ String? _nameError(String value) {
     return 'Enter a name between 2 and 80 characters';
   }
   return null;
+}
+
+// Blank is allowed: the phone is optional.
+String? _phoneError(String value) =>
+    value.trim().isEmpty ? null : phoneText(value);
+
+// The field shows +91 as a prefix, so a stored 91XXXXXXXXXX is edited as 10 digits.
+String? _localDigits(String? phone) {
+  if (phone == null) return null;
+  return phone.length == 12 && phone.startsWith('91')
+      ? phone.substring(2)
+      : phone;
 }

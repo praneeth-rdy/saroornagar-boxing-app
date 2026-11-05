@@ -40,11 +40,11 @@ class OfflineException extends AppException {
       'No connection. Check your internet and try again.';
 }
 
-/// Wrong phone number or password at sign-in.
+/// Wrong email or password at sign-in.
 class AuthFailedException extends AppException {
   const AuthFailedException([super.message = defaultMessage]);
 
-  static const defaultMessage = 'Wrong phone number or password.';
+  static const defaultMessage = 'Wrong email or password.';
 }
 
 class UnknownException extends AppException {

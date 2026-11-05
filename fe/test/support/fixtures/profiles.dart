@@ -6,6 +6,7 @@ final _created = DateTime.utc(2026, 11, 5, 4);
 final adminProfile = StaffProfile(
   id: '00000000-0000-4000-8000-000000000001',
   fullName: 'Ravi Kumar',
+  email: 'admin@local.test',
   phone: '919000000001',
   role: StaffRole.admin,
   isBlocked: false,
@@ -16,7 +17,7 @@ final adminProfile = StaffProfile(
 final coachProfile = StaffProfile(
   id: '00000000-0000-4000-8000-000000000002',
   fullName: 'Sana Begum',
-  phone: '919000000002',
+  email: 'coach@local.test',
   role: StaffRole.coach,
   isBlocked: false,
   createdAt: _created,
@@ -26,6 +27,7 @@ final coachProfile = StaffProfile(
 final blockedCoachProfile = StaffProfile(
   id: '00000000-0000-4000-8000-000000000003',
   fullName: 'Arjun Reddy',
+  email: 'arjun.reddy@local.test',
   phone: '919000000003',
   role: StaffRole.coach,
   isBlocked: true,
@@ -52,15 +54,19 @@ const _staffNames = [
   'Bhavana Iyer',
 ];
 
+String _fixtureStaffName(int index) => index < _staffNames.length
+    ? _staffNames[index]
+    : '${_staffNames[index % _staffNames.length]} ${index ~/ _staffNames.length + 1}';
+
 /// [count] extra staff after the admin: mostly coaches, every fourth an admin,
 /// every third blocked.
 List<StaffProfile> fixtureStaff(int count) => [
   for (var i = 0; i < count; i++)
     StaffProfile(
       id: fixtureStaffId(i),
-      fullName: i < _staffNames.length
-          ? _staffNames[i]
-          : '${_staffNames[i % _staffNames.length]} ${i ~/ _staffNames.length + 1}',
+      fullName: _fixtureStaffName(i),
+      email:
+          '${_fixtureStaffName(i).toLowerCase().replaceAll(' ', '.')}@local.test',
       phone: '9198${(4000000 + i).toString().padLeft(8, '0')}',
       role: i % 4 == 3 ? StaffRole.admin : StaffRole.coach,
       isBlocked: i % 3 == 2,

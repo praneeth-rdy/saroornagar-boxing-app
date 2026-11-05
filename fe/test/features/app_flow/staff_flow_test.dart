@@ -41,16 +41,39 @@ void main() {
     await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).at(0), 'Asha Rao');
-    await tester.enterText(find.byType(TextField).at(1), '9876500001');
+    await tester.enterText(find.byType(TextField).at(1), 'asha@local.test');
     await tester.enterText(find.byType(TextField).at(2), 'long-enough-1');
     await tester.tap(find.byType(PrimaryButton));
     await tester.pumpAndSettle();
 
     expect(find.text('Asha Rao'), findsOneWidget);
-    final ashaId = staff.stored.firstWhere((m) => m.fullName == 'Asha Rao').id;
+    expect(find.text('Coach · asha@local.test'), findsOneWidget);
+    final asha = staff.stored.firstWhere((m) => m.fullName == 'Asha Rao');
+    final ashaId = asha.id;
+    expect(asha.phone, isNull);
 
     await tester.tap(find.text('Asha Rao'));
     await tester.pumpAndSettle();
+    expect(find.text('asha@local.test'), findsOneWidget);
+    expect(find.text('No phone'), findsOneWidget);
+
+    await tester.tap(find.text('Edit'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).at(1), '9876500001');
+    await tester.tap(find.byType(PrimaryButton));
+    await tester.pumpAndSettle();
+    expect(staff.memberFor(ashaId)!.phone, '919876500001');
+    expect(find.text('No phone'), findsNothing);
+
+    // Emptying the field clears the phone again.
+    await tester.tap(find.text('Edit'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).at(1), '');
+    await tester.tap(find.byType(PrimaryButton));
+    await tester.pumpAndSettle();
+    expect(staff.memberFor(ashaId)!.phone, isNull);
+    expect(find.text('No phone'), findsOneWidget);
+
     await tester.tap(find.text('Reset password'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).at(0), 'fresh-pass-99');

@@ -25,7 +25,7 @@ void main() {
 
     expect(find.text('Staff and coaches only.'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextField).at(0), '9000000001');
+    await tester.enterText(find.byType(TextField).at(0), 'admin@local.test');
     await tester.enterText(find.byType(TextField).at(1), 'admin-local-1234');
     await tester.tap(find.text('Sign in').last);
     await tester.pumpAndSettle();
@@ -43,6 +43,48 @@ void main() {
 
     expect(find.text('Staff and coaches only.'), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
+  });
+
+  testWidgets('forgot password: code and new password land on Today', (
+    tester,
+  ) async {
+    final repository = MockAuthRepository();
+    addTearDown(repository.dispose);
+    await pumpApp(
+      tester,
+      overrides: [
+        authRepositoryProvider.overrideWithValue(repository),
+        attendanceRepositoryProvider.overrideWithValue(
+          MockAttendanceRepository(),
+        ),
+      ],
+    );
+
+    await tester.enterText(find.byType(TextField).at(0), 'Admin@Local.Test');
+    await tester.tap(find.text('Forgot password?'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Reset password'), findsOneWidget);
+    expect(find.text('Admin@Local.Test'), findsOneWidget);
+
+    await tester.tap(find.text('Send code'));
+    await tester.pumpAndSettle();
+
+    expect(repository.resetRequests, ['admin@local.test']);
+    expect(
+      find.text('Enter the code from the email and choose a new password.'),
+      findsOneWidget,
+    );
+
+    await tester.enterText(find.byType(TextField).at(0), mockRecoveryCode);
+    await tester.enterText(find.byType(TextField).at(1), 'new-password-1');
+    await tester.enterText(find.byType(TextField).at(2), 'new-password-1');
+    await tester.tap(find.text('Set new password'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.text('Today'), findsWidgets);
+    expect(find.text('Password updated'), findsOneWidget);
   });
 
   testWidgets('a blocked coach sees the blocked screen', (tester) async {

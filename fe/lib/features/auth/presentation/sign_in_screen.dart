@@ -14,9 +14,7 @@ import '../../../core/widgets/link_button.dart';
 import '../../../core/widgets/primary_button.dart';
 import 'auth_providers.dart';
 
-const _phoneLength = 10;
-
-/// Staff sign-in with phone and password; the route guard navigates on success.
+/// Staff sign-in with email and password; the route guard navigates on success.
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
 
@@ -25,30 +23,37 @@ class SignInScreen extends ConsumerStatefulWidget {
 }
 
 class _SignInScreenState extends ConsumerState<SignInScreen> {
-  final phoneController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  String? phoneError;
+  String? emailError;
   String? passwordError;
   bool isPasswordVisible = false;
 
   @override
   void dispose() {
-    phoneController.dispose();
+    emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
   void submit() {
-    final phone = phoneController.text;
+    final email = emailController.text;
     final password = passwordController.text;
     setState(() {
-      phoneError = phoneText(phone);
+      emailError = emailText(email);
       passwordError = passwordText(password);
     });
-    if (phoneError != null || passwordError != null) return;
+    if (emailError != null || passwordError != null) return;
     ref
         .read(signInControllerProvider.notifier)
-        .submit(phone: phone, password: password);
+        .submit(email: email, password: password);
+  }
+
+  void openForgotPassword() {
+    final email = emailController.text.trim();
+    context
+        .push(Routes.forgotPassword, extra: email.isEmpty ? null : email)
+        .ignore();
   }
 
   @override
@@ -70,13 +75,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             const Text('Staff and coaches only.', style: AppTypography.caption),
             const SizedBox(height: AppSpacing.xxl),
             AppTextField(
-              controller: phoneController,
-              label: 'Phone number',
-              prefixText: '+91 ',
-              keyboardType: TextInputType.phone,
-              maxLength: _phoneLength,
+              controller: emailController,
+              label: 'Email',
+              keyboardType: TextInputType.emailAddress,
+              autocorrect: false,
               textInputAction: TextInputAction.next,
-              errorText: phoneError,
+              errorText: emailError,
             ),
             const SizedBox(height: AppSpacing.lg),
             AppTextField(
@@ -113,6 +117,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             const SizedBox(height: AppSpacing.sm),
             Center(
               child: LinkButton(
+                label: 'Forgot password?',
+                onPressed: openForgotPassword,
+              ),
+            ),
+            Center(
+              child: LinkButton(
                 label: 'Want to try a session? Book a trial',
                 onPressed: () => context.push(Routes.trial).ignore(),
               ),
@@ -125,7 +135,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 }
 
 String _failureMessage(Object failure) => switch (failure) {
-  AuthFailedException() => 'That phone number and password do not match.',
+  AuthFailedException() => 'That email and password do not match.',
   OfflineException() => 'You are offline. Check the connection and try again.',
   AppException(:final message) => message,
   _ => UnknownException.defaultMessage,

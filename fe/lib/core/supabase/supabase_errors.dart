@@ -56,16 +56,44 @@ AppException _fromFunction(FunctionException error) {
 const _phoneProviderDisabledMessage =
     'Phone sign-in is not enabled on the server yet. Ask the club admin.';
 
+const _wrongCodeMessage = 'That code is wrong or has expired.';
+const _rateLimitMessage =
+    'Too many emails were sent. Try again in a few minutes.';
+const _emailNotConfirmedMessage =
+    'This account is not confirmed yet. Ask the club admin.';
+const _weakPasswordMessage =
+    'Choose a stronger password: at least 8 characters.';
+const _samePasswordMessage = 'Choose a password you have not used before.';
+
 AppException _fromAuth(AuthException error) {
-  // Checked before the generic 400 rule: a disabled phone provider also answers 400,
-  // but retyping the password will never fix it.
+  // Checked before the generic 400 rule: these also answer 400, but retyping the
+  // password will never fix them.
   if (_isPhoneProviderDisabled(error)) {
     return const ValidationException(_phoneProviderDisabledMessage);
   }
+  final recovery = _fromRecovery(error);
+  if (recovery != null) return recovery;
   if (error.code == 'invalid_credentials' || error.statusCode == '400') {
     return const AuthFailedException();
   }
   return const UnknownException();
+}
+
+ValidationException? _fromRecovery(AuthException error) {
+  return switch (error.code) {
+    'otp_expired' ||
+    'otp_disabled' => const ValidationException(_wrongCodeMessage),
+    'over_email_send_rate_limit' ||
+    'over_request_rate_limit' => const ValidationException(_rateLimitMessage),
+    'email_not_confirmed' => const ValidationException(
+      _emailNotConfirmedMessage,
+    ),
+    'weak_password' => const ValidationException(_weakPasswordMessage),
+    'same_password' => const ValidationException(_samePasswordMessage),
+    _ when error.message.contains('Token has expired or is invalid') =>
+      const ValidationException(_wrongCodeMessage),
+    _ => null,
+  };
 }
 
 bool _isPhoneProviderDisabled(AuthException error) {

@@ -16,10 +16,10 @@ Future<void> pumpSignIn(WidgetTester tester, MockAuthRepository repository) =>
 
 Future<void> fillAndSubmit(
   WidgetTester tester, {
-  String phone = '9000000001',
+  String email = 'admin@local.test',
   String password = 'admin-local-1234',
 }) async {
-  await tester.enterText(find.byType(TextField).at(0), phone);
+  await tester.enterText(find.byType(TextField).at(0), email);
   await tester.enterText(find.byType(TextField).at(1), password);
   await tester.tap(find.text('Sign in').last);
 }
@@ -33,8 +33,23 @@ void main() {
     await tester.tap(find.text('Sign in').last);
     await tester.pumpAndSettle();
 
-    expect(find.text('Enter a 10-digit mobile number'), findsOneWidget);
+    expect(find.text('Enter a valid email address'), findsOneWidget);
     expect(find.text('Enter a password of 8 to 72 characters'), findsOneWidget);
+  });
+
+  testWidgets('a malformed email is rejected', (tester) async {
+    await pumpSignIn(tester, MockAuthRepository());
+
+    await fillAndSubmit(tester, email: 'not-an-email');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Enter a valid email address'), findsOneWidget);
+  });
+
+  testWidgets('the forgot password link is shown', (tester) async {
+    await pumpSignIn(tester, MockAuthRepository());
+
+    expect(find.text('Forgot password?'), findsOneWidget);
   });
 
   testWidgets('wrong credentials show the mismatch banner', (tester) async {
@@ -43,10 +58,7 @@ void main() {
     await fillAndSubmit(tester, password: 'not-the-password');
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('That phone number and password do not match.'),
-      findsOneWidget,
-    );
+    expect(find.text('That email and password do not match.'), findsOneWidget);
   });
 
   testWidgets('offline scenario shows the offline banner', (tester) async {

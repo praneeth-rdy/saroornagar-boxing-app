@@ -41,7 +41,7 @@ void main() {
       ],
     );
 
-    await tester.enterText(find.byType(TextField).at(0), '9000000001');
+    await tester.enterText(find.byType(TextField).at(0), 'admin@local.test');
     await tester.enterText(find.byType(TextField).at(1), 'admin-local-1234');
     await tester.tap(find.text('Sign in').last);
     await tester.pumpAndSettle();

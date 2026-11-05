@@ -35,8 +35,7 @@ class MoreScreen extends ConsumerWidget {
               child: ListRow(
                 leading: AvatarInitials(name: profile.fullName),
                 title: profile.fullName,
-                subtitle:
-                    '${formatPhone(profile.phone)} · ${_roleLabel(profile.role)}',
+                subtitle: _profileSubtitle(profile),
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
@@ -89,6 +88,15 @@ class MoreScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+String _profileSubtitle(StaffProfile profile) {
+  final phone = profile.phone;
+  return [
+    profile.email,
+    if (phone != null) formatPhone(phone),
+    _roleLabel(profile.role),
+  ].join(' · ');
 }
 
 String _roleLabel(StaffRole role) => switch (role) {

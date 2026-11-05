@@ -7,6 +7,7 @@
 - **Tests:** yes (assistant: proofs + the two widget tests below)
 - **Schema change approved by the owner:** n/a
 - **Hosted apply:** n/a
+- **Owner request this serves:** "Can we do an email-password sign-in instead and add a forgot password option too?" (2026-11-05). Any later chat message about logos is a separate thread handled elsewhere; build this package as written.
 
 ## Goal
 The forgot-password and reset screens always offer a way back to sign-in, weak or reused

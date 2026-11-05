@@ -12,7 +12,7 @@ import 'proof_harness.dart';
 import 'proof_support.dart';
 
 Future<void> _fill(WidgetTester tester) async {
-  await tester.enterText(find.byType(TextField).at(0), '9000000001');
+  await tester.enterText(find.byType(TextField).at(0), 'admin@local.test');
   await tester.enterText(find.byType(TextField).at(1), 'wrong-password-1');
   await tester.pump();
 }
@@ -61,7 +61,10 @@ void main() {
         ),
       ],
       interact: (tester) async {
-        await tester.enterText(find.byType(TextField).at(0), '9000000001');
+        await tester.enterText(
+          find.byType(TextField).at(0),
+          'admin@local.test',
+        );
         await tester.enterText(
           find.byType(TextField).at(1),
           'admin-local-1234',

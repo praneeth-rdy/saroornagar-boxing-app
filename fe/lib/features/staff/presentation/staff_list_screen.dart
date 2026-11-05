@@ -7,7 +7,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
-import '../../../core/utils/phone_format.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/avatar_initials.dart';
@@ -140,7 +139,7 @@ class _NameAndRole extends StatelessWidget {
           ],
         ),
         Text(
-          '${staffRoleLabel(member.role)} · ${formatPhone(member.phone)}',
+          '${staffRoleLabel(member.role)} · ${member.email}',
           style: AppTypography.caption,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

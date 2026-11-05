@@ -21,6 +21,7 @@ class AppTextField extends StatelessWidget {
     this.maxLines = 1,
     this.showCounter = false,
     this.enabled = true,
+    this.autocorrect = true,
   });
 
   final TextEditingController? controller;
@@ -46,6 +47,9 @@ class AppTextField extends StatelessWidget {
   final bool showCounter;
   final bool enabled;
 
+  /// Off for emails, codes and other values that are not words.
+  final bool autocorrect;
+
   @override
   Widget build(BuildContext context) {
     final prefix = prefixText;
@@ -68,6 +72,8 @@ class AppTextField extends StatelessWidget {
           maxLines: maxLines,
           minLines: maxLines > 1 ? maxLines ~/ 2 : null,
           enabled: enabled,
+          autocorrect: autocorrect,
+          enableSuggestions: autocorrect,
           style: AppTypography.body,
           decoration: InputDecoration(
             hintText: hint,

@@ -31,6 +31,27 @@ void main() {
     });
   });
 
+  group('emailText', () {
+    test('passes an address, ignoring case and padding', () {
+      expect(emailText('  Admin@Local.Test '), isNull);
+    });
+
+    test('fails with the fixed message on a malformed address', () {
+      expect(emailText('admin'), 'Enter a valid email address');
+      expect(emailText('admin@'), 'Enter a valid email address');
+      expect(emailText('a b@c.d'), 'Enter a valid email address');
+    });
+
+    test('fails on null and blank', () {
+      expect(emailText(null), 'Enter a valid email address');
+      expect(emailText('  '), 'Enter a valid email address');
+    });
+
+    test('normalizeEmail trims and lowers', () {
+      expect(normalizeEmail('  Admin@Local.Test '), 'admin@local.test');
+    });
+  });
+
   group('passwordText', () {
     test('fails below 8 characters', () {
       expect(passwordText('1234567'), isNotNull);

@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$StaffInput {
 
- String get fullName; StaffRole get role; String? get phone; String? get password;
+ String get fullName; StaffRole get role; String? get email;/// Optional; blank or null means no phone.
+ String? get phone; String? get password;
 /// Create a copy of StaffInput
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +28,20 @@ $StaffInputCopyWith<StaffInput> get copyWith => _$StaffInputCopyWithImpl<StaffIn
 @override
 bool operator ==(Object other) {
   final _this = this as StaffInput;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is StaffInput&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.password, _this.password) || other.password == _this.password));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StaffInput&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.password, _this.password) || other.password == _this.password));
 }
 
 
 @override
 int get hashCode {
   final _this = this as StaffInput;
-  return Object.hash(runtimeType,_this.fullName,_this.role,_this.phone,_this.password);
+  return Object.hash(runtimeType,_this.fullName,_this.role,_this.email,_this.phone,_this.password);
 }
 
 @override
 String toString() {
   final _this = this as StaffInput;
-  return 'StaffInput(fullName: ${_this.fullName}, role: ${_this.role}, phone: ${_this.phone}, password: ${_this.password})';
+  return 'StaffInput(fullName: ${_this.fullName}, role: ${_this.role}, email: ${_this.email}, phone: ${_this.phone}, password: ${_this.password})';
 }
 
 
@@ -51,7 +52,7 @@ abstract mixin class $StaffInputCopyWith<$Res>  {
   factory $StaffInputCopyWith(StaffInput value, $Res Function(StaffInput) _then) = _$StaffInputCopyWithImpl;
 @useResult
 $Res call({
- String fullName, StaffRole role, String? phone, String? password
+ String fullName, StaffRole role, String? email, String? phone, String? password
 });
 
 
@@ -68,11 +69,12 @@ class _$StaffInputCopyWithImpl<$Res>
 
 /// Create a copy of StaffInput
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? fullName = null,Object? role = null,Object? phone = freezed,Object? password = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? fullName = null,Object? role = null,Object? email = freezed,Object? phone = freezed,Object? password = freezed,}) {
   return _then(StaffInput(
 fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as StaffRole,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as StaffRole,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -159,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fullName,  StaffRole role,  String? phone,  String? password)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fullName,  StaffRole role,  String? email,  String? phone,  String? password)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _StaffInput() when $default != null:
-return $default(_that.fullName,_that.role,_that.phone,_that.password);case _:
+return $default(_that.fullName,_that.role,_that.email,_that.phone,_that.password);case _:
   return orElse();
 
 }
@@ -180,10 +182,10 @@ return $default(_that.fullName,_that.role,_that.phone,_that.password);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fullName,  StaffRole role,  String? phone,  String? password)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fullName,  StaffRole role,  String? email,  String? phone,  String? password)  $default,) {final _that = this;
 switch (_that) {
 case _StaffInput():
-return $default(_that.fullName,_that.role,_that.phone,_that.password);case _:
+return $default(_that.fullName,_that.role,_that.email,_that.phone,_that.password);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +202,10 @@ return $default(_that.fullName,_that.role,_that.phone,_that.password);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fullName,  StaffRole role,  String? phone,  String? password)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fullName,  StaffRole role,  String? email,  String? phone,  String? password)?  $default,) {final _that = this;
 switch (_that) {
 case _StaffInput() when $default != null:
-return $default(_that.fullName,_that.role,_that.phone,_that.password);case _:
+return $default(_that.fullName,_that.role,_that.email,_that.phone,_that.password);case _:
   return null;
 
 }
@@ -215,11 +217,13 @@ return $default(_that.fullName,_that.role,_that.phone,_that.password);case _:
 
 
 class _StaffInput implements StaffInput {
-  const _StaffInput({required this.fullName, required this.role, this.phone, this.password});
+  const _StaffInput({required this.fullName, required this.role, this.email, this.phone, this.password});
   
 
 @override final  String fullName;
 @override final  StaffRole role;
+@override final  String? email;
+/// Optional; blank or null means no phone.
 @override final  String? phone;
 @override final  String? password;
 
@@ -233,18 +237,18 @@ _$StaffInputCopyWith<_StaffInput> get copyWith => __$StaffInputCopyWithImpl<_Sta
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _StaffInput&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.role, role) || other.role == role)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.password, password) || other.password == password));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _StaffInput&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.role, role) || other.role == role)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.password, password) || other.password == password));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,fullName,role,phone,password);
+    return Object.hash(runtimeType,fullName,role,email,phone,password);
 }
 
 @override
 String toString() {
-    return 'StaffInput(fullName: $fullName, role: $role, phone: $phone, password: $password)';
+    return 'StaffInput(fullName: $fullName, role: $role, email: $email, phone: $phone, password: $password)';
 }
 
 
@@ -255,7 +259,7 @@ abstract mixin class _$StaffInputCopyWith<$Res> implements $StaffInputCopyWith<$
   factory _$StaffInputCopyWith(_StaffInput value, $Res Function(_StaffInput) _then) = __$StaffInputCopyWithImpl;
 @override @useResult
 $Res call({
- String fullName, StaffRole role, String? phone, String? password
+ String fullName, StaffRole role, String? email, String? phone, String? password
 });
 
 
@@ -272,11 +276,12 @@ class __$StaffInputCopyWithImpl<$Res>
 
 /// Create a copy of StaffInput
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? fullName = null,Object? role = null,Object? phone = freezed,Object? password = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? fullName = null,Object? role = null,Object? email = freezed,Object? phone = freezed,Object? password = freezed,}) {
   return _then(_StaffInput(
 fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as StaffRole,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as StaffRole,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
 as String?,
   ));

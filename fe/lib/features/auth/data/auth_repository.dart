@@ -7,10 +7,20 @@ abstract class AuthRepository {
   /// Emits on sign-in and sign-out.
   Stream<bool> get sessionChanges;
 
-  /// [phone] is the 10-digit mobile number as typed.
-  Future<void> signIn({required String phone, required String password});
+  /// [email] is trimmed and lower-cased before it is sent.
+  Future<void> signIn({required String email, required String password});
 
   Future<void> signOut();
 
   Future<StaffProfile> currentProfile();
+
+  /// Emails a 6-digit recovery code; succeeds whether or not the account exists.
+  Future<void> requestPasswordReset(String email);
+
+  /// Verifies the recovery [code], which signs in, then sets [newPassword].
+  Future<void> completePasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  });
 }

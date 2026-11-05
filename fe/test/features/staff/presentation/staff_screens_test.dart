@@ -81,7 +81,7 @@ void main() {
       expect(blocked.height, other.height);
     });
 
-    testWidgets('a blocked row shows the full phone at 390 px', (tester) async {
+    testWidgets('a blocked row shows the full email at 390 px', (tester) async {
       await tester.runAsync(_loadInter);
       await _pump(
         tester,
@@ -89,9 +89,7 @@ void main() {
         surface: const Size(390, 844),
       );
 
-      final subtitle = find.text(
-        'Coach · ${formatPhone(blockedCoachProfile.phone)}',
-      );
+      final subtitle = find.text('Coach · ${blockedCoachProfile.email}');
       expect(subtitle, findsOneWidget);
       expect(
         tester.renderObject<RenderParagraph>(subtitle).didExceedMaxLines,
@@ -114,9 +112,44 @@ void main() {
         find.text('Enter a name between 2 and 80 characters'),
         findsOneWidget,
       );
-      expect(find.text('Enter a 10-digit mobile number'), findsOneWidget);
+      expect(find.text('Enter a valid email address'), findsOneWidget);
       expect(
         find.text('Enter a password of 8 to 72 characters'),
+        findsOneWidget,
+      );
+      // The phone is optional, so blank is not an error.
+      expect(find.text('Enter a 10-digit mobile number'), findsNothing);
+      expect(staff.stored, hasLength(3));
+    });
+
+    testWidgets('a malformed email and a short phone are flagged', (
+      tester,
+    ) async {
+      final staff = await _pump(tester, const StaffFormScreen());
+
+      await tester.enterText(find.byType(TextField).at(0), 'Asha Rao');
+      await tester.enterText(find.byType(TextField).at(1), 'asha@');
+      await tester.enterText(find.byType(TextField).at(2), 'long-enough-1');
+      await tester.enterText(find.byType(TextField).at(3), '12345');
+      await tester.tap(find.byType(PrimaryButton));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Enter a valid email address'), findsOneWidget);
+      expect(find.text('Enter a 10-digit mobile number'), findsOneWidget);
+      expect(staff.stored, hasLength(3));
+    });
+
+    testWidgets('a duplicate email shows the banner message', (tester) async {
+      final staff = await _pump(tester, const StaffFormScreen());
+
+      await tester.enterText(find.byType(TextField).at(0), 'Asha Rao');
+      await tester.enterText(find.byType(TextField).at(1), coachProfile.email);
+      await tester.enterText(find.byType(TextField).at(2), 'long-enough-1');
+      await tester.tap(find.byType(PrimaryButton));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('A staff member with this email already exists'),
         findsOneWidget,
       );
       expect(staff.stored, hasLength(3));
@@ -126,22 +159,31 @@ void main() {
       await _pump(tester, const StaffFormScreen());
 
       await tester.enterText(find.byType(TextField).at(0), 'Asha Rao');
-      await tester.enterText(find.byType(TextField).at(1), '9000000002');
+      await tester.enterText(find.byType(TextField).at(1), 'asha@local.test');
       await tester.enterText(find.byType(TextField).at(2), 'long-enough-1');
+      await tester.enterText(find.byType(TextField).at(3), '9000000003');
       await tester.tap(find.byType(PrimaryButton));
       await tester.pumpAndSettle();
 
       expect(
-        find.text('A staff member with this number already exists'),
+        find.text('This number belongs to another staff member'),
         findsOneWidget,
       );
+    });
+
+    testWidgets('editing offers name, role and phone only', (tester) async {
+      await _pump(tester, StaffFormScreen(userId: coachProfile.id));
+
+      expect(find.text('Email'), findsNothing);
+      expect(find.text('Password'), findsNothing);
+      expect(find.byType(TextField), findsNWidgets(2));
     });
 
     testWidgets('editing yourself locks the role chips', (tester) async {
       await _pump(tester, StaffFormScreen(userId: adminProfile.id));
 
       expect(find.text('You cannot change your own role'), findsOneWidget);
-      // Phone and password are not editable.
+      // Password is not editable.
       expect(find.text('Password'), findsNothing);
     });
 
@@ -155,6 +197,23 @@ void main() {
   });
 
   group('admin detail', () {
+    testWidgets('shows the email, then No phone when there is none', (
+      tester,
+    ) async {
+      await _pump(tester, StaffDetailScreen(userId: coachProfile.id));
+
+      expect(find.text(coachProfile.email), findsOneWidget);
+      expect(find.text('No phone'), findsOneWidget);
+    });
+
+    testWidgets('shows the formatted phone when present', (tester) async {
+      await _pump(tester, StaffDetailScreen(userId: adminProfile.id));
+
+      expect(find.text(adminProfile.email), findsOneWidget);
+      expect(find.text(formatPhone(adminProfile.phone!)), findsOneWidget);
+      expect(find.text('No phone'), findsNothing);
+    });
+
     testWidgets('Edit and Reset password stack full width, 12 px apart', (
       tester,
     ) async {

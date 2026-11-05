@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$StaffProfile {
 
- String get id;@JsonKey(name: 'full_name') String get fullName; String get phone;@JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire) StaffRole get role;@JsonKey(name: 'is_blocked') bool get isBlocked;@JsonKey(name: 'created_at') DateTime get createdAt;@JsonKey(name: 'updated_at') DateTime get updatedAt;
+ String get id;@JsonKey(name: 'full_name') String get fullName; String get email;/// Optional; the stored `91XXXXXXXXXX` form when present.
+ String? get phone;@JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire) StaffRole get role;@JsonKey(name: 'is_blocked') bool get isBlocked;@JsonKey(name: 'created_at') DateTime get createdAt;@JsonKey(name: 'updated_at') DateTime get updatedAt;
 /// Create a copy of StaffProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +31,20 @@ $StaffProfileCopyWith<StaffProfile> get copyWith => _$StaffProfileCopyWithImpl<S
 @override
 bool operator ==(Object other) {
   final _this = this as StaffProfile;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is StaffProfile&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.isBlocked, _this.isBlocked) || other.isBlocked == _this.isBlocked)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StaffProfile&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.fullName, _this.fullName) || other.fullName == _this.fullName)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.phone, _this.phone) || other.phone == _this.phone)&&(identical(other.role, _this.role) || other.role == _this.role)&&(identical(other.isBlocked, _this.isBlocked) || other.isBlocked == _this.isBlocked)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as StaffProfile;
-  return Object.hash(runtimeType,_this.id,_this.fullName,_this.phone,_this.role,_this.isBlocked,_this.createdAt,_this.updatedAt);
+  return Object.hash(runtimeType,_this.id,_this.fullName,_this.email,_this.phone,_this.role,_this.isBlocked,_this.createdAt,_this.updatedAt);
 }
 
 @override
 String toString() {
   final _this = this as StaffProfile;
-  return 'StaffProfile(id: ${_this.id}, fullName: ${_this.fullName}, phone: ${_this.phone}, role: ${_this.role}, isBlocked: ${_this.isBlocked}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt})';
+  return 'StaffProfile(id: ${_this.id}, fullName: ${_this.fullName}, email: ${_this.email}, phone: ${_this.phone}, role: ${_this.role}, isBlocked: ${_this.isBlocked}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt})';
 }
 
 
@@ -54,7 +55,7 @@ abstract mixin class $StaffProfileCopyWith<$Res>  {
   factory $StaffProfileCopyWith(StaffProfile value, $Res Function(StaffProfile) _then) = _$StaffProfileCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'full_name') String fullName, String phone,@JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire) StaffRole role,@JsonKey(name: 'is_blocked') bool isBlocked,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'updated_at') DateTime updatedAt
+ String id,@JsonKey(name: 'full_name') String fullName, String email, String? phone,@JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire) StaffRole role,@JsonKey(name: 'is_blocked') bool isBlocked,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'updated_at') DateTime updatedAt
 });
 
 
@@ -71,12 +72,13 @@ class _$StaffProfileCopyWithImpl<$Res>
 
 /// Create a copy of StaffProfile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fullName = null,Object? phone = null,Object? role = null,Object? isBlocked = null,Object? createdAt = null,Object? updatedAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fullName = null,Object? email = null,Object? phone = freezed,Object? role = null,Object? isBlocked = null,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(StaffProfile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
-as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String?,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as StaffRole,isBlocked: null == isBlocked ? _self.isBlocked : isBlocked // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -165,10 +167,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire)  StaffRole role, @JsonKey(name: 'is_blocked')  bool isBlocked, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName,  String email,  String? phone, @JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire)  StaffRole role, @JsonKey(name: 'is_blocked')  bool isBlocked, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _StaffProfile() when $default != null:
-return $default(_that.id,_that.fullName,_that.phone,_that.role,_that.isBlocked,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.fullName,_that.email,_that.phone,_that.role,_that.isBlocked,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -186,10 +188,10 @@ return $default(_that.id,_that.fullName,_that.phone,_that.role,_that.isBlocked,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire)  StaffRole role, @JsonKey(name: 'is_blocked')  bool isBlocked, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName,  String email,  String? phone, @JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire)  StaffRole role, @JsonKey(name: 'is_blocked')  bool isBlocked, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _StaffProfile():
-return $default(_that.id,_that.fullName,_that.phone,_that.role,_that.isBlocked,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.fullName,_that.email,_that.phone,_that.role,_that.isBlocked,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +208,10 @@ return $default(_that.id,_that.fullName,_that.phone,_that.role,_that.isBlocked,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'full_name')  String fullName,  String phone, @JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire)  StaffRole role, @JsonKey(name: 'is_blocked')  bool isBlocked, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'full_name')  String fullName,  String email,  String? phone, @JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire)  StaffRole role, @JsonKey(name: 'is_blocked')  bool isBlocked, @JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'updated_at')  DateTime updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _StaffProfile() when $default != null:
-return $default(_that.id,_that.fullName,_that.phone,_that.role,_that.isBlocked,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.fullName,_that.email,_that.phone,_that.role,_that.isBlocked,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -221,12 +223,14 @@ return $default(_that.id,_that.fullName,_that.phone,_that.role,_that.isBlocked,_
 @JsonSerializable()
 
 class _StaffProfile extends StaffProfile {
-  const _StaffProfile({required this.id, @JsonKey(name: 'full_name') required this.fullName, required this.phone, @JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire) required this.role, @JsonKey(name: 'is_blocked') required this.isBlocked, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'updated_at') required this.updatedAt}): super._();
+  const _StaffProfile({required this.id, @JsonKey(name: 'full_name') required this.fullName, required this.email, this.phone, @JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire) required this.role, @JsonKey(name: 'is_blocked') required this.isBlocked, @JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'updated_at') required this.updatedAt}): super._();
   factory _StaffProfile.fromJson(Map<String, dynamic> json) => _$StaffProfileFromJson(json);
 
 @override final  String id;
 @override@JsonKey(name: 'full_name') final  String fullName;
-@override final  String phone;
+@override final  String email;
+/// Optional; the stored `91XXXXXXXXXX` form when present.
+@override final  String? phone;
 @override@JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire) final  StaffRole role;
 @override@JsonKey(name: 'is_blocked') final  bool isBlocked;
 @override@JsonKey(name: 'created_at') final  DateTime createdAt;
@@ -245,18 +249,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _StaffProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.role, role) || other.role == role)&&(identical(other.isBlocked, isBlocked) || other.isBlocked == isBlocked)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _StaffProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.email, email) || other.email == email)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.role, role) || other.role == role)&&(identical(other.isBlocked, isBlocked) || other.isBlocked == isBlocked)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,fullName,phone,role,isBlocked,createdAt,updatedAt);
+    return Object.hash(runtimeType,id,fullName,email,phone,role,isBlocked,createdAt,updatedAt);
 }
 
 @override
 String toString() {
-    return 'StaffProfile(id: $id, fullName: $fullName, phone: $phone, role: $role, isBlocked: $isBlocked, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'StaffProfile(id: $id, fullName: $fullName, email: $email, phone: $phone, role: $role, isBlocked: $isBlocked, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -267,7 +271,7 @@ abstract mixin class _$StaffProfileCopyWith<$Res> implements $StaffProfileCopyWi
   factory _$StaffProfileCopyWith(_StaffProfile value, $Res Function(_StaffProfile) _then) = __$StaffProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'full_name') String fullName, String phone,@JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire) StaffRole role,@JsonKey(name: 'is_blocked') bool isBlocked,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'updated_at') DateTime updatedAt
+ String id,@JsonKey(name: 'full_name') String fullName, String email, String? phone,@JsonKey(fromJson: StaffRole.fromWire, toJson: _roleToWire) StaffRole role,@JsonKey(name: 'is_blocked') bool isBlocked,@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'updated_at') DateTime updatedAt
 });
 
 
@@ -284,12 +288,13 @@ class __$StaffProfileCopyWithImpl<$Res>
 
 /// Create a copy of StaffProfile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fullName = null,Object? phone = null,Object? role = null,Object? isBlocked = null,Object? createdAt = null,Object? updatedAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fullName = null,Object? email = null,Object? phone = freezed,Object? role = null,Object? isBlocked = null,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(_StaffProfile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
-as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String?,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as StaffRole,isBlocked: null == isBlocked ? _self.isBlocked : isBlocked // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable

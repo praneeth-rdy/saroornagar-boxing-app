@@ -62,7 +62,7 @@ void main() {
       // Staff signs in and sees the booking in the Trials tab.
       await tester.tap(find.text('Already train here? Sign in'));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).at(0), '9000000001');
+      await tester.enterText(find.byType(TextField).at(0), 'admin@local.test');
       await tester.enterText(find.byType(TextField).at(1), 'admin-local-1234');
       await tester.tap(find.text('Sign in').last);
       await tester.pumpAndSettle();

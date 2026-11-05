@@ -3,6 +3,8 @@ import '../utils/india_date.dart';
 /// Route paths; screens navigate by these names, never by string literals.
 abstract final class Routes {
   static const signIn = '/sign-in';
+  static const forgotPassword = '/forgot-password';
+  static const resetPassword = '/reset-password';
   static const today = '/today';
   static const trainees = '/trainees';
   static const traineeNew = '/trainees/new';

@@ -2,7 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/errors/app_exception.dart';
 import '../../../core/supabase/supabase_errors.dart';
-import '../../../core/utils/phone_format.dart';
+import '../../../core/utils/validators.dart';
 import '../domain/staff_profile.dart';
 import 'auth_repository.dart';
 
@@ -20,16 +20,11 @@ class SupabaseAuthRepository implements AuthRepository {
       .distinct();
 
   @override
-  Future<void> signIn({required String phone, required String password}) async {
-    final normalized = normalizePhone(phone);
-    if (normalized == null) {
-      throw const ValidationException('Enter a 10-digit mobile number');
-    }
+  Future<void> signIn({required String email, required String password}) async {
+    final normalized = _validEmail(email);
     await guardSupabase(
-      () => client.auth.signInWithPassword(
-        phone: '+$normalized',
-        password: password,
-      ),
+      () =>
+          client.auth.signInWithPassword(email: normalized, password: password),
     );
   }
 
@@ -42,4 +37,33 @@ class SupabaseAuthRepository implements AuthRepository {
     final row = await client.rpc<dynamic>('current_profile');
     return StaffProfile.fromJson(Map<String, dynamic>.from(row as Map));
   });
+
+  @override
+  Future<void> requestPasswordReset(String email) async {
+    final normalized = _validEmail(email);
+    await guardSupabase(() => client.auth.resetPasswordForEmail(normalized));
+  }
+
+  @override
+  Future<void> completePasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    final normalized = _validEmail(email);
+    await guardSupabase(() async {
+      await client.auth.verifyOTP(
+        type: OtpType.recovery,
+        email: normalized,
+        token: code.trim(),
+      );
+      await client.auth.updateUser(UserAttributes(password: newPassword));
+    });
+  }
+}
+
+String _validEmail(String email) {
+  final message = emailText(email);
+  if (message != null) throw ValidationException(message);
+  return normalizeEmail(email);
 }
