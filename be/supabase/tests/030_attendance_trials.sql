@@ -1,6 +1,6 @@
 -- Attendance and trial bookings: tables, RLS, marking functions, roster, history, booking window.
 begin;
-select plan(143);
+select plan(151);
 
 -- Fixtures: a blocked coach and the pinned clock (2026-06-10 is a Wednesday in India; 06-14 is a Sunday).
 select tests.create_user('blocked@local.test', 'blocked-local-1234', 'Blocked Coach', 'coach');
@@ -122,9 +122,9 @@ select is((select marked_by from public.attendance where session_id = :'s_mornin
 select is((select marked_at from public.attendance where session_id = :'s_morning' and trainee_id = :'t_amy'), '2026-06-10 12:05:00+00'::timestamptz, 'a correction records the new time');
 select is((select count(*)::int from public.attendance where session_id = :'s_morning'), 1, 'correcting never adds a second row');
 select tests.authenticate_as('coach@local.test');
-select throws_ok(format($$select public.mark_attendance(%L, %L, 'present')$$, :'s_morning', :'t_dan'), 'BXVAL', 'This trainee is inactive', 'an inactive trainee cannot be marked');
+select throws_ok(format($$select public.mark_attendance(%L, %L, 'present')$$, :'s_morning', :'t_dan'), 'BXVAL', 'This student is inactive', 'an inactive trainee cannot be marked');
 select throws_ok(format($$select public.mark_attendance(%L, %L, 'present')$$, gen_random_uuid(), :'t_amy'), 'BXNTF', 'Session not found', 'an unknown session is not found');
-select throws_ok(format($$select public.mark_attendance(%L, %L, 'present')$$, :'s_morning', gen_random_uuid()), 'BXNTF', 'Trainee not found', 'an unknown trainee is not found');
+select throws_ok(format($$select public.mark_attendance(%L, %L, 'present')$$, :'s_morning', gen_random_uuid()), 'BXNTF', 'Student not found', 'an unknown trainee is not found');
 select throws_ok(format($$select public.mark_attendance(%L, %L, null)$$, :'s_morning', :'t_amy'), 'BXVAL', 'Choose present or absent', 'a null status is refused');
 select is((select count(*)::int from public.attendance where session_id = :'s_morning' and trainee_id = :'t_dan'), 0, 'the refused inactive mark stored nothing');
 
@@ -182,7 +182,21 @@ select is((select count(*)::int from public.trainee_attendance_history(:'t_amy',
 select is((select count(*)::int from public.trainee_attendance_history(:'t_amy', '2026-06-01', '2026-06-10')), 2, 'history includes the end date');
 select is((select count(*)::int from public.trainee_attendance_history(:'t_dan', '2026-06-01', '2026-06-30')), 0, 'a trainee without marks has an empty history');
 select throws_ok(format($$select * from public.trainee_attendance_history(%L, '2026-06-30', '2026-06-01')$$, :'t_amy'), 'BXVAL', 'The end date is before the start date', 'history refuses an inverted range');
-select throws_ok(format($$select * from public.trainee_attendance_history(%L, '2026-06-01', '2026-06-30')$$, gen_random_uuid()), 'BXNTF', 'Trainee not found', 'history of an unknown trainee is not found');
+select throws_ok(format($$select * from public.trainee_attendance_history(%L, '2026-06-01', '2026-06-30')$$, gen_random_uuid()), 'BXNTF', 'Student not found', 'history of an unknown trainee is not found');
+select is(
+  (select array_agg(starts_at::text || '-' || ends_at::text order by ordinality)
+   from public.trainee_attendance_history(:'t_amy', '2026-06-01', '2026-06-30') with ordinality),
+  array['06:00:00-08:30:00', '17:30:00-20:00:00', '06:00:00-08:30:00'],
+  'history carries each session start and end time'
+);
+select tests.authenticate_as('coach@local.test');
+select (public.add_extra_session('2026-06-13', '07:15', '08:00')).id as s_sat_extra \gset
+select public.mark_attendance(:'s_sat_extra', :'t_amy', 'present');
+select is(
+  (select slot::text || ' ' || starts_at::text || '-' || ends_at::text
+   from public.trainee_attendance_history(:'t_amy', '2026-06-13', '2026-06-13')),
+  'extra 07:15:00-08:00:00', 'history gives an extra session its own time'
+);
 select tests.set_clock('2026-06-10 12:00:00+00');
 
 -- Direct access to attendance -----------------------------------------------------------
@@ -228,6 +242,20 @@ select throws_ok(format($$select public.book_trial(%L, '9876543299', '2026-06-11
 select throws_ok($$select public.book_trial('Short Phone', '12345', '2026-06-11', 'morning', 'device-key-cccccccc-0003', null, 25)$$, 'BXVAL', 'Enter a 10-digit mobile number', 'a malformed phone is refused');
 select throws_ok($$select public.book_trial('Extra Slot', '9876543299', '2026-06-11', 'extra', 'device-key-cccccccc-0003', null, 25)$$, 'BXVAL', 'Pick the morning or the evening batch', 'the extra slot is refused');
 select throws_ok($$select public.book_trial('Past Day', '9876543299', '2026-06-09', 'morning', 'device-key-cccccccc-0003', null, 25)$$, 'BXVAL', 'Pick today or a later day', 'a past day is refused');
+-- 2026-06-10 12:00 UTC is 17:30 in India: the morning batch has ended, the evening has not.
+select throws_ok($$select public.book_trial('Late Morning', '9876543299', '2026-06-10', 'morning', 'device-key-cccccccc-0003', null, 25)$$, 'BXVAL', 'That batch has already ended today', 'today''s morning batch is refused once it has ended');
+-- A later check firing proves the ended-batch rule let the booking through, without inserting a row.
+select tests.set_clock('2026-06-10 02:59:59+00');
+select throws_ok($$select public.book_trial('Early Morning', '9876543299', '2026-06-10', 'morning', 'device-key-cccccccc-0003')$$, 'BXVAL', 'Tell us your age or date of birth', 'today''s morning batch is open until 08:30 India time');
+select tests.set_clock('2026-06-10 14:29:59+00');
+select throws_ok($$select public.book_trial('Late Evening', '9876543299', '2026-06-10', 'evening', 'device-key-cccccccc-0003')$$, 'BXVAL', 'Tell us your age or date of birth', 'today''s evening batch is open until 20:00 India time');
+select tests.set_clock('2026-06-10 14:30:00+00');
+select throws_ok($$select public.book_trial('Too Late', '9876543299', '2026-06-10', 'evening', 'device-key-cccccccc-0003', null, 25)$$, 'BXVAL', 'That batch has already ended today', 'today''s evening batch is refused from 20:00 India time');
+select throws_ok($$select public.book_trial('Next Morning', '9876543299', '2026-06-11', 'morning', 'device-key-cccccccc-0003')$$, 'BXVAL', 'Tell us your age or date of birth', 'an ended batch today does not block tomorrow');
+-- 19:00 UTC is already 00:30 on 11 June in India, so the 11 June morning is today and still open.
+select tests.set_clock('2026-06-10 19:00:00+00');
+select throws_ok($$select public.book_trial('Past Midnight', '9876543299', '2026-06-11', 'morning', 'device-key-cccccccc-0003')$$, 'BXVAL', 'Tell us your age or date of birth', 'the batch end is read in India time');
+select tests.set_clock('2026-06-10 12:00:00+00');
 select throws_ok($$select public.book_trial('Far Day', '9876543299', '2026-07-11', 'morning', 'device-key-cccccccc-0003', null, 25)$$, 'BXVAL', 'Trials can be booked up to 30 days ahead', 'a day 31 days ahead is refused');
 select throws_ok($$select public.book_trial('Sunday Man', '9876543299', '2026-06-14', 'morning', 'device-key-cccccccc-0003', null, 25)$$, 'BXVAL', 'The club is closed on Sundays', 'a Sunday is refused');
 select throws_ok($$select public.book_trial('No Age', '9876543299', '2026-06-11', 'morning', 'device-key-cccccccc-0003')$$, 'BXVAL', 'Tell us your age or date of birth', 'neither age nor date of birth is refused');

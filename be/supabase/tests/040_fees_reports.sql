@@ -1,6 +1,6 @@
 -- Fee payments and staff reports: tier helper, table, RLS, payment functions, fee status, monthly summary.
 begin;
-select plan(104);
+select plan(107);
 
 -- Fixtures: a blocked coach and the pinned clock (2026-06-10 12:00 UTC is 2026-06-10 in India).
 select tests.create_user('blocked@local.test', 'blocked-local-1234', 'Blocked Coach', 'coach');
@@ -122,8 +122,8 @@ select is(
 );
 
 -- record_fee_payment: validation ---------------------------------------------------------
-select throws_ok(format($$select public.record_fee_payment(%L, 500, 'cash', '2026-06-10', '2026-06-01')$$, gen_random_uuid()), 'BXNTF', 'Trainee not found', 'an unknown trainee is not found');
-select throws_ok(format($$select public.record_fee_payment(null, 500, 'cash', '2026-06-10', '2026-06-01')$$), 'BXNTF', 'Trainee not found', 'a null trainee is not found');
+select throws_ok(format($$select public.record_fee_payment(%L, 500, 'cash', '2026-06-10', '2026-06-01')$$, gen_random_uuid()), 'BXNTF', 'Student not found', 'an unknown trainee is not found');
+select throws_ok(format($$select public.record_fee_payment(null, 500, 'cash', '2026-06-10', '2026-06-01')$$), 'BXNTF', 'Student not found', 'a null trainee is not found');
 select throws_ok(format($$select public.record_fee_payment(%L, 500, 'cash', '2026-06-11', '2026-06-01')$$, :'t_amy'), 'BXVAL', 'The payment date cannot be in the future', 'a payment dated tomorrow is refused');
 select throws_ok(format($$select public.record_fee_payment(%L, 500, 'cash', null, '2026-06-01')$$, :'t_amy'), 'BXVAL', 'Enter the payment date', 'a null payment date is refused');
 select throws_ok(format($$select public.record_fee_payment(%L, 500, 'cash', '2026-06-10', '2026-06-15')$$, :'t_amy'), 'BXVAL', 'Period must be a month', 'a period that is not a month start is refused');
@@ -175,7 +175,7 @@ select is(
 select is((select count(*)::int from public.trainee_fee_history(:'t_bob')), 1, 'history holds only that trainee payments');
 select is((select count(*)::int from public.trainee_fee_history(:'t_zed')), 0, 'a trainee without payments has an empty history');
 select is((select count(*)::int from public.trainee_fee_history(:'t_dan')), 2, 'an inactive trainee still has a history');
-select throws_ok(format($$select * from public.trainee_fee_history(%L)$$, gen_random_uuid()), 'BXNTF', 'Trainee not found', 'history of an unknown trainee is not found');
+select throws_ok(format($$select * from public.trainee_fee_history(%L)$$, gen_random_uuid()), 'BXNTF', 'Student not found', 'history of an unknown trainee is not found');
 
 -- delete_fee_payment: the seven day window ---------------------------------------------------------
 select id as p_old from public.fee_payments where trainee_id = :'t_bob' and period_month = '2026-05-01' \gset
@@ -287,7 +287,23 @@ select is(
   (select count(*)::int from public.monthly_attendance_summary('2026-04-01') where present_count = 0 and absent_count = 0 and session_count = 0),
   4, 'a month without sessions lists every active trainee with zero counts'
 );
-select is((select count(*)::int from public.monthly_attendance_summary('2026-06-01') where trainee_id = :'t_dan'), 0, 'inactive trainees are not in the summary');
+select is((select count(*)::int from public.monthly_attendance_summary('2026-06-01') where trainee_id = :'t_dan'), 0, 'an inactive student without marks that month is not in the summary');
+-- Dan attends once in October and is made inactive again: the October report keeps his row.
+select public.set_trainee_status(:'t_dan', 'active');
+select id as s_oct from public.ensure_day_sessions('2026-10-05') where slot = 'morning' \gset
+select public.mark_attendance(:'s_oct', :'t_dan', 'present');
+select public.set_trainee_status(:'t_dan', 'inactive');
+select is(
+  (select array_agg(full_name order by ordinality) from public.monthly_attendance_summary('2026-10-01') with ordinality),
+  array['amy Adams', 'Bob Bell', 'Cy Child', 'Dormant Dan', 'Zed Zulu'],
+  'an inactive student with marks that month stays in the summary, in name order'
+);
+select is(
+  (select present_count::text || '/' || absent_count::text || '/' || session_count::text
+   from public.monthly_attendance_summary('2026-10-01') where trainee_id = :'t_dan'),
+  '1/0/1', 'the inactive student keeps their real counts for that month'
+);
+select is((select count(*)::int from public.fee_status_list('2026-10-01') where trainee_id = :'t_dan'), 0, 'the fee status list stays active only');
 select throws_ok($$select * from public.monthly_attendance_summary('2026-06-30')$$, 'BXVAL', 'Period must be a month', 'a month end date is refused');
 select throws_ok($$select * from public.monthly_attendance_summary(null)$$, 'BXVAL', 'Period must be a month', 'a null month is refused');
 

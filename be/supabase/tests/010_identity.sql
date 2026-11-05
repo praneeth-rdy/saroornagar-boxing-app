@@ -16,11 +16,11 @@ select is(
   true, 'profiles has RLS enabled'
 );
 select policies_are(
-  'public', 'profiles', array['profiles_select_own', 'profiles_select_staff'],
-  'profiles has exactly the two named select policies'
+  'public', 'profiles', array['profiles_select_staff_or_own'],
+  'profiles has exactly the one merged select policy'
 );
-select policy_cmd_is('public', 'profiles', 'profiles_select_own', 'select', 'own policy is select');
-select policy_cmd_is('public', 'profiles', 'profiles_select_staff', 'select', 'staff policy is select');
+select policy_cmd_is('public', 'profiles', 'profiles_select_staff_or_own', 'select', 'merged policy is select');
+select policy_roles_are('public', 'profiles', 'profiles_select_staff_or_own', array['authenticated'], 'merged policy is for authenticated');
 select has_trigger('public', 'profiles', 'profiles_set_updated_at', 'updated_at trigger exists');
 select has_trigger('auth', 'users', 'on_auth_user_created', 'profile-creation trigger exists');
 select has_trigger('auth', 'users', 'on_auth_user_phone_changed', 'phone-sync trigger exists');
