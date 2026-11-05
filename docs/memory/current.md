@@ -5,17 +5,18 @@ Last updated 2026-11-05 (end of the second session, late). History in `log.md`.
 ## Where the product stands
 
 Release 1 is built, applied to the hosted project and installed on the owner's phone
-(build 32, "Saroornagar Boxing"). Staff sign in by email with a forgot-password flow; L5a
+(build 34, "Saroornagar Boxing"). Staff sign in by email with a forgot-password flow; L5a
 Classic badge and icon; presence-only attendance with confirmed unmark and session reset;
 logs grouped by date; monthly attendance = classes attended per student; the app says
-"Student" everywhere; compact record-payment with 500 / 800. The owner tests on the device
+"Student" everywhere; compact record-payment with 500 / 800; roll numbers (unique among active students,
+suggested gaps-first, editable) on Today, the Students list and the forms. The owner tests on the device
 and reports defects in chat; each becomes an R3-nn row and a direct developer dispatch.
 
 | Area | State |
 |---|---|
-| `be/` | 10 migrations (through `summary_held_sessions`, `unmark_attendance`), pgTAP 550, seed (email accounts), Edge Function `admin-staff` v2. All applied to hosted 2026-11-05. |
-| `fe/` | Theme A kit, config, errors, email auth + forgot password, shell, Today, Trainees, Trials, Fees (compact record screen, 500/800), Staff admin by email, brand badge + launcher icon. Baseline: analyze 0, `flutter test` 411 (incl. 57 proofs). Release signing with the upload keystore; app name "Boxing Club". |
-| Device | Build 32 installed and copied to `/sdcard/Download/boxing-club-32.apk` (older copies deleted). Reinstall after every landed app run. |
+| `be/` | 11 migrations (through `roll_numbers`), pgTAP 589, seed (email accounts), Edge Function `admin-staff` v2. All applied to hosted 2026-11-05. |
+| `fe/` | Theme A kit, config, errors, email auth + forgot password, shell, Today, Trainees, Trials, Fees (compact record screen, 500/800), Staff admin by email, brand badge + launcher icon. Baseline: analyze 0, `flutter test` 428 (incl. 57 proofs). Release signing with the upload keystore; app name "Boxing Club". |
+| Device | Build 34 installed and copied to `/sdcard/Download/boxing-club-34.apk` (older copies deleted). Reinstall after every landed app run. |
 | Hosted | Project `qgqmnaxdxuezjlexlfpw`. Admin by email (login in `creds.md`). Advisors: no RLS gaps. Migration history uses MCP timestamps (B-10). Migration history uses MCP timestamps (B-10). |
 | `docs/` | Review log R1-01..R1-07, R2-01..R2-07 (all fixed except R1-03, R1-04 as backlog B-05, B-06). Backlog A-08..A-11, B-05, B-06, B-09, B-10 open. |
 

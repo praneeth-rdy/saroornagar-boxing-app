@@ -136,3 +136,4 @@ see the files as unapplied unless `supabase migration repair` is run first.
 | 2026-11-05 | Edge Function `admin-staff` version 2 (create by email) | Architect through the MCP |
 | 2026-11-05 | First admin re-created with an email identity (login in `creds.md`) | Architect through the MCP |
 | 2026-11-05 | `20261105111738_fee_tier_800`, `20261105114039_summary_held_sessions`, `20261105114625_unmark_attendance` applied | Architect through the MCP, on the owner's "retry now" |
+| 2026-11-05 | `20261105154420_roll_numbers` applied (backfill gave the one existing student roll 1; the owner then set it to 10 through the MCP) | Architect through the MCP |

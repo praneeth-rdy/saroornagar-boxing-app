@@ -14,6 +14,9 @@ Newest first. One entry per work session: what changed, what it means for the ne
   app named "Saroornagar Boxing"; senior tier 800; compact payment screen.
 - Hosted: three migrations applied after the owner's "retry now" (the classifier had
   blocked one apply). Build 32 on the device and in Downloads.
+- Roll numbers added (unique among active students, gap-first suggestion, editable; roster
+  and list ordered by them); hosted data reset (marks cleared, one test student removed,
+  Praneeth Reddy = roll 10). Build 34 on the device.
 - Open: B-12 (server messages say trainee), B-13 (extra session time in logs), A-08..A-11,
   B-05, B-06, B-09; dashboard steps (sign-ups off, {{ .Token }} in the reset template).
 
