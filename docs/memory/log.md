@@ -20,7 +20,7 @@ Newest first. One entry per work session: what changed, what it means for the ne
 - Backlog sweep done (B-05, B-06, B-09, B-12, B-13, A-08..A-11); the be migration waits for
   the hosted apply. Build 37 on the device; the owner will share the APK with coaches.
 - Application id set to `com.saroornagarboxing.app`; forgot-password entry hidden (admins
-  reset from Staff). Build 39 is the first build shared with the coaches.
+  reset from Staff). Build 41 (sign-in without the badge) is the first build shared with the coaches.
 - Open: hosted apply of the backlog-sweep migration (blocked twice by the classifier);
   dashboard: turn public sign-ups off.
 
