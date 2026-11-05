@@ -1,44 +1,35 @@
 # Current state
 
-Last updated 2026-11-05 (evening, end of the first session). Session history is in `log.md`; this file is the snapshot.
+Last updated 2026-11-05 (second session, mid-run). History in `log.md`.
 
 ## Where the product stands
 
-Scaffold only. Requirements interview in progress (`docs/product.md`, Open questions). The
-design-directions canvas (https://claude.ai/artifact/FCyab964t4z3EBViU17TeE) awaits the
-owner's pick (D-01). No app code beyond the Flutter template, no migrations, no hosted
-Supabase project.
+Release 1 backend is complete locally and committed (5 migrations, 501 pgTAP assertions,
+Edge Function `admin-staff`); nothing applied to hosted. The app foundation and sign-in are
+committed (analyze clean, 102 tests, debug APK builds). Run 2 (Today, Trainees, Trials,
+Fees, Staff admin) is being built through `tiered-build` from
+`.claude/handoffs/2026-11-05-release-1-run-2/`.
 
 | Area | State |
 |---|---|
-| `fe/` | `flutter create --empty`, Android only, package `saroornagar_boxing`, application id still the Flutter default (D-04). Lint rules set. `config/dev.json` and `prod.json` empty. |
-| `be/` | `supabase init` with ports 563xx; no migrations. |
-| `docs/` | Protocol, product (confirmed vs open), backlog, decisions, empty architecture maps. |
-| `.claude/` | Workspace rules, developer and assistant agents, `/build` skill, `tiered-build` workflow, handoff template. Supabase skills installed (gitignored). |
+| `be/` | `20261105074646_identity`, `..075401_trainees_sessions`, `..080014_attendance_trials`, `..080602_fees_reports`, `..081756_harden_profiles`; tests 000-040; seed; `functions/admin-staff`. Hosted: not applied, not deployed. |
+| `fe/` | Theme A kit, config, errors, router, auth, shell, More tab; Today/Trainees/Trials are stubs until run 2 lands. Deps: riverpod 3.4.3, go_router 18.1.3, supabase_flutter 2.18.3, freezed 4.0.3, intl 0.20.3. Baseline: analyze 0 issues, 102 tests. |
+| `docs/` | Architecture maps filled by the workers; review log R1-01..R1-07; backlog B-01..B-08, A-01..A-07. |
 
-## Toolchain on this Mac (observed 2026-11-05)
+## Blocked on the owner (hosted steps, in this order)
 
-Flutter 3.47.7 with the Android SDK 36; Docker Desktop running; Node through nvm (shells start
-with `source ~/.zshrc`); `npx supabase` 3.0.0, **not logged in** (`supabase login` or the MCP
-OAuth is the owner's step); no `gh`. Xcode incomplete (irrelevant, Android only).
-
-## Blocked on the owner
-
-1. Hosted Supabase project `qgqmnaxdxuezjlexlfpw` (region ap-northeast-1, Tokyo; created by the owner
-   2026-11-05). Publishable key in `fe/config/*.json`. CLI logged in and `be/` linked (2026-11-05). Still needed: the DB password (for `db push`), MCP approval after a relaunch. Credentials live in `creds.md` (gitignored).
-2. Remaining open points in `docs/product.md` (DOB on the trainee record, trial slot
-   details, Android application id, first admin creation).
-3. Approval of the first schema proposal: `notes/schema-proposal-release-1.md` (re-present
-   it in chat at the start of the next session if not yet approved).
-5. Supabase MCP: configured in `.mcp.json` and enabled in `settings.local.json`, but the
-   session that wrote it could not load it; the owner relaunches, approves the `supabase`
-   server and finishes its OAuth via `/mcp`. Verify by listing tables through the MCP.
-4. (settled) Credentials in the gitignored `creds.md` at the repo root.
+1. Dashboard: Authentication > Sign In / Up: turn "Allow new users to sign up" off; enable
+   the Phone provider; keep phone confirmations off (`notes/be-open-signup-role-escalation.md`).
+2. Say the word for the hosted apply (5 migrations through the MCP `apply_migration`, then
+   `deploy_edge_function admin-staff`).
+3. Create the first admin in the dashboard (phone + password); the Architect then inserts the
+   profile row with role `admin` through the MCP and records the login in `creds.md`.
+4. Open points: Android application id (D-04), B-05/B-06 in the backlog, fee status list
+   semantics (product.md open question 7).
 
 ## Resume checklist
 
-1. Interview rounds 1 to 4 done; design A chosen; release 1 = guest trial booking + staff
-   app, no trainee view.
-2. Next: schema approval, then run 1 packages (be: identity, trainees, sessions, attendance,
-   trial bookings, fee payments; fe: theme A, sign-in, Today, roster, trials, fees) through
-   the `tiered-build` workflow (standing opt-in).
+1. If run 2 did not finish: check `.claude/handoffs/2026-11-05-release-1-run-2/` and
+   `git status`; re-run `tiered-build` for the remaining tasks.
+2. Review run 2 (diffs, proofs under `fe/test/proofs/out/`), commit, then hosted apply on
+   the owner's word, then a device run against hosted.

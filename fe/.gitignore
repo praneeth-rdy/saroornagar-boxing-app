@@ -58,3 +58,6 @@ android/upload-keystore.jks
 android/key.properties
 config/*.local.json
 .claude/settings.local.json
+
+# Screen proofs are review artefacts, regenerated on demand.
+test/proofs/out/
