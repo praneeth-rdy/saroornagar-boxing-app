@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../core/errors/app_exception.dart';
 import '../../../core/models/payment_method.dart';
@@ -13,6 +12,7 @@ import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/choice_row.dart';
+import '../../../core/widgets/date_field.dart';
 import '../../../core/widgets/inline_banner.dart';
 import '../../../core/widgets/list_row.dart';
 import '../../../core/widgets/primary_button.dart';
@@ -189,19 +189,7 @@ class _PaymentFormState extends ConsumerState<_PaymentForm> {
           ),
         ],
         const SizedBox(height: AppSpacing.lg),
-        const Text('Paid on', style: AppTypography.label),
-        const SizedBox(height: AppSpacing.sm),
-        AppCard(
-          padding: EdgeInsets.zero,
-          child: ListRow(
-            title: DateFormat('d MMM yyyy').format(paidOn),
-            trailing: const Icon(
-              Icons.calendar_today_outlined,
-              color: AppColors.muted,
-            ),
-            onTap: pickPaidOn,
-          ),
-        ),
+        DateField(label: 'Paid on', date: paidOn, onPick: pickPaidOn),
         const SizedBox(height: AppSpacing.lg),
         const Text('For month', style: AppTypography.label),
         const SizedBox(height: AppSpacing.sm),

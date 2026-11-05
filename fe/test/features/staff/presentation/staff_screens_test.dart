@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:saroornagar_boxing/core/di/repository_providers.dart';
+import 'package:saroornagar_boxing/core/theme/app_typography.dart';
+import 'package:saroornagar_boxing/core/utils/phone_format.dart';
 import 'package:saroornagar_boxing/core/widgets/primary_button.dart';
+import 'package:saroornagar_boxing/core/widgets/secondary_button.dart';
 import 'package:saroornagar_boxing/features/auth/domain/staff_profile.dart';
 import 'package:saroornagar_boxing/features/staff/presentation/staff_detail_screen.dart';
 import 'package:saroornagar_boxing/features/staff/presentation/staff_form_screen.dart';
@@ -16,8 +21,9 @@ Future<MockStaffRepository> _pump(
   WidgetTester tester,
   Widget home, {
   StaffProfile? caller,
+  Size surface = const Size(800, 1800),
 }) async {
-  tester.view.physicalSize = const Size(1600, 3600);
+  tester.view.physicalSize = surface * 2;
   tester.view.devicePixelRatio = 2;
   addTearDown(tester.view.reset);
   final me = caller ?? adminProfile;
@@ -35,6 +41,15 @@ Future<MockStaffRepository> _pump(
   return staff;
 }
 
+// Widths only match a device with the real font; the test font is much wider.
+Future<void> _loadInter() async {
+  final loader = FontLoader(AppTypography.fontFamily);
+  for (final weight in ['Regular', 'Medium', 'SemiBold', 'Bold']) {
+    loader.addFont(rootBundle.load('assets/fonts/Inter-$weight.ttf'));
+  }
+  await loader.load();
+}
+
 void main() {
   group('admin list', () {
     testWidgets('shows rows, the Blocked chip and the You caption', (
@@ -47,6 +62,42 @@ void main() {
       expect(find.text('Arjun Reddy'), findsOneWidget);
       expect(find.text('Blocked'), findsOneWidget);
       expect(find.text('You'), findsOneWidget);
+    });
+  });
+
+  group('admin list layout', () {
+    testWidgets('a blocked row is as tall as an unblocked one', (tester) async {
+      await _pump(tester, const StaffListScreen());
+
+      final blocked = tester.getSize(
+        find.ancestor(of: find.text('Blocked'), matching: find.byType(InkWell)),
+      );
+      final other = tester.getSize(
+        find.ancestor(
+          of: find.text('Sana Begum'),
+          matching: find.byType(InkWell),
+        ),
+      );
+      expect(blocked.height, other.height);
+    });
+
+    testWidgets('a blocked row shows the full phone at 390 px', (tester) async {
+      await tester.runAsync(_loadInter);
+      await _pump(
+        tester,
+        const StaffListScreen(),
+        surface: const Size(390, 844),
+      );
+
+      final subtitle = find.text(
+        'Coach · ${formatPhone(blockedCoachProfile.phone)}',
+      );
+      expect(subtitle, findsOneWidget);
+      expect(
+        tester.renderObject<RenderParagraph>(subtitle).didExceedMaxLines,
+        isFalse,
+      );
+      expect(tester.takeException(), isNull);
     });
   });
 
@@ -104,6 +155,20 @@ void main() {
   });
 
   group('admin detail', () {
+    testWidgets('Edit and Reset password stack full width, 12 px apart', (
+      tester,
+    ) async {
+      await _pump(tester, StaffDetailScreen(userId: coachProfile.id));
+
+      final edit = tester.getRect(find.widgetWithText(SecondaryButton, 'Edit'));
+      final reset = tester.getRect(
+        find.widgetWithText(SecondaryButton, 'Reset password'),
+      );
+      expect(reset.left, edit.left);
+      expect(reset.width, edit.width);
+      expect(reset.top - edit.bottom, 12);
+    });
+
     testWidgets('block asks for confirmation and cancel changes nothing', (
       tester,
     ) async {

@@ -14,6 +14,7 @@ class ListRow extends StatelessWidget {
     this.subtitle,
     this.trailing,
     this.onTap,
+    this.titleStyle = AppTypography.bodyStrong,
   });
 
   final Widget? leading;
@@ -21,6 +22,9 @@ class ListRow extends StatelessWidget {
   final String? subtitle;
   final Widget? trailing;
   final VoidCallback? onTap;
+
+  /// A placeholder title passes a hint style so it does not read as a value.
+  final TextStyle titleStyle;
 
   /// Puts a hairline between rows, for the children of an [AppCard] column.
   static List<Widget> divide(List<Widget> rows) => [
@@ -53,7 +57,7 @@ class ListRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(title, style: AppTypography.bodyStrong),
+                  Text(title, style: titleStyle),
                   if (subtitleText != null)
                     Text(subtitleText, style: AppTypography.caption),
                 ],

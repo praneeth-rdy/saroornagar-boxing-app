@@ -8,7 +8,7 @@ class AppTextField extends StatelessWidget {
   const AppTextField({
     super.key,
     this.controller,
-    required this.label,
+    this.label,
     this.hint,
     this.keyboardType,
     this.obscureText = false,
@@ -24,7 +24,9 @@ class AppTextField extends StatelessWidget {
   });
 
   final TextEditingController? controller;
-  final String label;
+
+  /// Left out when an eyebrow above already names the field.
+  final String? label;
   final String? hint;
   final TextInputType? keyboardType;
   final bool obscureText;
@@ -47,12 +49,15 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final prefix = prefixText;
+    final labelText = label;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: AppTypography.label),
-        const SizedBox(height: AppSpacing.sm),
+        if (labelText != null) ...[
+          Text(labelText, style: AppTypography.label),
+          const SizedBox(height: AppSpacing.sm),
+        ],
         TextField(
           controller: controller,
           keyboardType: keyboardType,

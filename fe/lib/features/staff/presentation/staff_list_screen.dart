@@ -94,10 +94,6 @@ class _StaffRow extends StatelessWidget {
                 AvatarInitials(name: member.fullName),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(child: _NameAndRole(member: member)),
-                if (member.isBlocked) ...[
-                  const SizedBox(width: AppSpacing.sm),
-                  const StaffChip.blocked(),
-                ],
                 if (isSelf) ...[
                   const SizedBox(width: AppSpacing.sm),
                   const Text('You', style: AppTypography.caption),
@@ -124,15 +120,30 @@ class _NameAndRole extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          member.fullName,
-          style: member.isBlocked
-              ? AppTypography.bodyStrong.copyWith(color: AppColors.muted)
-              : AppTypography.bodyStrong,
+        // The chip sits beside the name so the subtitle keeps its full width.
+        Row(
+          children: [
+            Flexible(
+              child: Text(
+                member.fullName,
+                style: member.isBlocked
+                    ? AppTypography.bodyStrong.copyWith(color: AppColors.muted)
+                    : AppTypography.bodyStrong,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (member.isBlocked) ...[
+              const SizedBox(width: AppSpacing.sm),
+              const StaffChip.blocked(isCompact: true),
+            ],
+          ],
         ),
         Text(
           '${staffRoleLabel(member.role)} · ${formatPhone(member.phone)}',
           style: AppTypography.caption,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

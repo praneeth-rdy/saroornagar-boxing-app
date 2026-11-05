@@ -32,6 +32,11 @@ import 'trial_visitors_card.dart';
 const _pickerDaysBack = 60;
 const _pickerDaysAhead = 7;
 
+// The bulk-absent bar: its padding plus one button.
+const _barTopPadding = AppSpacing.sm;
+const _barBottomPadding = AppSpacing.md;
+const _barHeight = _barTopPadding + AppSizes.controlHeight + _barBottomPadding;
+
 /// The day's sessions and attendance marking.
 class TodayScreen extends ConsumerWidget {
   const TodayScreen({super.key});
@@ -227,16 +232,17 @@ class _RosterBody extends ConsumerWidget {
     final controller = ref.read(markControllerProvider(sessionId).notifier);
     final failure = marking.isLoading ? null : marking.error;
     final remaining = entries.where((entry) => entry.status == null).length;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    final hasBar = remaining > 0;
+    return Stack(
       children: [
-        Expanded(
+        Positioned.fill(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
+            // The bar floats over the list, so the last row needs room to clear it.
+            padding: EdgeInsets.fromLTRB(
               AppSpacing.gutter,
               AppSpacing.sm,
               AppSpacing.gutter,
-              AppSpacing.lg,
+              hasBar ? _barHeight + AppSpacing.lg : AppSpacing.lg,
             ),
             children: [
               ProgressCard(
@@ -272,18 +278,26 @@ class _RosterBody extends ConsumerWidget {
             ],
           ),
         ),
-        if (remaining > 0)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
-              AppSpacing.sm,
-              AppSpacing.gutter,
-              AppSpacing.md,
-            ),
-            child: PrimaryButton(
-              label: 'Mark the remaining $remaining absent',
-              isBusy: marking.isLoading,
-              onPressed: () => _markRemaining(context, ref, remaining),
+        if (hasBar)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: ColoredBox(
+              color: AppColors.ground,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.gutter,
+                  _barTopPadding,
+                  AppSpacing.gutter,
+                  _barBottomPadding,
+                ),
+                child: PrimaryButton(
+                  label: 'Mark the remaining $remaining absent',
+                  isBusy: marking.isLoading,
+                  onPressed: () => _markRemaining(context, ref, remaining),
+                ),
+              ),
             ),
           ),
       ],

@@ -14,10 +14,10 @@ import '../../../core/utils/validators.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/choice_row.dart';
+import '../../../core/widgets/date_field.dart';
 import '../../../core/widgets/eyebrow.dart';
 import '../../../core/widgets/inline_banner.dart';
 import '../../../core/widgets/link_button.dart';
-import '../../../core/widgets/list_row.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../today/presentation/today_providers.dart';
 import '../domain/trial_booking.dart';
@@ -183,7 +183,7 @@ class _BookTrialScreenState extends ConsumerState<BookTrialScreen> {
             const Text('Try a session', style: AppTypography.title),
             const SizedBox(height: AppSpacing.xs),
             const Text(
-              'Pick a day and a batch. The coach will be expecting you.',
+              'Pick a day and a batch. The coach will expect you.',
               style: AppTypography.caption,
             ),
             if (mine.isNotEmpty) ...[
@@ -235,7 +235,8 @@ class _BookTrialScreenState extends ConsumerState<BookTrialScreen> {
             const Eyebrow('YOUR AGE'),
             const SizedBox(height: AppSpacing.sm),
             if (usesDateOfBirth)
-              _BirthDateField(
+              DateField(
+                label: 'Date of birth',
                 date: dateOfBirth,
                 errorText: isSubmitted ? ageOrBirthError : null,
                 onPick: () => pickDateOfBirth(today),
@@ -243,7 +244,7 @@ class _BookTrialScreenState extends ConsumerState<BookTrialScreen> {
             else
               AppTextField(
                 controller: age,
-                label: 'Age',
+                hint: 'Age in years',
                 keyboardType: TextInputType.number,
                 maxLength: _ageDigits,
                 textInputAction: TextInputAction.next,
@@ -263,7 +264,7 @@ class _BookTrialScreenState extends ConsumerState<BookTrialScreen> {
             const SizedBox(height: AppSpacing.sm),
             AppTextField(
               controller: note,
-              label: 'Note',
+              hint: 'Anything the coach should know',
               keyboardType: TextInputType.multiline,
               maxLength: _noteMaxLength,
               maxLines: _noteLines,
@@ -326,45 +327,6 @@ class _ChoiceSection<T> extends StatelessWidget {
           options: options,
           selected: selected,
           onSelected: onSelected,
-        ),
-        if (error != null) _FieldError(error),
-      ],
-    );
-  }
-}
-
-class _BirthDateField extends StatelessWidget {
-  const _BirthDateField({
-    required this.date,
-    required this.errorText,
-    required this.onPick,
-  });
-
-  final DateTime? date;
-  final String? errorText;
-  final VoidCallback onPick;
-
-  @override
-  Widget build(BuildContext context) {
-    final chosen = date;
-    final error = errorText;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Text('Date of birth', style: AppTypography.label),
-        const SizedBox(height: AppSpacing.sm),
-        AppCard(
-          padding: EdgeInsets.zero,
-          child: ListRow(
-            title: chosen == null
-                ? 'Choose a date'
-                : DateFormat('d MMM yyyy').format(chosen),
-            trailing: const Icon(
-              Icons.calendar_today_outlined,
-              color: AppColors.muted,
-            ),
-            onTap: onPick,
-          ),
         ),
         if (error != null) _FieldError(error),
       ],

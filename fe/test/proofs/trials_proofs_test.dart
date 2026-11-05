@@ -122,10 +122,7 @@ void main() {
       const TrialsScreen(),
       MockTrialRepository(
         clock: proofClock,
-        bookings: [
-          ...fixtureTrials(DateTime(2026, 11, 5)),
-          ...fixtureTrials(DateTime(2026, 11, 7)).take(1),
-        ],
+        bookings: fixtureTrialDays(DateTime(2026, 11, 5), days: 2),
       ),
     );
   });
@@ -137,11 +134,7 @@ void main() {
       const TrialsScreen(),
       MockTrialRepository(
         clock: proofClock,
-        bookings: [
-          for (var day = 5; day < 15; day++)
-            ...fixtureTrials(DateTime(2026, 11, day))
-                .map((booking) => booking.copyWith(id: '${booking.id}-$day')),
-        ],
+        bookings: fixtureTrialDays(DateTime(2026, 11, 5)),
       ),
     );
   });

@@ -62,22 +62,14 @@ class _StaffDetail extends ConsumerWidget {
       children: [
         _HeaderCard(member: member, isSelf: isSelf),
         const SizedBox(height: AppSpacing.md),
-        Row(
-          children: [
-            Expanded(
-              child: SecondaryButton(
-                label: 'Edit',
-                onPressed: () => context.push(Routes.staffEditOf(member.id)),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: SecondaryButton(
-                label: 'Reset password',
-                onPressed: () => showResetPasswordSheet(context, member),
-              ),
-            ),
-          ],
+        SecondaryButton(
+          label: 'Edit',
+          onPressed: () => context.push(Routes.staffEditOf(member.id)),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        SecondaryButton(
+          label: 'Reset password',
+          onPressed: () => showResetPasswordSheet(context, member),
         ),
         // The server refuses a self-block, so the action is not offered.
         if (!isSelf) ...[

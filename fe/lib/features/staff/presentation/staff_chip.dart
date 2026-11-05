@@ -14,31 +14,40 @@ class StaffChip extends StatelessWidget {
     super.key,
     required this.label,
     this.tone = StaffChipTone.neutral,
+    this.isCompact = false,
   });
 
-  const StaffChip.blocked({super.key})
+  const StaffChip.blocked({super.key, this.isCompact = false})
     : label = 'Blocked',
       tone = StaffChipTone.negative;
 
   final String label;
   final StaffChipTone tone;
 
+  /// Caption-sized with no vertical padding, to sit beside a list row's title.
+  final bool isCompact;
+
   @override
   Widget build(BuildContext context) {
     final isNegative = tone == StaffChipTone.negative;
+    final textStyle = isCompact
+        ? AppTypography.caption.copyWith(fontWeight: FontWeight.w500)
+        : AppTypography.label;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: isNegative ? AppColors.negativeSoft : AppColors.line,
         borderRadius: AppRadius.chipAll,
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.xs,
-        ),
+        padding: isCompact
+            ? const EdgeInsets.symmetric(horizontal: AppSpacing.sm)
+            : const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.xs,
+              ),
         child: Text(
           label,
-          style: AppTypography.label.copyWith(
+          style: textStyle.copyWith(
             color: isNegative ? AppColors.negative : AppColors.ink,
           ),
         ),

@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../core/errors/app_exception.dart';
 import '../../../core/router/routes.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/india_date.dart';
 import '../../../core/utils/phone_format.dart';
-import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/async_value_view.dart';
+import '../../../core/widgets/date_field.dart';
 import '../../../core/widgets/inline_banner.dart';
-import '../../../core/widgets/list_row.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../today/presentation/today_providers.dart';
 import '../domain/trainee.dart';
@@ -189,7 +185,7 @@ class _TraineeFormState extends ConsumerState<_TraineeForm> {
           errorText: isSubmitted ? _phoneError(phone.text) : null,
         ),
         const SizedBox(height: AppSpacing.lg),
-        _DateField(
+        DateField(
           label: 'Date of birth (optional)',
           date: dateOfBirth,
           clearLabel: 'Clear date of birth',
@@ -200,7 +196,7 @@ class _TraineeFormState extends ConsumerState<_TraineeForm> {
           onClear: () => setState(() => dateOfBirth = null),
         ),
         const SizedBox(height: AppSpacing.lg),
-        _DateField(
+        DateField(
           label: 'Joined on (optional)',
           date: joinedOn,
           clearLabel: 'Clear joining date',
@@ -231,60 +227,6 @@ class _TraineeFormState extends ConsumerState<_TraineeForm> {
           isBusy: submission.isLoading,
           onPressed: submit,
         ),
-      ],
-    );
-  }
-}
-
-class _DateField extends StatelessWidget {
-  const _DateField({
-    required this.label,
-    required this.date,
-    required this.clearLabel,
-    required this.onPick,
-    required this.onClear,
-    this.helper,
-  });
-
-  final String label;
-  final DateTime? date;
-  final String clearLabel;
-  final String? helper;
-  final VoidCallback onPick;
-  final VoidCallback onClear;
-
-  @override
-  Widget build(BuildContext context) {
-    final chosen = date;
-    final helperText = helper;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(label, style: AppTypography.label),
-        const SizedBox(height: AppSpacing.sm),
-        AppCard(
-          padding: EdgeInsets.zero,
-          child: ListRow(
-            title: chosen == null
-                ? 'Choose a date'
-                : DateFormat('d MMM yyyy').format(chosen),
-            trailing: chosen == null
-                ? const Icon(
-                    Icons.calendar_today_outlined,
-                    color: AppColors.muted,
-                  )
-                : IconButton(
-                    tooltip: clearLabel,
-                    icon: const Icon(Icons.close, color: AppColors.muted),
-                    onPressed: onClear,
-                  ),
-            onTap: onPick,
-          ),
-        ),
-        if (helperText != null) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Text(helperText, style: AppTypography.caption),
-        ],
       ],
     );
   }

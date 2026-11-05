@@ -12,5 +12,10 @@ to the fix. Read before reviewing; never re-report an item already here.
 | R1-05 | 2026-11-05 | fe | `InlineBanner` is capped at one line, so the offline copy clips at phone width. | fixed by run-2 task-01 (up to 3 lines) |
 | R1-06 | 2026-11-05 | fe | `renderProof` takes a widget only: no way to fill a form or trigger an error before capture, and the Material icon font is not loaded, so icons render as boxes. | fixed by run-2 task-01 (`interact` callback, icon font) |
 | R1-07 | 2026-11-05 | fe | A signed-in user with no profile (`BXNTF`) gets an error view with no sign-out. | fixed by run-2 task-01 (not-staff state) |
-| R2-01 | 2026-11-05 | fe | Staff list: a blocked row's phone wraps to two lines because the Blocked chip narrows the subtitle. | open, next fe fix package |
-| R2-02 | 2026-11-05 | fe | Staff detail: "Reset password" wraps inside its half-width secondary button. | open, next fe fix package |
+| R2-01 | 2026-11-05 | fe | Staff list: a blocked row's phone wraps to two lines because the Blocked chip narrows the subtitle. | fixed 2026-11-05, run-2 task-08 |
+| R2-02 | 2026-11-05 | fe | Staff detail: "Reset password" wraps inside its half-width secondary button. | fixed 2026-11-05, run-2 task-08 |
+| R2-03 | 2026-11-05 | fe | Trainee detail: a long note is cut mid-word in the Notes card with no ellipsis. | fixed 2026-11-05, run-2 task-08 |
+| R2-04 | 2026-11-05 | fe | Date fields: the "Choose a date" placeholder is bold ink like a value, so empty fields look filled. | fixed 2026-11-05, run-2 task-08 |
+| R2-05 | 2026-11-05 | fe | Today: the last roster row sits flush against the sticky bulk-absent bar (no bottom padding). | fixed 2026-11-05, run-2 task-08 |
+| R2-06 | 2026-11-05 | fe | Book trial: "YOUR AGE" eyebrow plus an "Age" field label, and the note eyebrow plus a "Note" label, label each field twice. | fixed 2026-11-05, run-2 task-08 |
+| R2-07 | 2026-11-05 | fe | Book trial subtitle leaves a one-word orphan; the trials fixture repeats the same three bookings every day and books a Sunday. | fixed 2026-11-05, run-2 task-08 |

@@ -92,6 +92,16 @@ security definer functions `book_trial` and `my_trial_bookings`. A direct anon `
 
 ## Hosted applies
 
+Hosted versions are the MCP's own timestamps, not the file names (the MCP records
+`name` = file name minus `.sql`). Apply through the MCP only; `npx supabase db push` would
+see the files as unapplied unless `supabase migration repair` is run first.
+
 | Date | Migration | By |
 |---|---|---|
-| | | |
+| 2026-11-05 | `20261105074646_identity` (hosted version 20261105093210) | assistant through the MCP, on the owner's word |
+| 2026-11-05 | `20261105075401_trainees_sessions` (hosted version 20261105093241) | assistant through the MCP |
+| 2026-11-05 | `20261105080014_attendance_trials` | Architect through the MCP |
+| 2026-11-05 | `20261105080602_fees_reports` | Architect through the MCP |
+| 2026-11-05 | `20261105081756_harden_profiles` | Architect through the MCP |
+| 2026-11-05 | Edge Function `admin-staff` version 1 deployed (verify_jwt on) | Architect through the MCP |
+| 2026-11-05 | First admin user inserted (phone identity, app_metadata role admin); login in `creds.md` | Architect through the MCP |

@@ -69,6 +69,23 @@ Future<void> _fillValid(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('shows the new subtitle and hint-only age and note fields', (
+    tester,
+  ) async {
+    await _pump(tester, MockTrialRepository(clock: _clock));
+
+    expect(
+      find.text('Pick a day and a batch. The coach will expect you.'),
+      findsOneWidget,
+    );
+    expect(find.text('Age in years'), findsOneWidget);
+    expect(find.text('Anything the coach should know'), findsOneWidget);
+    expect(find.text('Age'), findsNothing);
+    expect(find.text('Note'), findsNothing);
+    expect(find.text('Name'), findsOneWidget);
+    expect(find.text('Phone'), findsOneWidget);
+  });
+
   test('trialDaysFrom skips Sundays and returns seven days', () {
     final days = trialDaysFrom(DateTime(2026, 11, 5));
 

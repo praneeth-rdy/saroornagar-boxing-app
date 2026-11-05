@@ -67,10 +67,11 @@ final longNotesTrainee = Trainee(
   dateOfBirth: DateTime(1998, 7, 21),
   joinedOn: DateTime(2025, 6, 2),
   status: TraineeStatus.active,
+  // Whole sentences just under the 500-character server cap.
   notes: List.filled(
-    10,
-    'Old shoulder injury, no heavy bag on Mondays. Call his brother first. ',
-  ).join().substring(0, 500),
+    7,
+    'Old shoulder injury, no heavy bag on Mondays. Call his brother first.',
+  ).join(' '),
   createdAt: _created,
   updatedAt: _created,
 );
