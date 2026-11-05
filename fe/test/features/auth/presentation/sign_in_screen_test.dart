@@ -46,10 +46,10 @@ void main() {
     expect(find.text('Enter a valid email address'), findsOneWidget);
   });
 
-  testWidgets('the forgot password link is shown', (tester) async {
+  testWidgets('sign-in offers no forgot password link', (tester) async {
     await pumpSignIn(tester, MockAuthRepository());
 
-    expect(find.text('Forgot password?'), findsOneWidget);
+    expect(find.text('Forgot password?'), findsNothing);
   });
 
   testWidgets('wrong credentials show the mismatch banner', (tester) async {

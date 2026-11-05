@@ -152,7 +152,7 @@ list, and for `be` packages the owner's approval date and the app impact.
   installs with `~/Library/Android/sdk/platform-tools/adb install -r` on the connected device,
   deletes every `/sdcard/Download/boxing-club-*.apk` on the device, then pushes the new one as
   `/sdcard/Download/boxing-club-<build>.apk` (owner, 2026-11-05: numbered, older ones deleted
-  every time), then launches the app. When another agent is editing `fe/`, build
+  every time), then launches the app (package `com.saroornagarboxing.app`). When another agent is editing `fe/`, build
   from `git archive HEAD` exported under `fe/build/export-head/` with the signing files copied in. The upload keystore lives in `fe/android/keystore/` with
   `fe/android/key.properties` (both gitignored); passwords are in `creds.md`. Back the keystore
   up; it cannot be regenerated.

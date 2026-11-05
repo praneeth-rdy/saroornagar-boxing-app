@@ -8,6 +8,8 @@ each was applied. Newest first. Settled instructions are promoted into the relev
 
 | Instruction (owner's words, condensed) | Applied in |
 |---|---|
+| "Ignore reset/forgot password flow for now. We can do it offline." | The "Forgot password?" link is removed from sign-in (run-3 task-19); screens and routes stay for later; admins reset passwords from Staff. The {{ .Token }} template step is dropped from the owner's list. `docs/product.md`. |
+| "Yeah, let's have com.saroornagarboxing.app" (Android application id) | D-04 decided; run-3 task-19; `fe/CLAUDE.md` and `.claude/CLAUDE.md` package references. |
 | "Proceed with the remaining work." / "I have to share it with the users to start using." | Backlog sweep (run-3 task-17, task-18); sharing guidance given in chat; D-04 raised again before sharing. |
 | "Make Praneeth's roll number as 10" | Hosted data: `trainees.roll_no` set to 10 for the student Praneeth Reddy through the MCP (2026-11-05). |
 | "Show the students list sorted on this roll numbers by default." / "Reset the current students attendances & remove Kumar Anna student" | task-16 (list ordered by `roll_no`); hosted data: 3 marks deleted and the student removed through the MCP (2026-11-05). |

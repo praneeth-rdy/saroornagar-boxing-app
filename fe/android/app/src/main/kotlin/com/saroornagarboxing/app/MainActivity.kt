@@ -1,4 +1,4 @@
-package com.example.saroornagar_boxing
+package com.saroornagarboxing.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -20,9 +20,8 @@ attendance; people book trial sessions. Product scope and the open questions liv
 | Backend | Supabase: Postgres, Auth, Storage; RLS + Postgres functions called with `rpc()`. Lives in `../be`. |
 | Lints | `flutter_lints` + `prefer_single_quotes`, `avoid_print`, `require_trailing_commas` (`analysis_options.yaml`) |
 
-Android only for now. The Android application id is still the Flutter default
-(`com.example.saroornagar_boxing`) until the owner decides one; it changes in
-`android/app/build.gradle.kts` before any release build. New dependencies only through a
+Android only for now. Application id: `com.saroornagarboxing.app` (owner, 2026-11-05), set as
+`namespace` and `applicationId` in `android/app/build.gradle.kts`. New dependencies only through a
 handoff package that names the reason and the version; add the packages above when the first
 package needs them.
 

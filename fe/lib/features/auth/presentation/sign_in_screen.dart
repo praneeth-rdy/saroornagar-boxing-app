@@ -50,13 +50,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         .submit(email: email, password: password);
   }
 
-  void openForgotPassword() {
-    final email = emailController.text.trim();
-    context
-        .push(Routes.forgotPassword, extra: email.isEmpty ? null : email)
-        .ignore();
-  }
-
   @override
   Widget build(BuildContext context) {
     final attempt = ref.watch(signInControllerProvider);
@@ -118,12 +111,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               isBusy: attempt.isLoading,
             ),
             const SizedBox(height: AppSpacing.sm),
-            Center(
-              child: LinkButton(
-                label: 'Forgot password?',
-                onPressed: openForgotPassword,
-              ),
-            ),
             Center(
               child: LinkButton(
                 label: 'Want to try a session? Book a trial',

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:saroornagar_boxing/core/di/repository_providers.dart';
+import 'package:saroornagar_boxing/core/router/routes.dart';
+import 'package:saroornagar_boxing/features/auth/presentation/sign_in_screen.dart';
 
 import '../../helpers/pump_app.dart';
 import '../../support/fixtures/profiles.dart';
@@ -60,12 +63,13 @@ void main() {
       ],
     );
 
-    await tester.enterText(find.byType(TextField).at(0), 'Admin@Local.Test');
-    await tester.tap(find.text('Forgot password?'));
+    // Sign-in has no entry point to recovery, so the flow starts on its route.
+    GoRouter.of(tester.element(find.byType(SignInScreen)))
+        .go(Routes.forgotPassword);
     await tester.pumpAndSettle();
 
     expect(find.text('Reset password'), findsOneWidget);
-    expect(find.text('Admin@Local.Test'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).at(0), 'Admin@Local.Test');
 
     await tester.tap(find.text('Send code'));
     await tester.pumpAndSettle();

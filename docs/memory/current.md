@@ -22,9 +22,8 @@ and reports defects in chat; each becomes an R3-nn row and a direct developer di
 
 ## Blocked on the owner
 
-1. Hosted dashboard: turn off "Allow new users to sign up"; in Email Templates, "Reset
-   Password" must include {{ .Token }} so the forgot-password code arrives (otherwise the
-   mail carries a link the app cannot use). Phone provider is no longer needed.
+1. Hosted dashboard: turn off "Allow new users to sign up". (The reset-password template
+   step is dropped: the forgot-password entry point is hidden; admins reset from Staff.)
 1b. Apply `20261105160639_backlog_sweep.sql` to hosted (blocked; owner says "retry now").
 1c. Android application id before sharing (D-04): recommended `com.saroornagarboxing.app`;
    changing it after people install forces a reinstall.

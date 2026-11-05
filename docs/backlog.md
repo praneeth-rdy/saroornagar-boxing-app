@@ -11,7 +11,7 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | S-02 | Design directions canvas for the owner to pick from | done (2026-11-05), decision pending (D-01) |
 | S-03 | Requirements interview, broad to narrow, recorded in `product.md` | in progress |
 | S-04 | Hosted Supabase project: fill `fe/config/*.json`, add `project_ref` to `.mcp.json`, link the CLI | blocked on the owner (project ref, publishable key, access token or `supabase login`) |
-| S-05 | Android application id | blocked (D-04) |
+| S-05 | Android application id | done (2026-11-05), `com.saroornagarboxing.app` |
 | S-06 | Hosted dashboard: disable public sign-ups, enable the Phone provider with confirmations off, enable leaked-password protection if the plan allows | blocked on the owner (admin user created 2026-11-05 through the MCP) |
 
 ## Backend
@@ -55,5 +55,5 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | D-01 | Design direction | A Ivory and Graphite | decided 2026-11-05 |
 | D-02 | First scope | Guest trial booking + coach/staff/admin app; no trainee view | decided 2026-11-05 |
 | D-03 | Hosted Supabase project | Owner creates it and shares the project ref and publishable key | decided 2026-11-05, waiting on the owner |
-| D-04 | Android application id (currently the Flutter default `com.example.saroornagar_boxing`) | | open |
+| D-04 | Android application id | `com.saroornagarboxing.app` (owner, 2026-11-05); set in run-3 task-19 | decided 2026-11-05 |
 | D-05 | Logo and app name | L5a Classic badge chosen 2026-11-05 (canvas https://claude.ai/artifact/FL6oyLDsUSpT7RSx7hQcbb, source `docs/design/logos/project/L5a-Classic.dc.html`); launcher label "Saroornagar Boxing" (owner, 2026-11-05) | decided 2026-11-05 |
