@@ -8,6 +8,8 @@ each was applied. Newest first. Settled instructions are promoted into the relev
 
 | Instruction (owner's words, condensed) | Applied in |
 |---|---|
+| "Let the admin user have the ability to reset password of any user, block access, etc and also be able to manage the coaches/staff accounts" | `docs/product.md` Confirmed (Roles); replaces the earlier "same powers for now". |
+| Round 3 answers: trainee fields (name, optional photo/phone/joining date, active/inactive); trials have no confirmation, the slot only informs the coach; morning 6:00-8:30 am, evening 5:30-8:00 pm; reports: per-trainee history, monthly summary, fee status list. | `docs/product.md` Confirmed. |
 | "Let's not have trainees view for now. Let's only build for guest slot booking and coach/staff/admin." | `docs/product.md` Release 1 scope; trainee view deferred; backlog D-02 settled. |
 | "Let's have phone-number & password login" (after a chat on free phone OTP options) | `docs/product.md` Confirmed: phone + password for staff and trainees, no SMS provider. |
 | "use /build as needed" | Standing opt-in: the Architect runs the `tiered-build` workflow whenever a goal needs several packages or an implement-test-fix loop. `.claude/CLAUDE.md` routing rule 4. |

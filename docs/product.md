@@ -20,8 +20,9 @@ the date) or marked as an open question. Nothing is built from an assumption.
 - Trial booking happens in the app, with no account needed for the visitor.
 - Sign-in is phone number and password (owner, 2026-11-05), for staff and trainees alike. No
   OTP, no SMS provider.
-- Roles (round 2): an owner/admin role exists above coaches, but with the same powers as a
-  coach for now; the role is kept in the data, nothing is restricted yet.
+- Roles: coach/staff and admin. Everything a coach can do, an admin can do too. Admin only
+  (owner, 2026-11-05): manage coach/staff accounts (create, edit, remove), reset any user's
+  password, block or unblock a user's access.
 - Any trainee can attend any session; the coach marks from the full roster each time.
 - Fees in release 1: record only. Staff record a payment (cash or UPI, amount, date, period);
   the trainee sees their history and what is due. No money moves through the app.
@@ -32,6 +33,15 @@ Guest trial-slot booking plus the coach / staff / admin app. **No trainee view i
 trainees do not sign in; their attendance and fee records are kept by staff. The trainee
 view (own attendance, fee updates) is a later release; nothing in release 1 may depend on it.
 
+- Trainee record (round 3): name; optional photo, phone and joining date; active/inactive
+  status.
+- Trial booking: no confirmation step. A guest's booking only informs the coach that someone
+  is arriving for that session.
+- Sessions: morning generally 6:00 to 8:30 am, evening 5:30 to 8:00 pm, every day except
+  Sunday; staff may add an extra session on a day.
+- Staff reports in release 1: per-trainee attendance history, monthly attendance summary,
+  fee status list.
+
 ## Open questions
 
 Gathered through the requirements interview, broad to narrow. Each answer moves to the
@@ -40,12 +50,12 @@ Confirmed section with its date.
 1. (answered) Users and roles: owner/admin above coaches, same powers for now.
 2. (answered) Coach marks a session list.
 3. (answered) One club, two sessions daily except Sunday; any trainee may attend any session. Still open: roughly how many trainees; session timings.
-4. (answered) In the app, no account. Still open: who confirms a trial and how the visitor hears back; any trial fee; what the coach sees and does with a trial booking.
-5. (answered) Phone number and password, staff only in release 1. Still open: who creates a coach's account (owner in the app, or seeded by us); how a forgotten staff password is reset.
-6. Trainee records: what is stored (name, phone, joining date, plan, fees?).
+4. (answered) In the app, no account, no confirmation. Still open: what the guest fills in (name, phone, session, date); whether a slot has a capacity; whether the guest can cancel; any trial fee; what the coach does when the guest arrives (mark as attended? convert to trainee?).
+5. (answered) Phone and password; admin creates and manages staff accounts, resets passwords, blocks access. Still open: how the first admin account is created (seeded by us with a password handed over).
+6. (answered) Trainee record fields.
 7. (answered) Fees are record-only in release 1. Still open: the fee model (monthly amount per trainee? plans?), and what "due" means.
 8. Notifications (reminders, confirmations): in scope or not; channel.
-9. Reports: what the owner wants to see (per trainee, per batch, per month).
+9. (answered) Reports: per-trainee history, monthly summary, fee status list.
 10. Hosted Supabase: which organisation, region and project name; the Android application id.
 
 ## Glossary
