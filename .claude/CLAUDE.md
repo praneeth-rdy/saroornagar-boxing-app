@@ -133,9 +133,10 @@ list, and for `be` packages the owner's approval date and the app impact.
   (Mailpit), 56320 (shadow), 56329 (pooler), set in `be/supabase/config.toml`, so it can run
   next to other projects' stacks.
 - Credentials the Architect creates or receives (Supabase access token, DB password, test
-  logins, API keys) are written to a file outside the repository that the owner names;
-  `docs/memory/current.md` names the file, never its contents. No credential goes into any
-  repo file except the publishable Supabase key in `fe/config/*.json`.
+  logins, API keys) are written to `creds.md` at the repo root, which is gitignored (owner,
+  2026-11-05: "Keep it inside the repo gitignored"). Memory and docs name the file, never
+  its contents. No credential goes into any committed file except the publishable Supabase
+  key in `fe/config/*.json`.
 - **One development database:** the hosted Supabase project is the only dev database once it
   exists. The app (`fe/config/dev.json`) and every manual test point at it. The local stack
   exists only to run `db reset` and `test db` for migration checks.
