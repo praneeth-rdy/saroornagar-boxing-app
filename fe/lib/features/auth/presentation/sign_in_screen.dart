@@ -8,7 +8,6 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/app_text_field.dart';
-import '../../../core/widgets/brand_badge.dart';
 import '../../../core/widgets/eyebrow.dart';
 import '../../../core/widgets/inline_banner.dart';
 import '../../../core/widgets/link_button.dart';
@@ -62,8 +61,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             vertical: AppSpacing.xxl,
           ),
           children: [
-            const BrandBadge(),
-            const SizedBox(height: AppSpacing.xl),
             const Eyebrow('SAROORNAGAR BOXING'),
             const SizedBox(height: AppSpacing.sm),
             const Text('Sign in', style: AppTypography.title),
