@@ -21,7 +21,11 @@ Future<void> _pump(WidgetTester tester, RosterEntry entry) async {
           textScaler: TextScaler.linear(_largeTextScale),
         ),
         child: Scaffold(
-          body: RosterRow(entry: entry, onMark: (_) {}),
+          body: RosterRow(
+            entry: entry,
+            onMarkPresent: () {},
+            onRemoveMark: () {},
+          ),
         ),
       ),
     ),

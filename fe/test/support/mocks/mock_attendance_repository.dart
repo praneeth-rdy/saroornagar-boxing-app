@@ -15,7 +15,8 @@ import '../fixtures/sessions.dart';
 import '../scenario.dart';
 
 /// In-memory [AttendanceRepository] that follows the attendance migration's rules and
-/// messages (`20261105075401_trainees_sessions`, `20261105080014_attendance_trials`).
+/// messages (`20261105075401_trainees_sessions`, `20261105080014_attendance_trials`,
+/// `20261105114625_unmark_attendance`).
 class MockAttendanceRepository implements AttendanceRepository {
   MockAttendanceRepository({
     this.scenario = MockScenario.success,
@@ -178,23 +179,26 @@ class MockAttendanceRepository implements AttendanceRepository {
   );
 
   @override
-  Future<int> markRemainingAbsent(String sessionId) => applyScenario(
+  Future<void> unmark(String sessionId, String traineeId) =>
+      applyScenario<void>(
+        scenario,
+        success: () {
+          _session(sessionId);
+          // No trainee status check, as the server: an inactive trainee's mark can go.
+          if (_marks.remove(_markKey(sessionId, traineeId)) == null) {
+            throw const NotFoundException('No mark to remove');
+          }
+        },
+      );
+
+  @override
+  Future<int> resetSession(String sessionId) => applyScenario(
     scenario,
     success: () {
       _session(sessionId);
-      var inserted = 0;
-      for (final trainee in trainees.where((trainee) => trainee.isActive)) {
-        if (markFor(sessionId, trainee.id) != null) continue;
-        _marks[_markKey(sessionId, trainee.id)] = AttendanceMark(
-          sessionId: sessionId,
-          traineeId: trainee.id,
-          status: AttendanceStatus.absent,
-          markedBy: staffId,
-          markedAt: now(),
-        );
-        inserted++;
-      }
-      return inserted;
+      final before = _marks.length;
+      _marks.removeWhere((_, mark) => mark.sessionId == sessionId);
+      return before - _marks.length;
     },
   );
 

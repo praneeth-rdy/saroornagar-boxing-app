@@ -29,8 +29,11 @@ abstract class AttendanceRepository {
     AttendanceStatus status,
   );
 
-  /// Marks every unmarked active trainee absent and returns how many were marked.
-  Future<int> markRemainingAbsent(String sessionId);
+  /// Removes one trainee's mark; `NotFoundException` when there is none.
+  Future<void> unmark(String sessionId, String traineeId);
+
+  /// Removes every mark of the session and returns how many were removed.
+  Future<int> resetSession(String sessionId);
 
   /// Trial bookings dated [from] to [to], both inclusive.
   Future<List<TrialBooking>> trialsBetween(DateTime from, DateTime to);

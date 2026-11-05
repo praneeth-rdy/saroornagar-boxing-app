@@ -87,18 +87,41 @@ void main() {
     );
   });
 
-  test('mark remaining absent counts only unmarked active trainees', () async {
-    final repository = MockAttendanceRepository(
-      trainees: [...fixtureTrainees(5), inactiveTrainee],
-    );
+  test('unmark removes the stored mark', () async {
+    final repository = MockAttendanceRepository();
     await repository.sessionsFor(fixtureDay);
     await repository.mark(morningId, 'trainee-001', AttendanceStatus.present);
-    expect(await repository.markRemainingAbsent(morningId), 4);
-    expect(await repository.markRemainingAbsent(morningId), 0);
+    await repository.unmark(morningId, 'trainee-001');
+    expect(repository.markFor(morningId, 'trainee-001'), isNull);
+  });
+
+  test('unmark throws NotFoundException when there is no mark', () async {
+    final repository = MockAttendanceRepository();
+    await repository.sessionsFor(fixtureDay);
     expect(
-      repository.markFor(morningId, 'trainee-001')!.status,
-      AttendanceStatus.present,
+      repository.unmark(morningId, 'trainee-001'),
+      throwsA(
+        isA<NotFoundException>().having(
+          (e) => e.message,
+          'message',
+          'No mark to remove',
+        ),
+      ),
     );
+  });
+
+  test('reset removes every mark of the session only', () async {
+    final repository = MockAttendanceRepository();
+    await repository.sessionsFor(fixtureDay);
+    final eveningId = eveningSession(fixtureDay).id;
+    await repository.mark(morningId, 'trainee-001', AttendanceStatus.present);
+    await repository.mark(morningId, 'trainee-002', AttendanceStatus.present);
+    await repository.mark(eveningId, 'trainee-001', AttendanceStatus.present);
+
+    expect(await repository.resetSession(morningId), 2);
+    expect(await repository.resetSession(morningId), 0);
+    expect(repository.markFor(morningId, 'trainee-001'), isNull);
+    expect(repository.markFor(eveningId, 'trainee-001'), isNotNull);
   });
 
   test('a session with attendance cannot be removed', () async {

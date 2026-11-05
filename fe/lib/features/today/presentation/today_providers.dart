@@ -118,10 +118,10 @@ class RosterNotifier extends AsyncNotifier<List<RosterEntry>> {
   }
 }
 
-/// Marks for one day: optimistic single marks, the bulk absent mark, and a retry.
+/// Present marks for one day: optimistic marks and removals, the session reset, and a retry.
 ///
 /// Every call names the session from the row on screen and is refused unless that session
-/// belongs to [date]. Loading means the bulk mark is running; an error is the last failed
+/// belongs to [date]. Loading means a reset is running; an error is the last failed
 /// action, made on [failedSessionId].
 class MarkController extends AsyncNotifier<void> {
   MarkController(this.date);
@@ -135,21 +135,23 @@ class MarkController extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
 
-  Future<void> mark(
-    String sessionId,
-    String traineeId,
-    AttendanceStatus status,
-  ) async {
+  /// Marks the trainee present; a legacy absent mark is corrected to present.
+  Future<void> mark(String sessionId, String traineeId) async {
     if (!_belongsToDay(sessionId)) return;
     final previous = ref
         .read(rosterProvider(sessionId).notifier)
         .entryFor(traineeId);
-    if (previous == null || previous.status == status) return;
-    _replace(sessionId, previous.copyWith(status: status, markedAt: null));
+    if (previous == null || previous.status == AttendanceStatus.present) {
+      return;
+    }
+    _replace(
+      sessionId,
+      previous.copyWith(status: AttendanceStatus.present, markedAt: null),
+    );
     try {
       final stored = await ref
           .read(attendanceRepositoryProvider)
-          .mark(sessionId, traineeId, status);
+          .mark(sessionId, traineeId, AttendanceStatus.present);
       if (!ref.mounted) return;
       _replace(
         sessionId,
@@ -158,35 +160,44 @@ class MarkController extends AsyncNotifier<void> {
     } catch (error, stackTrace) {
       if (!ref.mounted) return;
       _replace(sessionId, previous);
-      _fail(
-        sessionId,
-        error,
-        stackTrace,
-        () => mark(sessionId, traineeId, status),
-      );
+      _fail(sessionId, error, stackTrace, () => mark(sessionId, traineeId));
     }
   }
 
-  /// Returns how many were marked, or null when it failed (the error is in state).
-  Future<int?> markRemainingAbsent(String sessionId) async {
+  /// Removes the trainee's present mark.
+  Future<void> unmark(String sessionId, String traineeId) async {
+    if (!_belongsToDay(sessionId)) return;
+    final previous = ref
+        .read(rosterProvider(sessionId).notifier)
+        .entryFor(traineeId);
+    if (previous == null || previous.status != AttendanceStatus.present) {
+      return;
+    }
+    _replace(sessionId, previous.copyWith(status: null, markedAt: null));
+    try {
+      await ref.read(attendanceRepositoryProvider).unmark(sessionId, traineeId);
+    } catch (error, stackTrace) {
+      if (!ref.mounted) return;
+      _replace(sessionId, previous);
+      _fail(sessionId, error, stackTrace, () => unmark(sessionId, traineeId));
+    }
+  }
+
+  /// Returns how many marks were removed, or null when it failed (the error is in state).
+  Future<int?> resetSession(String sessionId) async {
     if (state.isLoading || !_belongsToDay(sessionId)) return null;
     state = const AsyncLoading();
     try {
       final count = await ref
           .read(attendanceRepositoryProvider)
-          .markRemainingAbsent(sessionId);
+          .resetSession(sessionId);
       if (!ref.mounted) return count;
       state = const AsyncData(null);
       ref.invalidate(rosterProvider(sessionId));
       return count;
     } catch (error, stackTrace) {
       if (ref.mounted) {
-        _fail(
-          sessionId,
-          error,
-          stackTrace,
-          () => markRemainingAbsent(sessionId),
-        );
+        _fail(sessionId, error, stackTrace, () => resetSession(sessionId));
       }
       return null;
     }

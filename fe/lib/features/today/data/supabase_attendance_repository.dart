@@ -91,9 +91,17 @@ class SupabaseAttendanceRepository implements AttendanceRepository {
   }
 
   @override
-  Future<int> markRemainingAbsent(String sessionId) => guardSupabase(
+  Future<void> unmark(String sessionId, String traineeId) => guardSupabase(
+    () => client.rpc<dynamic>(
+      'unmark_attendance',
+      params: {'p_session_id': sessionId, 'p_trainee_id': traineeId},
+    ),
+  );
+
+  @override
+  Future<int> resetSession(String sessionId) => guardSupabase(
     () async => (await client.rpc<dynamic>(
-      'mark_remaining_absent',
+      'reset_session_attendance',
       params: {'p_session_id': sessionId},
     ) as num).toInt(),
   );

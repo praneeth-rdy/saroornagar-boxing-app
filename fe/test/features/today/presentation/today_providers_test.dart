@@ -113,7 +113,7 @@ void main() {
     await expectLater(
       container
           .read(markControllerProvider(fixtureDay).notifier)
-          .mark(otherDayId, 'trainee-001', AttendanceStatus.present),
+          .mark(otherDayId, 'trainee-001'),
       throwsA(isA<AssertionError>()),
     );
     expect(repository.markCalls, isEmpty);
@@ -132,7 +132,7 @@ void main() {
     final controller = container.read(
       markControllerProvider(fixtureDay).notifier,
     );
-    await controller.mark(morningId, 'trainee-001', AttendanceStatus.present);
+    await controller.mark(morningId, 'trainee-001');
 
     final entries = container.read(rosterProvider(morningId)).value!;
     expect(
@@ -149,5 +149,30 @@ void main() {
       after.firstWhere((e) => e.traineeId == 'trainee-001').status,
       AttendanceStatus.present,
     );
+  });
+
+  test('a failed unmark puts the present mark back', () async {
+    final repository = MockAttendanceRepository();
+    final container = _container(repository, DateTime.utc(2026, 11, 5, 7));
+    container.listen(daySessionsProvider(fixtureDay), (_, _) {});
+    await container.read(daySessionsProvider(fixtureDay).future);
+    await repository.mark(morningId, 'trainee-001', AttendanceStatus.present);
+    container.listen(rosterProvider(morningId), (_, _) {});
+    await container.read(rosterProvider(morningId).future);
+    container.listen(markControllerProvider(fixtureDay), (_, _) {});
+
+    repository.scenario = MockScenario.offline;
+    final controller = container.read(
+      markControllerProvider(fixtureDay).notifier,
+    );
+    await controller.unmark(morningId, 'trainee-001');
+
+    final entries = container.read(rosterProvider(morningId)).value!;
+    expect(
+      entries.firstWhere((e) => e.traineeId == 'trainee-001').status,
+      AttendanceStatus.present,
+    );
+    expect(container.read(markControllerProvider(fixtureDay)).hasError, isTrue);
+    expect(repository.markFor(morningId, 'trainee-001'), isNotNull);
   });
 }

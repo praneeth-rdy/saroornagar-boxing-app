@@ -8,6 +8,10 @@ each was applied. Newest first. Settled instructions are promoted into the relev
 
 | Instruction (owner's words, condensed) | Applied in |
 |---|---|
+| "Let's use a numbering, but delete the older ones everytime" (the Downloads APK copy) | `.claude/CLAUDE.md` Toolchain: delete `boxing-club-*.apk`, push `boxing-club-<build>.apk`. |
+| "Replace with latest apk after every run" | `.claude/CLAUDE.md` Toolchain: the Downloads copy is always `/sdcard/Download/boxing-club.apk`, overwritten on each install. |
+| "Install on the device & copy the release apk to the connected device's downloads folder" | `.claude/CLAUDE.md` Toolchain: every install also pushes the APK to `/sdcard/Download/boxing-club-<build>.apk`. |
+| "While adding a student, let's show name & optional phone upfront & then a collapsed ... text that says add additional info to see DOB, Joined on, Notes, etc. Instead of marking each item optional - can we just mark the required ones?" | run-3 task-12: collapsed "Add more details" on the student form; required fields marked with " *", no "(optional)" anywhere. |
 | "let the user unmark the attendance if they've tapped it by mistake or let them reset the attendance for a single session if they want to. For any of these, please show a confirmation modal." | run-3 task-13 (`unmark_attendance`, `reset_session_attendance`), task-14 (confirm dialogs on unmark and reset). |
 | "user need not manually mark absent. They'll only mark people who are present & rest to be considered absent if attendance is taken for at least 1 in the given session. If no attendance is taken on a session - ignore that session in the count" | `docs/product.md` (attendance capture); run-3 task-13 (`unmark_attendance`), task-14 (Today presence-only), task-12 (logs show attended sessions). |
 | "Wherever we show list of attendance logs - need not show separate rows or cards for morning & evening. You can show date-wise logs with each date noting morning & evening ..." | run-3 task-12: attendance logs grouped by date (history screen and student detail). |

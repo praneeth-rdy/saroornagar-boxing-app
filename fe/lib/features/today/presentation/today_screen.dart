@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/errors/app_exception.dart';
+import '../../../core/models/attendance_status.dart';
 import '../../../core/models/session_slot.dart';
 import '../../../core/router/routes.dart';
 import '../../../core/theme/app_colors.dart';
@@ -17,7 +18,6 @@ import '../../../core/widgets/eyebrow.dart';
 import '../../../core/widgets/inline_banner.dart';
 import '../../../core/widgets/link_button.dart';
 import '../../../core/widgets/list_row.dart';
-import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../trials/domain/trial_booking.dart';
 import '../domain/club_session.dart';
@@ -31,11 +31,6 @@ import 'trial_visitors_card.dart';
 
 const _pickerDaysBack = 60;
 const _pickerDaysAhead = 7;
-
-// The bulk-absent bar: its padding plus one button.
-const _barTopPadding = AppSpacing.sm;
-const _barBottomPadding = AppSpacing.md;
-const _barHeight = _barTopPadding + AppSizes.controlHeight + _barBottomPadding;
 
 /// The day's sessions and attendance marking.
 class TodayScreen extends ConsumerWidget {
@@ -233,112 +228,74 @@ class _RosterBody extends ConsumerWidget {
     final failure = marking.isLoading || controller.failedSessionId != sessionId
         ? null
         : marking.error;
-    final remaining = entries.where((entry) => entry.status == null).length;
-    final hasBar = remaining > 0;
-    return Stack(
+    final present = entries
+        .where((entry) => entry.status == AttendanceStatus.present)
+        .length;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.gutter,
+        AppSpacing.sm,
+        AppSpacing.gutter,
+        AppSpacing.lg,
+      ),
       children: [
-        Positioned.fill(
-          child: ListView(
-            // The bar floats over the list, so the last row needs room to clear it.
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
-              AppSpacing.sm,
-              AppSpacing.gutter,
-              hasBar ? _barHeight + AppSpacing.lg : AppSpacing.lg,
-            ),
-            children: [
-              ProgressCard(
-                marked: entries.length - remaining,
-                total: entries.length,
-              ),
-              if (failure != null) ...[
-                const SizedBox(height: AppSpacing.md),
-                InlineBanner(
-                  message: failure is AppException
-                      ? failure.message
-                      : UnknownException.defaultMessage,
-                  tone: InlineBannerTone.error,
-                  onRetry: controller.retry,
+        ProgressCard(present: present, total: entries.length),
+        if (failure != null) ...[
+          const SizedBox(height: AppSpacing.md),
+          InlineBanner(
+            message: failure is AppException
+                ? failure.message
+                : UnknownException.defaultMessage,
+            tone: InlineBannerTone.error,
+            onRetry: controller.retry,
+          ),
+        ],
+        _TrialVisitors(date: date, slot: slot),
+        const SizedBox(height: AppSpacing.md),
+        AppCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: ListRow.divide([
+              for (final entry in entries)
+                RosterRow(
+                  key: ValueKey(entry.traineeId),
+                  entry: entry,
+                  onMarkPresent: () =>
+                      controller.mark(sessionId, entry.traineeId),
+                  onRemoveMark: () => _confirmRemove(context, ref, entry),
                 ),
-              ],
-              _TrialVisitors(date: date, slot: slot),
-              const SizedBox(height: AppSpacing.md),
-              AppCard(
-                padding: EdgeInsets.zero,
-                child: Column(
-                  children: ListRow.divide([
-                    for (final entry in entries)
-                      RosterRow(
-                        key: ValueKey(entry.traineeId),
-                        entry: entry,
-                        onMark: (status) =>
-                            controller.mark(sessionId, entry.traineeId, status),
-                      ),
-                  ]),
-                ),
-              ),
-            ],
+            ]),
           ),
         ),
-        if (hasBar)
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: ColoredBox(
-              color: AppColors.ground,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.gutter,
-                  _barTopPadding,
-                  AppSpacing.gutter,
-                  _barBottomPadding,
-                ),
-                child: PrimaryButton(
-                  label: 'Mark the remaining $remaining absent',
-                  isBusy: marking.isLoading,
-                  onPressed: () => _markRemaining(context, ref, remaining),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }
 
-  Future<void> _markRemaining(
+  Future<void> _confirmRemove(
     BuildContext context,
     WidgetRef ref,
-    int remaining,
+    RosterEntry entry,
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(
-          remaining == 1
-              ? 'Mark 1 trainee absent?'
-              : 'Mark $remaining trainees absent?',
-        ),
-        content: const Text('Everyone not marked yet is marked absent.'),
+        title: Text('Remove the mark for ${entry.fullName}?'),
         actions: [
           LinkButton(
             label: 'Cancel',
             onPressed: () => Navigator.of(dialogContext).pop(false),
           ),
           LinkButton(
-            label: 'Mark absent',
+            label: 'Remove',
             onPressed: () => Navigator.of(dialogContext).pop(true),
           ),
         ],
       ),
     );
     if (confirmed != true) return;
-    final count = await ref
+    await ref
         .read(markControllerProvider(date).notifier)
-        .markRemainingAbsent(sessionId);
-    if (count == null || !context.mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('$count marked absent')));
+        .unmark(sessionId, entry.traineeId);
   }
 }
 

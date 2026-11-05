@@ -42,6 +42,13 @@ validator message, semantic label and proof fixture with the word Trainee/traine
   is shown as given it stays the server's; the mock mirrors the server), semantics labels,
   and proof names where they are user-visible text (file names may stay). Identifiers,
   routes paths and class names stay (`Trainee`, `/trainees`).
+- Student form (add and edit): Name and Phone first; then a `LinkButton('Add more details')`
+  that expands, in place, Date of birth, Joined on and Notes (expanded by default on edit
+  when any of the three has a value). Owner, 2026-11-05.
+- Required-field convention, app-wide: a required field's label ends with " *" (Name *,
+  Email *, Password *, Phone * on the trial form); no label says "(optional)" any more.
+  Apply to the student, staff, trial and record-payment forms and to `AppTextField` /
+  `DateField` labels. A one-line caption under the first form field is not needed.
 - `docs/product.md` glossary: "Student: a person who trains at the club (the app's word
   for a trainee since 2026-11-05)". `docs/fe/architecture.md` screen names updated.
 
@@ -51,6 +58,7 @@ follow-up changes them: backlog item). Renaming code or tables.
 
 ## Acceptance criteria
 - [ ] `grep -rn "Trainee\|trainee" fe/lib --include=*.dart` matches only identifiers, imports, routes and comments, never a quoted user-facing string (the developer lists any exception).
+- [ ] Student form widget test: collapsed by default on add, the link reveals the three fields, expanded on edit with a DOB; `grep -rn "(optional)" fe/lib` returns nothing.
 - [ ] Monthly attendance widget test: no session total shown, counts per row, tap pushes the history route with the month.
 - [ ] `flutter analyze` 0, `dart format` clean, suite passes.
-- [ ] Proofs (assistant): `attendance_summary_typical`, `attendance_summary_heavy`, `trainees_typical`, `trainee_detail_typical`, `trainee_form_empty`, `today_typical` re-rendered.
+- [ ] Proofs (assistant): `attendance_summary_typical`, `attendance_summary_heavy`, `trainees_typical`, `trainee_detail_typical`, `trainee_form_empty` (collapsed), `trainee_form_expanded`, `staff_form_empty`, `book_trial_empty`, `today_typical` re-rendered.

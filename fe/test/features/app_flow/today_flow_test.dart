@@ -23,7 +23,7 @@ class _NoProfileAuthRepository extends MockAuthRepository {
 }
 
 void main() {
-  testWidgets('sign in, mark two trainees, then mark the rest absent', (
+  testWidgets('sign in, mark two trainees present, then undo one', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(1600, 3000);
@@ -47,30 +47,28 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Today'), findsWidgets);
-    expect(find.text('0 of 5'), findsOneWidget);
+    expect(find.text('Tap the students who are here.'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('present-trainee-001')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('absent-trainee-002')));
+    await tester.tap(find.byKey(const Key('present-trainee-002')));
     await tester.pumpAndSettle();
-    expect(find.text('2 of 5'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
+    expect(find.text('of 5 students'), findsOneWidget);
 
-    await tester.tap(find.text('Mark the remaining 3 absent'));
+    await tester.tap(find.byKey(const Key('present-trainee-002')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Mark absent'));
+    await tester.tap(find.text('Remove'));
     await tester.pumpAndSettle();
 
-    expect(find.text('5 of 5'), findsOneWidget);
-    expect(find.text('3 marked absent'), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
     final morningId = morningSession(fixtureDay).id;
     expect(
       attendance.markFor(morningId, 'trainee-001')!.status,
       AttendanceStatus.present,
     );
-    expect(
-      attendance.markFor(morningId, 'trainee-005')!.status,
-      AttendanceStatus.absent,
-    );
+    expect(attendance.markFor(morningId, 'trainee-002'), isNull);
+    expect(attendance.markFor(morningId, 'trainee-005'), isNull);
   });
 
   testWidgets('an account without a profile sees the not-staff screen', (

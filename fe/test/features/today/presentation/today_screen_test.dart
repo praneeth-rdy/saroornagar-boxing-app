@@ -40,22 +40,52 @@ Future<void> _pump(
 }
 
 void main() {
-  testWidgets('marking a trainee updates the progress count', (tester) async {
+  testWidgets('marking a trainee present updates the count', (tester) async {
     final repository = MockAttendanceRepository(trainees: fixtureTrainees(4));
     await _pump(tester, repository);
 
-    expect(find.text('0 of 4'), findsOneWidget);
-    expect(find.text('Mark the remaining 4 absent'), findsOneWidget);
+    expect(find.text('PRESENT'), findsOneWidget);
+    expect(find.text('Tap the students who are here.'), findsOneWidget);
+    expect(find.text('Reset attendance'), findsNothing);
 
     await tester.tap(find.byKey(const Key('present-trainee-001')));
     await tester.pumpAndSettle();
 
-    expect(find.text('1 of 4'), findsOneWidget);
-    expect(find.text('3 to go'), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
+    expect(find.text('of 4 students'), findsOneWidget);
+    expect(find.text('Reset attendance'), findsOneWidget);
     expect(
-      repository.markFor(_morningId, 'trainee-001')!.status.name,
-      'present',
+      repository.markFor(_morningId, 'trainee-001')!.status,
+      AttendanceStatus.present,
     );
+  });
+
+  testWidgets('tapping an unmarked row marks it present', (tester) async {
+    final trainees = fixtureTrainees(3);
+    final repository = MockAttendanceRepository(trainees: trainees);
+    await _pump(tester, repository);
+
+    await tester.tap(find.text(trainees[1].fullName));
+    await tester.pumpAndSettle();
+
+    expect(
+      repository.markFor(_morningId, trainees[1].id)!.status,
+      AttendanceStatus.present,
+    );
+  });
+
+  testWidgets('rows never show absent or not marked', (tester) async {
+    final trainees = fixtureTrainees(4);
+    final repository = MockAttendanceRepository(
+      trainees: trainees,
+      marks: fixtureMarks(_morningId, trainees, present: 1, absent: 2),
+    );
+    await _pump(tester, repository);
+
+    expect(find.text('Absent'), findsNothing);
+    expect(find.text('Not marked'), findsNothing);
+    expect(find.textContaining('Present, '), findsOneWidget);
+    expect(find.text('of 4 students'), findsOneWidget);
   });
 
   testWidgets('a failed mark rolls back and shows a banner', (tester) async {
@@ -66,11 +96,11 @@ void main() {
     await tester.tap(find.byKey(const Key('present-trainee-001')));
     await tester.pumpAndSettle();
 
-    expect(find.text('0 of 4'), findsOneWidget);
+    expect(find.text('Tap the students who are here.'), findsOneWidget);
     expect(find.text('Retry'), findsOneWidget);
   });
 
-  testWidgets('the sticky button hides once everyone is marked', (
+  testWidgets('removing a mark asks first and removes it on Remove', (
     tester,
   ) async {
     final trainees = fixtureTrainees(3);
@@ -80,34 +110,98 @@ void main() {
     );
     await _pump(tester, repository);
 
-    expect(find.text('Mark the remaining 1 absent'), findsOneWidget);
-    await tester.tap(find.byKey(Key('absent-${trainees[2].id}')));
+    await tester.tap(find.byKey(Key('present-${trainees[0].id}')));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Remove the mark for ${trainees[0].fullName}?'),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Remove'));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Mark the remaining'), findsNothing);
-    expect(find.text('Everyone marked'), findsOneWidget);
+    expect(repository.markFor(_morningId, trainees[0].id), isNull);
+    expect(find.text('of 3 students'), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
   });
 
-  testWidgets('mark the remaining absent confirms then reports the count', (
-    tester,
-  ) async {
-    final trainees = fixtureTrainees(5);
+  testWidgets('cancelling the remove dialog keeps the mark', (tester) async {
+    final trainees = fixtureTrainees(3);
     final repository = MockAttendanceRepository(
       trainees: trainees,
       marks: fixtureMarks(_morningId, trainees, present: 2),
     );
     await _pump(tester, repository);
 
-    await tester.tap(find.text('Mark the remaining 3 absent'));
+    await tester.tap(find.text(trainees[0].fullName));
     await tester.pumpAndSettle();
-    expect(find.text('Mark 3 trainees absent?'), findsOneWidget);
-
-    await tester.tap(find.text('Mark absent'));
+    await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
 
-    expect(find.text('3 marked absent'), findsOneWidget);
-    expect(find.text('Everyone marked'), findsOneWidget);
-    expect(find.textContaining('Mark the remaining'), findsNothing);
+    expect(repository.markFor(_morningId, trainees[0].id), isNotNull);
+    expect(find.text('2'), findsOneWidget);
+  });
+
+  testWidgets('a failed remove puts the mark back and shows a banner', (
+    tester,
+  ) async {
+    final trainees = fixtureTrainees(3);
+    final repository = MockAttendanceRepository(
+      trainees: trainees,
+      marks: fixtureMarks(_morningId, trainees, present: 2),
+    );
+    await _pump(tester, repository);
+
+    repository.scenario = MockScenario.offline;
+    await tester.tap(find.byKey(Key('present-${trainees[0].id}')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Remove'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('2'), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
+    expect(repository.markFor(_morningId, trainees[0].id), isNotNull);
+  });
+
+  testWidgets('reset asks first and clears the session on Reset', (
+    tester,
+  ) async {
+    final trainees = fixtureTrainees(5);
+    final repository = MockAttendanceRepository(
+      trainees: trainees,
+      marks: fixtureMarks(_morningId, trainees, present: 3),
+    );
+    await _pump(tester, repository);
+
+    await tester.tap(find.text('Reset attendance'));
+    await tester.pumpAndSettle();
+    expect(find.text('Remove all 3 marks for this session?'), findsOneWidget);
+
+    await tester.tap(find.text('Reset'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Attendance reset'), findsOneWidget);
+    expect(find.text('Tap the students who are here.'), findsOneWidget);
+    expect(find.text('Reset attendance'), findsNothing);
+    expect(repository.markFor(_morningId, trainees[0].id), isNull);
+  });
+
+  testWidgets('cancelling the reset dialog keeps every mark', (tester) async {
+    final trainees = fixtureTrainees(5);
+    final repository = MockAttendanceRepository(
+      trainees: trainees,
+      marks: fixtureMarks(_morningId, trainees, present: 3),
+    );
+    await _pump(tester, repository);
+
+    await tester.tap(find.text('Reset attendance'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('3'), findsOneWidget);
+    expect(find.text('Attendance reset'), findsNothing);
+    expect(repository.markFor(_morningId, trainees[0].id), isNotNull);
   });
 
   testWidgets('a Sunday with no sessions shows the closed state', (
