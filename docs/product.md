@@ -36,6 +36,9 @@ Guest trial-slot booking plus the coach / staff / admin app. **No trainee view i
 trainees do not sign in; their attendance and fee records are kept by staff. The trainee
 view (own attendance, fee updates) is a later release; nothing in release 1 may depend on it.
 
+- Every student has a numeric roll number for roll call, unique among active students; the
+  form suggests the smallest unused number (gaps first, else highest + 1) and staff may
+  change it (owner, 2026-11-05).
 - Trainee record (round 3): name; optional photo, phone, date of birth and joining date;
   active/inactive status. No "arrived" tick on trial bookings.
 - Trial booking: no confirmation step. A guest's booking only informs the coach that someone

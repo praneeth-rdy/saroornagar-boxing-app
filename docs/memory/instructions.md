@@ -8,6 +8,9 @@ each was applied. Newest first. Settled instructions are promoted into the relev
 
 | Instruction (owner's words, condensed) | Applied in |
 |---|---|
+| "Show the students list sorted on this roll numbers by default." / "Reset the current students attendances & remove Kumar Anna student" | task-16 (list ordered by `roll_no`); hosted data: 3 marks deleted and the student removed through the MCP (2026-11-05). |
+| "These numbers must be unique among the active students. Add a default number in the form incremented based on the existing numbers - First filling the gaps between existing numbers & then if no gap then a plain increment of the highest available roll number." | task-15 and task-16 revised: active-only uniqueness, editable number, `next_roll_no` suggestion (gaps first). `docs/product.md`. |
+| "Can you add permanent numeric roll numbers on each student that students can remember for roll callouts while taking attendance?" | run-3 task-15 (`trainees.roll_no` from a sequence, roster ordered by it), task-16 (roll badge on Today, list, search, header); `docs/product.md` Confirmed. |
 | "Rename the app to just Saroornagar Boxing" | Launcher label "Saroornagar Boxing" (run-3 task-12); `docs/backlog.md` D-05. |
 | "Let's use a numbering, but delete the older ones everytime" (the Downloads APK copy) | `.claude/CLAUDE.md` Toolchain: delete `boxing-club-*.apk`, push `boxing-club-<build>.apk`. |
 | "Replace with latest apk after every run" | `.claude/CLAUDE.md` Toolchain: the Downloads copy is always `/sdcard/Download/boxing-club.apk`, overwritten on each install. |

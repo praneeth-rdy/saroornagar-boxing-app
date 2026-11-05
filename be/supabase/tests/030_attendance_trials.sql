@@ -1,6 +1,6 @@
 -- Attendance and trial bookings: tables, RLS, marking functions, roster, history, booking window.
 begin;
-select plan(141);
+select plan(143);
 
 -- Fixtures: a blocked coach and the pinned clock (2026-06-10 is a Wednesday in India; 06-14 is a Sunday).
 select tests.create_user('blocked@local.test', 'blocked-local-1234', 'Blocked Coach', 'coach');
@@ -144,17 +144,29 @@ select throws_ok(format($$select public.mark_remaining_absent(%L)$$, gen_random_
 -- session_roster ---------------------------------------------------------------------
 select is(
   (select array_agg(full_name order by ordinality) from public.session_roster(:'s_morning') with ordinality),
-  array['amy Adams', 'Bob Bell', 'Zed Zulu'],
-  'the roster lists active trainees ordered case-insensitively by name'
+  array['Zed Zulu', 'amy Adams', 'Bob Bell'],
+  'the roster lists active trainees in roll number order'
+);
+select is(
+  (select array_agg(roll_no order by ordinality) from public.session_roster(:'s_morning') with ordinality),
+  array[1, 2, 3],
+  'the roster carries each roll number'
 );
 select is(
   (select array_agg(status::text order by ordinality) from public.session_roster(:'s_morning') with ordinality),
-  array['absent', 'present', 'absent'],
+  array['absent', 'absent', 'present'],
   'the roster carries each trainee mark'
 );
 select is((select count(*)::int from public.session_roster(:'s_extra') where status is null), 3, 'an unmarked session shows every active trainee with a null status');
 select is((select count(*)::int from public.session_roster(:'s_extra') where trainee_id = :'t_dan'), 0, 'the roster hides inactive trainees');
 select throws_ok(format($$select * from public.session_roster(%L)$$, gen_random_uuid()), 'BXNTF', 'Session not found', 'the roster of an unknown session is not found');
+select tests.authenticate_as('coach@local.test');
+select (public.update_trainee(:'t_zed', 'Zed Zulu', null, null, null, null, 9)).id;
+select is(
+  (select array_agg(full_name order by ordinality) from public.session_roster(:'s_morning') with ordinality),
+  array['amy Adams', 'Bob Bell', 'Zed Zulu'],
+  'a changed roll number moves the trainee in the roster'
+);
 
 -- trainee_attendance_history ----------------------------------------------------------
 select tests.set_clock('2026-06-12 12:00:00+00');

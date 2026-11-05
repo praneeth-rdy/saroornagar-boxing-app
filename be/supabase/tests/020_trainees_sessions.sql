@@ -1,6 +1,6 @@
 -- Trainees and sessions: tables, RLS, trainee functions, photo bucket, day sessions, extra sessions.
 begin;
-select plan(196);
+select plan(233);
 
 -- Fixtures: a blocked coach, plus the pinned clock (2026-06-10 is a Wednesday in India; 06-14 is a Sunday).
 select tests.create_user('blocked@local.test', 'blocked-local-1234', 'Blocked Coach', 'coach');
@@ -32,6 +32,14 @@ select has_index('public', 'trainees', 'trainees_status_full_name_idx', 'trainee
 select has_index('public', 'sessions', 'sessions_regular_slot_key', 'sessions regular slot unique index exists');
 select has_index('public', 'sessions', 'sessions_date_idx', 'sessions date index exists');
 select col_default_is('public', 'trainees', 'status', 'active'::text, 'trainee status defaults to active');
+select col_type_is('public', 'trainees', 'roll_no', 'integer', 'roll_no is an integer');
+select col_not_null('public', 'trainees', 'roll_no', 'roll_no is not null');
+select has_index('public', 'trainees', 'trainees_roll_no_active_key', 'trainees active roll number unique index exists');
+select is(
+  (select indisunique and pg_get_expr(indpred, indrelid) = '(status = ''active''::trainee_status)'
+   from pg_index where indexrelid = 'public.trainees_roll_no_active_key'::regclass),
+  true, 'the roll number index is unique over active students only'
+);
 
 -- Privileges ----------------------------------------------------------------
 select is(
@@ -57,23 +65,25 @@ select is(
   false, 'anon and authenticated have no write privilege on sessions'
 );
 select is(
-  has_function_privilege('authenticated', 'public.create_trainee(text, text, date, date, text)', 'execute')
-    and has_function_privilege('authenticated', 'public.update_trainee(uuid, text, text, date, date, text)', 'execute')
+  has_function_privilege('authenticated', 'public.create_trainee(text, text, date, date, text, integer)', 'execute')
+    and has_function_privilege('authenticated', 'public.update_trainee(uuid, text, text, date, date, text, integer)', 'execute')
     and has_function_privilege('authenticated', 'public.set_trainee_status(uuid, public.trainee_status)', 'execute')
     and has_function_privilege('authenticated', 'public.set_trainee_photo(uuid, text)', 'execute')
     and has_function_privilege('authenticated', 'public.ensure_day_sessions(date)', 'execute')
     and has_function_privilege('authenticated', 'public.add_extra_session(date, time, time)', 'execute')
-    and has_function_privilege('authenticated', 'public.delete_extra_session(uuid)', 'execute'),
+    and has_function_privilege('authenticated', 'public.delete_extra_session(uuid)', 'execute')
+    and has_function_privilege('authenticated', 'public.next_roll_no()', 'execute'),
   true, 'authenticated can execute every trainee and session function'
 );
 select is(
-  has_function_privilege('anon', 'public.create_trainee(text, text, date, date, text)', 'execute')
-    or has_function_privilege('anon', 'public.update_trainee(uuid, text, text, date, date, text)', 'execute')
+  has_function_privilege('anon', 'public.create_trainee(text, text, date, date, text, integer)', 'execute')
+    or has_function_privilege('anon', 'public.update_trainee(uuid, text, text, date, date, text, integer)', 'execute')
     or has_function_privilege('anon', 'public.set_trainee_status(uuid, public.trainee_status)', 'execute')
     or has_function_privilege('anon', 'public.set_trainee_photo(uuid, text)', 'execute')
     or has_function_privilege('anon', 'public.ensure_day_sessions(date)', 'execute')
     or has_function_privilege('anon', 'public.add_extra_session(date, time, time)', 'execute')
-    or has_function_privilege('anon', 'public.delete_extra_session(uuid)', 'execute'),
+    or has_function_privilege('anon', 'public.delete_extra_session(uuid)', 'execute')
+    or has_function_privilege('anon', 'public.next_roll_no()', 'execute'),
   false, 'anon cannot execute any trainee or session function'
 );
 select is(
@@ -82,16 +92,31 @@ select is(
   false, 'API roles cannot execute the private trainee input cleaner'
 );
 select is(
-  (select prosecdef and 'search_path=""' = any(proconfig) from pg_proc where oid = 'public.create_trainee(text, text, date, date, text)'::regprocedure)
+  has_function_privilege('authenticated', 'private.next_roll_no()', 'execute')
+    or has_function_privilege('anon', 'private.next_roll_no()', 'execute')
+    or has_function_privilege('authenticated', 'private.check_roll_no(integer, uuid)', 'execute')
+    or has_function_privilege('anon', 'private.check_roll_no(integer, uuid)', 'execute'),
+  false, 'API roles cannot execute the private roll number helpers'
+);
+select hasnt_function('public', 'create_trainee', array['text', 'text', 'date', 'date', 'text'], 'the 5-argument create_trainee is gone');
+select hasnt_function('public', 'update_trainee', array['uuid', 'text', 'text', 'date', 'date', 'text'], 'the 6-argument update_trainee is gone');
+select is(
+  (select prosecdef and 'search_path=""' = any(proconfig) from pg_proc where oid = 'public.create_trainee(text, text, date, date, text, integer)'::regprocedure)
     and (select prosecdef and 'search_path=""' = any(proconfig) from pg_proc where oid = 'public.ensure_day_sessions(date)'::regprocedure)
-    and (select prosecdef and 'search_path=""' = any(proconfig) from pg_proc where oid = 'public.delete_extra_session(uuid)'::regprocedure),
+    and (select prosecdef and 'search_path=""' = any(proconfig) from pg_proc where oid = 'public.delete_extra_session(uuid)'::regprocedure)
+    and (select prosecdef and 'search_path=""' = any(proconfig) from pg_proc where oid = 'public.update_trainee(uuid, text, text, date, date, text, integer)'::regprocedure)
+    and (select prosecdef and 'search_path=""' = any(proconfig) from pg_proc where oid = 'public.next_roll_no()'::regprocedure),
   true, 'functions are security definer with an empty search_path'
 );
 
 -- Table constraints (as postgres, bypassing the functions) ----------------------
-select throws_ok($$insert into public.trainees (full_name) values ('x')$$, '23514', null, 'trainee name shorter than 2 characters is rejected by the table');
-select throws_ok($$insert into public.trainees (full_name, date_of_birth) values ('Old Timer', '1900-01-01')$$, '23514', null, 'date of birth on 1900-01-01 is rejected by the table');
-select throws_ok($$insert into public.trainees (full_name, notes) values ('Note Taker', repeat('n', 501))$$, '23514', null, 'notes over 500 characters are rejected by the table');
+select throws_ok($$insert into public.trainees (full_name, roll_no) values ('x', 900)$$, '23514', null, 'trainee name shorter than 2 characters is rejected by the table');
+select throws_ok($$insert into public.trainees (full_name, date_of_birth, roll_no) values ('Old Timer', '1900-01-01', 901)$$, '23514', null, 'date of birth on 1900-01-01 is rejected by the table');
+select throws_ok($$insert into public.trainees (full_name, notes, roll_no) values ('Note Taker', repeat('n', 501), 902)$$, '23514', null, 'notes over 500 characters are rejected by the table');
+select throws_ok($$insert into public.trainees (full_name, roll_no) values ('Zero Roll', 0)$$, '23514', null, 'a roll number of 0 is rejected by the table');
+select throws_ok($$insert into public.trainees (full_name) values ('No Roll')$$, '23502', null, 'a missing roll number is rejected by the table');
+select throws_ok($$insert into public.trainees (full_name, roll_no) values ('Copy Roll', 1)$$, '23505', null, 'a second active student on the same number is rejected by the table');
+select lives_ok($$insert into public.trainees (full_name, roll_no, status) values ('Old Roll', 1, 'inactive')$$, 'an inactive student may share an active number at the table');
 select throws_ok($$insert into public.sessions (session_date, slot, starts_at, ends_at) values ('2026-06-10', 'extra', '10:00', '10:00')$$, '23514', null, 'session ending at its start is rejected by the table');
 select lives_ok($$insert into public.sessions (session_date, slot, starts_at, ends_at) values ('2026-06-20', 'morning', '06:00', '08:30')$$, 'a regular slot can be inserted once');
 select throws_ok($$insert into public.sessions (session_date, slot, starts_at, ends_at) values ('2026-06-20', 'morning', '06:30', '09:00')$$, '23505', null, 'a second morning on the same date violates the partial unique index');
@@ -159,6 +184,9 @@ select is((select photo_path from public.trainees where id = :'t1'), null, 'a ne
 select is((select created_by from public.trainees where id = :'t1'), tests.user_id('coach@local.test'), 'create_trainee records the coach as creator');
 select is((select created_by from public.trainees where id = :'t2'), tests.user_id('admin@local.test'), 'create_trainee records the admin as creator');
 select is((select created_at from public.trainees where id = :'t1'), '2026-06-10 12:00:00+00'::timestamptz, 'created_at comes from private.clock()');
+select is((select roll_no from public.trainees where id = :'t1'), 1, 'the first student gets roll number 1 by default');
+select is((select roll_no from public.trainees where id = :'t2'), 2, 'the second student gets roll number 2 by default');
+select is((select roll_no from public.create_trainee('Third Student')), 3, 'the third student gets roll number 3 by default');
 select is((select full_name from public.create_trainee('  Spaced Name  ')), 'Spaced Name', 'create_trainee trims the name');
 select is((select phone from public.create_trainee('Blank Phone', '   ')), null, 'a blank phone becomes null');
 select is((select notes from public.create_trainee('Blank Notes', null, null, null, '   ')), null, 'blank notes become null');
@@ -266,6 +294,46 @@ select tests.authenticate_as_anon();
 select throws_ok(format($$select public.set_trainee_status(%L, 'inactive')$$, :'t1'), '42501', null, 'anon cannot change a status');
 select tests.clear_auth();
 select is((select status::text from public.trainees where id = :'t1'), 'active', 'denied status changes changed nothing');
+
+-- Roll numbers ------------------------------------------------------------------------
+select tests.authenticate_as('coach@local.test');
+select is(public.next_roll_no(), (select max(roll_no) + 1 from public.trainees where status = 'active'), 'with no gap the suggestion is the highest active number plus one');
+select public.next_roll_no() as next_no \gset
+select is((select roll_no from public.create_trainee('No Gap Student')), :next_no, 'a default number with no gap is the highest plus one');
+select is((select roll_no from public.set_trainee_status(:'t2', 'inactive')), 2, 'deactivating keeps the roll number');
+select is(public.next_roll_no(), 2, 'a gap left by an inactive student is suggested first');
+select (public.create_trainee('Gap Filler')).id as t_gap \gset
+select is((select roll_no from public.trainees where id = :'t_gap'), 2, 'a default number fills the gap');
+select is((select count(*)::int from public.trainees where roll_no = 2), 2, 'an active student may share the number of an inactive one');
+select is((select roll_no from public.create_trainee('Picked Number', null, null, null, null, 500)), 500, 'an explicit roll number is accepted');
+select throws_ok($$select public.create_trainee('Copy Number', null, null, null, null, 500)$$, 'BXDUP', 'Roll number 500 is already in use', 'a number held by an active student fails BXDUP');
+select tests.authenticate_as('coach@local.test');
+select throws_ok($$select public.create_trainee('Zero Number', null, null, null, null, 0)$$, 'BXVAL', 'Enter a roll number above 0', 'roll number 0 fails BXVAL');
+select tests.authenticate_as('coach@local.test');
+select throws_ok($$select public.create_trainee('Negative Number', null, null, null, null, -3)$$, 'BXVAL', 'Enter a roll number above 0', 'a negative roll number fails BXVAL');
+select tests.authenticate_as('coach@local.test');
+select throws_ok(format($$select public.set_trainee_status(%L, 'active')$$, :'t2'), 'BXDUP', 'Roll number 2 is already in use', 'reactivating onto a number now in use fails BXDUP');
+select tests.authenticate_as('coach@local.test');
+select is((select status::text from public.trainees where id = :'t2'), 'inactive', 'the clashing reactivation changed nothing');
+select is((select roll_no from public.update_trainee(:'t2', 'Anil Rao', null, null, null, null, 500)), 500, 'an inactive student may take a number in use');
+select is((select roll_no from public.update_trainee(:'t2', 'Anil Rao', null, null, null, null, 600)), 600, 'update_trainee changes the roll number');
+select is((select status::text from public.set_trainee_status(:'t2', 'active')), 'active', 'reactivating on a free number works');
+select is((select roll_no from public.update_trainee(:'t2', 'Anil Rao', null, null, null, null, 600)), 600, 'saving an active student with their own number works');
+select is((select roll_no from public.update_trainee(:'t2', 'Anil Rao', null, null, null, null)), 600, 'a null roll number keeps the current one');
+select throws_ok(format($$select public.update_trainee(%L, 'Anil Rao', null, null, null, null, 500)$$, :'t2'), 'BXDUP', 'Roll number 500 is already in use', 'update_trainee onto an active number fails BXDUP');
+select tests.authenticate_as('coach@local.test');
+select throws_ok(format($$select public.update_trainee(%L, 'Anil Rao', null, null, null, null, 0)$$, :'t2'), 'BXVAL', 'Enter a roll number above 0', 'update_trainee with roll number 0 fails BXVAL');
+select tests.clear_auth();
+select is((select roll_no from public.trainees where id = :'t2'), 600, 'failed roll number updates changed nothing');
+savepoint no_active;
+update public.trainees set status = 'inactive';
+select is(private.next_roll_no(), 1, 'with no active students the suggestion is 1');
+rollback to savepoint no_active;
+select tests.authenticate_as('blocked@local.test');
+select throws_ok($$select public.next_roll_no()$$, 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot ask for a roll number');
+select tests.authenticate_as_anon();
+select throws_ok($$select public.next_roll_no()$$, '42501', null, 'anon cannot ask for a roll number');
+select tests.clear_auth();
 
 -- set_trainee_photo ------------------------------------------------------------------
 select tests.authenticate_as('coach@local.test');
