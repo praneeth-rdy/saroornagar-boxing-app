@@ -10,7 +10,8 @@ type StaffRole = 'admin' | 'coach';
 interface Profile {
   id: string;
   full_name: string;
-  phone: string;
+  email: string;
+  phone: string | null;
   role: StaffRole;
   is_blocked: boolean;
   created_at: string;
@@ -26,6 +27,8 @@ const corsHeaders = {
 
 // Long enough to be permanent; "none" lifts it.
 const BAN_FOREVER = '876000h';
+// Same pattern as private.normalize_email and the profiles_email_check constraint.
+const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_BODY_BYTES = 16 * 1024;
 
@@ -60,6 +63,20 @@ function normalizePhone(value: unknown): string {
   if (digits.length === 10) return `91${digits}`;
   if (digits.length === 12 && digits.startsWith('91')) return digits;
   throw invalid('Enter a 10-digit mobile number');
+}
+
+// Absent, null or blank means no phone, as update_staff treats a blank p_phone.
+function optionalPhone(value: unknown): string | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value === 'string' && value.trim() === '') return null;
+  return normalizePhone(value);
+}
+
+// Same rule as private.normalize_email: trimmed, lower-cased, one @ and a dotted domain.
+function requireEmail(value: unknown): string {
+  const email = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (!EMAIL_PATTERN.test(email)) throw invalid('Enter a valid email address');
+  return email;
 }
 
 function requireFullName(value: unknown): string {
@@ -123,6 +140,16 @@ async function findProfile(admin: SupabaseClient, userId: string): Promise<Profi
   return data;
 }
 
+async function phoneTaken(admin: SupabaseClient, phone: string): Promise<boolean> {
+  const { data, error } = await admin
+    .from('profiles')
+    .select('id')
+    .eq('phone', phone)
+    .limit(1);
+  if (error) throw error;
+  return (data ?? []).length > 0;
+}
+
 async function requireProfile(admin: SupabaseClient, userId: string): Promise<Profile> {
   const profile = await findProfile(admin, userId);
   if (!profile) throw new HttpError(404, 'BXNTF', 'Staff member not found');
@@ -153,23 +180,30 @@ async function authenticate(req: Request, url: string, anonKey: string): Promise
 
 async function createStaff(admin: SupabaseClient, body: Record<string, unknown>) {
   const fullName = requireFullName(body.full_name);
-  const phone = normalizePhone(body.phone);
+  const email = requireEmail(body.email);
+  const phone = optionalPhone(body.phone);
   const password = requirePassword(body.password);
   const role = requireRole(body.role);
 
-  // The on_auth_user_created trigger reads the role from app_metadata, which only the
-  // service role can write, so a self sign-up never becomes staff.
+  const phoneClash = new HttpError(409, 'BXDUP', 'This number belongs to another staff member');
+  // The trigger's unique violation reaches us only as a generic Auth database error, so the
+  // clash is checked up front and again after a failed create (a concurrent insert).
+  if (phone && (await phoneTaken(admin, phone))) throw phoneClash;
+
+  // The on_auth_user_created trigger reads the role and phone from app_metadata, which only
+  // the service role can write, so a self sign-up never becomes staff.
   const { data, error } = await admin.auth.admin.createUser({
-    phone,
+    email,
     password,
-    phone_confirm: true,
-    app_metadata: { role, full_name: fullName },
+    email_confirm: true,
+    app_metadata: phone ? { role, full_name: fullName, phone } : { role, full_name: fullName },
     user_metadata: { full_name: fullName },
   });
   if (error) {
-    if (error.code === 'phone_exists') {
-      throw new HttpError(409, 'BXDUP', 'A staff member with this number already exists');
+    if (error.code === 'email_exists') {
+      throw new HttpError(409, 'BXDUP', 'A staff member with this email already exists');
     }
+    if (phone && (await phoneTaken(admin, phone))) throw phoneClash;
     throw error;
   }
 

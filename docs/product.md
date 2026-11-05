@@ -18,8 +18,9 @@ the date) or marked as an open question. Nothing is built from an assumption.
 - One club, one location. Two sessions every day, morning and evening, except Sunday. A coach
   or staff member can add an extra session on a day when needed.
 - Trial booking happens in the app, with no account needed for the visitor.
-- Sign-in is phone number and password (owner, 2026-11-05), for staff and trainees alike. No
-  OTP, no SMS provider.
+- Sign-in is email and password for staff, with a forgot-password flow by emailed code
+  (owner, 2026-11-05, replacing the earlier phone + password choice). No SMS provider.
+  Visitors booking a trial still give a phone number.
 - Roles: coach/staff and admin. Everything a coach can do, an admin can do too. Admin only
   (owner, 2026-11-05): manage coach/staff accounts (create, edit, remove), reset any user's
   password, block or unblock a user's access.

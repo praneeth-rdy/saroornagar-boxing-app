@@ -1,11 +1,11 @@
 -- Identity: helpers, profiles RLS, update_staff, current_profile, auth triggers, seed accounts.
 begin;
-select plan(80);
+select plan(101);
 
 -- Fixed seed accounts (seed.sql) plus fixtures created per test run.
-select tests.create_user('919000000010', 'blocked-local-1234', 'Blocked Coach', 'coach') as blocked_id \gset
-select tests.create_user('919000000011', 'blocked-local-1234', 'Blocked Admin', 'admin') as blocked_admin_id \gset
-update public.profiles set is_blocked = true where phone in ('919000000010', '919000000011');
+select tests.create_user('blocked@local.test', 'blocked-local-1234', 'Blocked Coach', 'coach') as blocked_id \gset
+select tests.create_user('blocked-admin@local.test', 'blocked-local-1234', 'Blocked Admin', 'admin') as blocked_admin_id \gset
+update public.profiles set is_blocked = true where email in ('blocked@local.test', 'blocked-admin@local.test');
 
 -- Structure ----------------------------------------------------------------
 select has_table('public', 'profiles', 'profiles table exists');
@@ -57,12 +57,12 @@ select is(
   false, 'authenticated cannot execute the other private functions'
 );
 select is(
-  has_function_privilege('anon', 'public.update_staff(uuid, text, public.staff_role)', 'execute')
+  has_function_privilege('anon', 'public.update_staff(uuid, text, public.staff_role, text)', 'execute')
     or has_function_privilege('anon', 'public.current_profile()', 'execute'),
   false, 'anon cannot execute update_staff or current_profile'
 );
 select is(
-  has_function_privilege('authenticated', 'public.update_staff(uuid, text, public.staff_role)', 'execute')
+  has_function_privilege('authenticated', 'public.update_staff(uuid, text, public.staff_role, text)', 'execute')
     and has_function_privilege('authenticated', 'public.current_profile()', 'execute'),
   true, 'authenticated can execute update_staff and current_profile'
 );
@@ -93,47 +93,47 @@ select ok(abs(extract(epoch from (private.clock() - now()))) < 5, 'clock falls b
 
 -- updated_at trigger -----------------------------------------------------------
 select tests.set_clock('2026-04-01 10:00:00+00');
-update public.profiles set full_name = 'Local Coach Two' where phone = '919000000002';
+update public.profiles set full_name = 'Local Coach Two' where email = 'coach@local.test';
 select is(
-  (select updated_at from public.profiles where phone = '919000000002'),
+  (select updated_at from public.profiles where email = 'coach@local.test'),
   '2026-04-01 10:00:00+00'::timestamptz, 'update stamps updated_at from private.clock()'
 );
 select tests.set_clock(null);
 
 -- Seed accounts and auth triggers --------------------------------------------------
 select is(
-  (select role::text from public.profiles where phone = '919000000001'),
+  (select role::text from public.profiles where email = 'admin@local.test'),
   'admin', 'seed admin profile exists with role admin'
 );
 select is(
-  (select role::text from public.profiles where phone = '919000000002'),
+  (select role::text from public.profiles where email = 'coach@local.test'),
   'coach', 'seed coach profile exists with role coach'
 );
 select is(
-  (select id from public.profiles where phone = '919000000001'),
+  (select id from public.profiles where email = 'admin@local.test'),
   '00000000-0000-4000-a000-000000000001'::uuid, 'seed admin uses the fixed uuid'
 );
 select is(
   (select count(*)::int from auth.identities where user_id in
     ('00000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000002')),
-  2, 'seed accounts have phone identities'
+  2, 'seed accounts have email identities'
 );
 
-select tests.create_user('919000000020', 'x-local-1234', null, 'coach') as nameless_id \gset
+select tests.create_user('nameless@local.test', 'x-local-1234', null, 'coach', '919000000020') as nameless_id \gset
 select is(
   (select full_name from public.profiles where id = :'nameless_id'),
   '919000000020', 'missing full_name falls back to the phone'
 );
 -- The role is read from app_metadata only; a sign-up without it, or with it only in user metadata, is not staff.
-select tests.create_user_without_role('919000000022', 'x-local-1234') as roleless_id \gset
-select tests.create_user_without_role('919000000023', 'x-local-1234', 'admin') as self_admin_id \gset
+select tests.create_user_without_role('roleless@local.test', 'x-local-1234') as roleless_id \gset
+select tests.create_user_without_role('self-admin@local.test', 'x-local-1234', 'admin') as self_admin_id \gset
 select is(
   (select count(*)::int from public.profiles where id in (:'roleless_id', :'self_admin_id')),
   0, 'no app_metadata role (none, or admin in user metadata only) creates no profile'
 );
 select is(
-  tests.create_user('919000000020', 'x-local-1234', null, 'coach'), :'nameless_id'::uuid,
-  'tests.create_user is idempotent on phone'
+  tests.create_user('nameless@local.test', 'x-local-1234', null, 'coach', '919000000020'), :'nameless_id'::uuid,
+  'tests.create_user is idempotent on email'
 );
 update auth.users set phone = '919000000021' where id = :'nameless_id';
 select is(
@@ -141,15 +141,15 @@ select is(
   '919000000021', 'changing auth.users.phone updates profiles.phone'
 );
 select throws_ok(
-  $$insert into public.profiles (id, full_name, phone) values (gen_random_uuid(), 'No Auth User', '919000000078')$$,
+  $$insert into public.profiles (id, full_name, email, phone) values (gen_random_uuid(), 'No Auth User', 'ghost@local.test', '919000000078')$$,
   '23503', null, 'profile needs an auth user (foreign key)'
 );
 select throws_ok(
-  $$update public.profiles set phone = '919000000001' where phone = '919000000002'$$,
+  $$update public.profiles set phone = '919000000021' where email = 'coach@local.test'$$,
   '23505', null, 'phone is unique'
 );
 select throws_ok(
-  $$update public.profiles set full_name = 'x' where phone = '919000000002'$$,
+  $$update public.profiles set full_name = 'x' where email = 'coach@local.test'$$,
   '23514', null, 'full_name shorter than 2 characters is rejected'
 );
 delete from auth.users where phone = '919000000021';
@@ -159,123 +159,219 @@ select is(
 );
 
 -- is_staff / is_admin (role reset: callers reach them only through policies; claims stay) --
-select tests.authenticate_as('919000000001');
+select tests.authenticate_as('admin@local.test');
 reset role;
 select is(private.is_staff(), true, 'admin is staff');
 select is(private.is_admin(), true, 'admin is admin');
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 reset role;
 select is(private.is_staff(), true, 'coach is staff');
 select is(private.is_admin(), false, 'coach is not admin');
-select tests.authenticate_as('919000000011');
+select tests.authenticate_as('blocked-admin@local.test');
 reset role;
 select is(private.is_staff(), false, 'blocked admin is not staff');
 select is(private.is_admin(), false, 'blocked admin is not admin');
 select tests.clear_auth();
 
 -- profiles RLS ---------------------------------------------------------------------
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select cmp_ok((select count(*)::int from public.profiles), '>=', 4, 'coach reads every staff row');
-select tests.authenticate_as('919000000010');
+select tests.authenticate_as('blocked@local.test');
 select is((select count(*)::int from public.profiles), 1, 'blocked coach reads only their own row');
-select is((select phone from public.profiles), '919000000010', 'the blocked coach row is their own');
+select is((select email from public.profiles), 'blocked@local.test', 'the blocked coach row is their own');
 
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select throws_ok($$insert into public.profiles (id, full_name, phone) values (gen_random_uuid(), 'Sneaky', '919000000077')$$, '42501', null, 'coach cannot insert a profile');
-select tests.authenticate_as('919000000002');
-select throws_ok($$update public.profiles set role = 'admin' where phone = '919000000002'$$, '42501', null, 'coach cannot promote themselves with a direct update');
-select tests.authenticate_as('919000000002');
-select throws_ok($$delete from public.profiles where phone = '919000000001'$$, '42501', null, 'coach cannot delete a profile');
-select tests.authenticate_as('919000000001');
-select throws_ok($$update public.profiles set role = 'coach' where phone = '919000000002'$$, '42501', null, 'admin cannot update profiles directly either');
+select tests.authenticate_as('coach@local.test');
+select throws_ok($$update public.profiles set role = 'admin' where email = 'coach@local.test'$$, '42501', null, 'coach cannot promote themselves with a direct update');
+select tests.authenticate_as('coach@local.test');
+select throws_ok($$delete from public.profiles where email = 'admin@local.test'$$, '42501', null, 'coach cannot delete a profile');
+select tests.authenticate_as('admin@local.test');
+select throws_ok($$update public.profiles set role = 'coach' where email = 'coach@local.test'$$, '42501', null, 'admin cannot update profiles directly either');
 
 select tests.authenticate_as_anon();
 select throws_ok($$select count(*) from public.profiles$$, '42501', null, 'anon has no select privilege on profiles');
 select tests.clear_auth();
 
 -- update_staff ----------------------------------------------------------------------
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select throws_ok(
-  format($$select public.update_staff(%L, 'Hacked Name', 'admin')$$, tests.user_id('919000000002')),
+  format($$select public.update_staff(%L, 'Hacked Name', 'admin', null)$$, tests.user_id('coach@local.test')),
   'BXPRM', 'Only an admin can edit staff', 'coach cannot edit staff (self)'
 );
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select throws_ok(
-  format($$select public.update_staff(%L, 'Hacked Name', 'coach')$$, tests.user_id('919000000001')),
+  format($$select public.update_staff(%L, 'Hacked Name', 'coach', null)$$, tests.user_id('admin@local.test')),
   'BXPRM', 'Only an admin can edit staff', 'coach cannot edit the admin'
 );
-select tests.authenticate_as('919000000011');
+select tests.authenticate_as('blocked-admin@local.test');
 select throws_ok(
-  format($$select public.update_staff(%L, 'Still Admin', 'admin')$$, tests.user_id('919000000002')),
+  format($$select public.update_staff(%L, 'Still Admin', 'admin', null)$$, tests.user_id('coach@local.test')),
   'BXPRM', 'Only an admin can edit staff', 'blocked admin cannot edit staff'
 );
 select tests.authenticate_as_anon();
 select throws_ok(
-  format($$select public.update_staff(%L, 'Anon Edit', 'coach')$$, tests.user_id('919000000002')),
+  format($$select public.update_staff(%L, 'Anon Edit', 'coach', null)$$, tests.user_id('coach@local.test')),
   '42501', null, 'anon cannot call update_staff'
 );
 
-select tests.authenticate_as('919000000001');
+select tests.authenticate_as('admin@local.test');
 select throws_ok(
-  $$select public.update_staff('00000000-0000-4000-a000-0000000000ff', 'Ghost Person', 'coach')$$,
+  $$select public.update_staff('00000000-0000-4000-a000-0000000000ff', 'Ghost Person', 'coach', null)$$,
   'BXNTF', 'Staff member not found', 'missing staff id fails BXNTF'
 );
-select tests.authenticate_as('919000000001');
+select tests.authenticate_as('admin@local.test');
 select throws_ok(
-  format($$select public.update_staff(%L, 'Local Admin', 'coach')$$, tests.user_id('919000000001')),
+  format($$select public.update_staff(%L, 'Local Admin', 'coach', null)$$, tests.user_id('admin@local.test')),
   'BXVAL', 'You cannot change your own role', 'admin cannot change their own role'
 );
-select tests.authenticate_as('919000000001');
+select tests.authenticate_as('admin@local.test');
 select throws_ok(
-  format($$select public.update_staff(%L, 'X', 'coach')$$, tests.user_id('919000000002')),
+  format($$select public.update_staff(%L, 'X', 'coach', null)$$, tests.user_id('coach@local.test')),
   'BXVAL', 'Enter a name between 2 and 80 characters', 'one-character name fails'
 );
-select tests.authenticate_as('919000000001');
+select tests.authenticate_as('admin@local.test');
 select throws_ok(
-  format($$select public.update_staff(%L, '   ', 'coach')$$, tests.user_id('919000000002')),
+  format($$select public.update_staff(%L, '   ', 'coach', null)$$, tests.user_id('coach@local.test')),
   'BXVAL', 'Enter a name between 2 and 80 characters', 'blank name fails'
 );
-select tests.authenticate_as('919000000001');
+select tests.authenticate_as('admin@local.test');
 select throws_ok(
-  format($$select public.update_staff(%L, %L, 'coach')$$, tests.user_id('919000000002'), repeat('a', 81)),
+  format($$select public.update_staff(%L, %L, 'coach', null)$$, tests.user_id('coach@local.test'), repeat('a', 81)),
   'BXVAL', 'Enter a name between 2 and 80 characters', '81-character name fails'
 );
-select tests.authenticate_as('919000000001');
+select tests.authenticate_as('admin@local.test');
 select throws_ok(
-  format($$select public.update_staff(%L, 'Local Coach', null)$$, tests.user_id('919000000002')),
+  format($$select public.update_staff(%L, 'Local Coach', null, null)$$, tests.user_id('coach@local.test')),
   'BXVAL', 'Choose a role', 'null role fails'
 );
 
-select tests.authenticate_as('919000000001');
+select tests.authenticate_as('admin@local.test');
 select is(
   (select role::text || '|' || full_name from public.update_staff(
-    tests.user_id('919000000002'), '  Coach Renamed  ', 'admin')),
+    tests.user_id('coach@local.test'), '  Coach Renamed  ', 'admin', null)),
   'admin|Coach Renamed', 'admin edits another staff member; name is trimmed'
 );
 select is(
-  (select role::text from public.update_staff(tests.user_id('919000000001'), 'Local Admin Two', 'admin')),
+  (select role::text from public.update_staff(tests.user_id('admin@local.test'), 'Local Admin Two', 'admin', null)),
   'admin', 'admin can rename themselves keeping their role'
 );
 select tests.clear_auth();
 select is(
-  (select full_name from public.profiles where phone = '919000000001'),
+  (select full_name from public.profiles where email = 'admin@local.test'),
   'Local Admin Two', 'the rename was persisted'
 );
 
 -- current_profile ------------------------------------------------------------------------
-select tests.authenticate_as('919000000002');
-select is((select phone from public.current_profile()), '919000000002', 'current_profile returns the own row');
-select tests.authenticate_as('919000000010');
+select tests.authenticate_as('coach@local.test');
+select is((select email from public.current_profile()), 'coach@local.test', 'current_profile returns the own row');
+select tests.authenticate_as('blocked@local.test');
 select is((select is_blocked from public.current_profile()), true, 'current_profile returns the own row for a blocked user');
-select is((select phone from public.current_profile()), '919000000010', 'blocked user gets their own phone');
+select is((select email from public.current_profile()), 'blocked@local.test', 'blocked user gets their own email');
 select tests.clear_auth();
 
-select tests.create_user('919000000030', 'x-local-1234', 'No Profile', 'coach') as orphan_id \gset
+select tests.create_user('orphan@local.test', 'x-local-1234', 'No Profile', 'coach') as orphan_id \gset
 delete from public.profiles where id = :'orphan_id';
-select tests.authenticate_as('919000000030');
+select tests.authenticate_as('orphan@local.test');
 select throws_ok($$select public.current_profile()$$, 'BXNTF', 'Profile not found', 'current_profile fails BXNTF without a profile');
 select tests.authenticate_as_anon();
 select throws_ok($$select public.current_profile()$$, '42501', null, 'anon cannot call current_profile');
+select tests.clear_auth();
+
+-- Email identity ---------------------------------------------------------------------------
+select col_not_null('public', 'profiles', 'email', 'profiles.email is required');
+select col_is_unique('public', 'profiles', 'email', 'profiles.email is unique');
+select col_is_null('public', 'profiles', 'phone', 'profiles.phone is optional');
+select has_trigger('auth', 'users', 'on_auth_user_email_changed', 'email-sync trigger exists');
+
+select tests.create_user('Mixed.Case@Local.Test', 'x-local-1234', 'Mixed Case', 'coach') as mixed_id \gset
+select is(
+  (select email from public.profiles where id = :'mixed_id'),
+  'mixed.case@local.test', 'profile email is lower-cased'
+);
+select is(
+  (select phone from public.profiles where id = :'mixed_id'),
+  null, 'a profile can be created without a phone'
+);
+insert into auth.users (id, aud, role, raw_app_meta_data)
+values ('00000000-0000-4000-a000-0000000000e1', 'authenticated', 'authenticated', '{"role": "coach"}'::jsonb);
+select is(
+  (select count(*)::int from public.profiles where id = '00000000-0000-4000-a000-0000000000e1'),
+  0, 'an auth user without an email gets no profile'
+);
+update auth.users set email = 'Renamed.Mixed@Local.Test' where id = :'mixed_id';
+select is(
+  (select email from public.profiles where id = :'mixed_id'),
+  'renamed.mixed@local.test', 'changing auth.users.email updates profiles.email'
+);
+select throws_ok(
+  $$update public.profiles set email = 'not-an-email' where email = 'renamed.mixed@local.test'$$,
+  '23514', null, 'a malformed profile email is rejected'
+);
+select throws_ok(
+  $$update public.profiles set email = 'admin@local.test' where email = 'renamed.mixed@local.test'$$,
+  '23505', null, 'email is unique'
+);
+
+-- update_staff phone -------------------------------------------------------------------------
+select tests.create_user('phoned@local.test', 'x-local-1234', 'Phoned Coach', 'coach', '919000000040') as phoned_id \gset
+select tests.authenticate_as('admin@local.test');
+select is(
+  (select phone from public.update_staff(:'mixed_id', 'Mixed Case', 'coach', '919000000041')),
+  '919000000041', 'admin sets a staff phone'
+);
+select is(
+  (select phone from public.update_staff(:'mixed_id', 'Mixed Case', 'coach', null)),
+  null, 'a null phone clears the staff phone'
+);
+select throws_ok(
+  format($$select public.update_staff(%L, 'Mixed Case', 'coach', '919000000040')$$, :'mixed_id'),
+  'BXDUP', 'This number belongs to another staff member', 'a phone used by another staff member fails BXDUP'
+);
+select tests.authenticate_as('phoned@local.test');
+select throws_ok(
+  format($$select public.update_staff(%L, 'Mixed Case', 'coach', '919000000042')$$, :'mixed_id'),
+  'BXPRM', 'Only an admin can edit staff', 'coach cannot set a staff phone'
+);
+select tests.authenticate_as_anon();
+select throws_ok(
+  format($$select public.update_staff(%L, 'Mixed Case', 'coach', '919000000042')$$, :'mixed_id'),
+  '42501', null, 'anon cannot set a staff phone'
+);
+select tests.clear_auth();
+
+-- profile on app_metadata update --------------------------------------------------------------
+select tests.create_user_like_gotrue('Gotrue@Local.Test', 'x-local-1234', 'Gotrue Coach', 'coach') as gotrue_id \gset
+select is(
+  (select email || '|' || full_name || '|' || role::text from public.profiles where id = :'gotrue_id'),
+  'gotrue@local.test|Gotrue Coach|coach', 'insert then app_metadata update creates the profile'
+);
+select tests.create_user('direct@local.test', 'x-local-1234', 'Direct Coach', 'coach') as direct_id \gset
+select is(
+  (select role::text from public.profiles where id = :'direct_id'), 'coach',
+  'direct insert with app_metadata still creates the profile'
+);
+update auth.users set raw_app_meta_data = raw_app_meta_data || '{"role": "admin"}'::jsonb where id = :'gotrue_id';
+select is(
+  (select role::text from public.profiles where id = :'gotrue_id'), 'coach',
+  'a later app_metadata role change leaves profiles.role alone'
+);
+select tests.create_user_without_role('meta-norole@local.test', 'x-local-1234') as meta_norole_id \gset
+update auth.users set raw_app_meta_data = raw_app_meta_data || '{"full_name": "No Role"}'::jsonb where id = :'meta_norole_id';
+select is(
+  (select count(*)::int from public.profiles where id = :'meta_norole_id'), 0,
+  'a metadata update without a role creates no profile'
+);
+update auth.users set raw_app_meta_data = raw_app_meta_data || '{"role": "trainee"}'::jsonb where id = :'meta_norole_id';
+select is(
+  (select count(*)::int from public.profiles where id = :'meta_norole_id'), 0,
+  'a metadata update with a non-staff role creates no profile'
+);
+select tests.authenticate_as_anon();
+select throws_ok(
+  format($$select private.ensure_profile((select u from auth.users u where u.id = %L))$$, :'gotrue_id'),
+  '42501', null, 'anon cannot call private.ensure_profile'
+);
 select tests.clear_auth();
 
 select * from finish();

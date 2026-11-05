@@ -3,11 +3,11 @@ begin;
 select plan(117);
 
 -- Fixtures: a blocked coach and the pinned clock (2026-06-10 is a Wednesday in India; 06-14 is a Sunday).
-select tests.create_user('919000000010', 'blocked-local-1234', 'Blocked Coach', 'coach');
-update public.profiles set is_blocked = true where phone = '919000000010';
+select tests.create_user('blocked@local.test', 'blocked-local-1234', 'Blocked Coach', 'coach');
+update public.profiles set is_blocked = true where email = 'blocked@local.test';
 select tests.set_clock('2026-06-10 12:00:00+00');
 
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select (public.create_trainee('Zed Zulu')).id as t_zed \gset
 select (public.create_trainee('amy Adams')).id as t_amy \gset
 select (public.create_trainee('Bob Bell')).id as t_bob \gset
@@ -98,7 +98,7 @@ select is(
 -- mark_attendance: access ----------------------------------------------------
 select tests.authenticate_as_anon();
 select throws_ok(format($$select public.mark_attendance(%L, %L, 'present')$$, :'s_morning', :'t_amy'), '42501', null, 'anon cannot call mark_attendance');
-select tests.authenticate_as('919000000010');
+select tests.authenticate_as('blocked@local.test');
 select throws_ok(format($$select public.mark_attendance(%L, %L, 'present')$$, :'s_morning', :'t_amy'), 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot mark attendance');
 select throws_ok(format($$select public.mark_remaining_absent(%L)$$, :'s_morning'), 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot mark everyone absent');
 select throws_ok(format($$select * from public.session_roster(%L)$$, :'s_morning'), 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot read the roster');
@@ -106,22 +106,22 @@ select throws_ok(format($$select * from public.trainee_attendance_history(%L, '2
 select throws_ok($$select * from public.trial_bookings_between('2026-06-01', '2026-06-30')$$, 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot list trial bookings');
 
 -- mark_attendance: behaviour ---------------------------------------------------
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select is((select status::text from public.mark_attendance(:'s_morning', :'t_amy', 'present')), 'present', 'marking present inserts and returns the row');
-select is((select marked_by from public.attendance where session_id = :'s_morning' and trainee_id = :'t_amy'), tests.user_id('919000000002'), 'the mark records the coach who made it');
+select is((select marked_by from public.attendance where session_id = :'s_morning' and trainee_id = :'t_amy'), tests.user_id('coach@local.test'), 'the mark records the coach who made it');
 select is((select count(*)::int from public.attendance where session_id = :'s_morning'), 1, 'one attendance row exists after the first mark');
 
 -- Advance the clock so a real update is distinguishable from a no-op.
 select tests.set_clock('2026-06-10 12:05:00+00');
-select tests.authenticate_as('919000000001');
+select tests.authenticate_as('admin@local.test');
 select is((select status::text from public.mark_attendance(:'s_morning', :'t_amy', 'present')), 'present', 'the same status is a no-op that still returns the row');
-select is((select marked_by from public.attendance where session_id = :'s_morning' and trainee_id = :'t_amy'), tests.user_id('919000000002'), 'a no-op keeps the original marker');
+select is((select marked_by from public.attendance where session_id = :'s_morning' and trainee_id = :'t_amy'), tests.user_id('coach@local.test'), 'a no-op keeps the original marker');
 select is((select marked_at from public.attendance where session_id = :'s_morning' and trainee_id = :'t_amy'), '2026-06-10 12:00:00+00'::timestamptz, 'a no-op keeps the original time');
 select is((select status::text from public.mark_attendance(:'s_morning', :'t_amy', 'absent')), 'absent', 'a different status corrects the mark');
-select is((select marked_by from public.attendance where session_id = :'s_morning' and trainee_id = :'t_amy'), tests.user_id('919000000001'), 'a correction records the new marker');
+select is((select marked_by from public.attendance where session_id = :'s_morning' and trainee_id = :'t_amy'), tests.user_id('admin@local.test'), 'a correction records the new marker');
 select is((select marked_at from public.attendance where session_id = :'s_morning' and trainee_id = :'t_amy'), '2026-06-10 12:05:00+00'::timestamptz, 'a correction records the new time');
 select is((select count(*)::int from public.attendance where session_id = :'s_morning'), 1, 'correcting never adds a second row');
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select throws_ok(format($$select public.mark_attendance(%L, %L, 'present')$$, :'s_morning', :'t_dan'), 'BXVAL', 'This trainee is inactive', 'an inactive trainee cannot be marked');
 select throws_ok(format($$select public.mark_attendance(%L, %L, 'present')$$, gen_random_uuid(), :'t_amy'), 'BXNTF', 'Session not found', 'an unknown session is not found');
 select throws_ok(format($$select public.mark_attendance(%L, %L, 'present')$$, :'s_morning', gen_random_uuid()), 'BXNTF', 'Trainee not found', 'an unknown trainee is not found');
@@ -178,11 +178,11 @@ select is((select count(*)::int from public.attendance where session_id = :'s_mo
 select throws_ok(format($$insert into public.attendance (session_id, trainee_id, status) values (%L, %L, 'present')$$, :'s_extra', :'t_amy'), '42501', null, 'staff cannot insert attendance directly');
 select throws_ok(format($$update public.attendance set status = 'present' where session_id = %L$$, :'s_morning'), '42501', null, 'staff cannot update attendance directly');
 select throws_ok(format($$delete from public.attendance where session_id = %L$$, :'s_morning'), '42501', null, 'staff cannot delete attendance directly');
-select tests.authenticate_as('919000000010');
+select tests.authenticate_as('blocked@local.test');
 select is((select count(*)::int from public.attendance), 0, 'a blocked coach sees no attendance rows');
 select tests.authenticate_as_anon();
 select throws_ok($$select count(*) from public.attendance$$, '42501', null, 'anon has no select privilege on attendance');
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 
 -- delete_extra_session with attendance -------------------------------------------------------
 select public.mark_attendance(:'s_extra', :'t_bob', 'present');
@@ -255,7 +255,7 @@ select is(
 select tests.set_clock('2026-06-10 12:00:00+00');
 
 -- trial_bookings_between: staff ---------------------------------------------------------------------------------
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select is((select count(*)::int from public.trial_bookings), 7, 'staff can select every trial booking directly');
 select is((select count(*)::int from public.trial_bookings_between('2026-06-10', '2026-06-12')), 6, 'the staff list covers the requested range');
 select is(
@@ -265,13 +265,13 @@ select is(
 );
 select is((select count(*)::int from public.trial_bookings_between('2026-06-13', '2026-07-31')), 1, 'the staff list excludes days outside the range');
 select throws_ok($$select * from public.trial_bookings_between('2026-06-30', '2026-06-01')$$, 'BXVAL', 'The end date is before the start date', 'the staff list refuses an inverted range');
-select tests.authenticate_as('919000000010');
+select tests.authenticate_as('blocked@local.test');
 select is((select count(*)::int from public.trial_bookings), 0, 'a blocked coach sees no trial bookings directly');
 select tests.authenticate_as_anon();
 select throws_ok($$select * from public.trial_bookings_between('2026-06-01', '2026-06-30')$$, '42501', null, 'anon cannot call trial_bookings_between');
 
 -- Authenticated users can book too ------------------------------------------------------------------------------------
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select is((select count(*)::int from public.book_trial('Staff Friend', '9876543255', '2026-06-13', 'evening', 'device-key-ffffffff-0006', null, 40)), 1, 'a signed-in user can book a trial');
 
 select * from finish();

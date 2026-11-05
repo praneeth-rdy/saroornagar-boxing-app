@@ -8,6 +8,8 @@ each was applied. Newest first. Settled instructions are promoted into the relev
 
 | Instruction (owner's words, condensed) | Applied in |
 |---|---|
+| "Let's remove club text from the logo" (after "Can you show me variations for L5?") | Logo canvas: every artboard reads "Saroornagar Boxing"; five L5 badge variations added (L5a..L5e). The launcher label stays "Boxing Club" until the owner picks a name. |
+| "Can we do an email-password sign-in instead and add a forgot password option too?" / "Phone sign-in is disabled." | `docs/product.md` Confirmed, `docs/decisions.md`; run 3 packages (`.claude/handoffs/2026-11-05-release-1-run-3/`): profiles by email, Edge Function by email, sign-in and forgot-password screens, staff admin by email. |
 | "Please also add a cleaner, readable & short name" (the app name on the device) | Launcher label set to "Boxing Club" in the main Android manifest (2026-11-05); alternatives shown on the logo canvas; the owner can rename when picking a logo. |
 | "Create logo options and show me so that I can choose." | Logo canvas (six options, direction A palette) under `docs/design/logos/project/`, published as a Design canvas; decision D-05 in `docs/backlog.md`. |
 | "I keep seeing an error message that says You are offline ... while trying to sign-in." | Cause: no INTERNET permission in the main Android manifest (release builds). Fixed 2026-11-05; review log R3-01. Also: a disabled Phone provider now shows its own message instead of a mismatch. |

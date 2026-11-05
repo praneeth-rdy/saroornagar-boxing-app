@@ -4,6 +4,12 @@ Newest first. Short: the decision, the reason, the alternatives considered.
 
 ## 2026-11-05
 
+- **Staff sign in by email and password; forgot password by emailed code.** Phone sign-in
+  needed the hosted Phone provider and had no self-service reset; email auth is on by
+  default and the recovery OTP needs no deep link. The built-in sender's free-tier rate
+  limit is accepted for a club; custom SMTP is a later decision. Alternative kept out: a
+  recovery link with a custom URL scheme (needs redirect allow-listing and app links).
+
 - **Design direction A, Ivory and Graphite** (owner's pick from the canvas
   https://claude.ai/artifact/FCyab964t4z3EBViU17TeE, files in `docs/design/directions/`):
   ground #F5F5F7, surface #FFFFFF, ink #1D1D1F, muted #6E6E73, accent #0A5FD6, Inter, radii

@@ -3,11 +3,11 @@ begin;
 select plan(101);
 
 -- Fixtures: a blocked coach and the pinned clock (2026-06-10 12:00 UTC is 2026-06-10 in India).
-select tests.create_user('919000000010', 'blocked-local-1234', 'Blocked Coach', 'coach');
-update public.profiles set is_blocked = true where phone = '919000000010';
+select tests.create_user('blocked@local.test', 'blocked-local-1234', 'Blocked Coach', 'coach');
+update public.profiles set is_blocked = true where email = 'blocked@local.test';
 select tests.set_clock('2026-06-10 12:00:00+00');
 
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select (public.create_trainee('Zed Zulu', null, '2015-01-01')).id as t_zed \gset
 select (public.create_trainee('amy Adams', null, '2000-03-15')).id as t_amy \gset
 select (public.create_trainee('Bob Bell')).id as t_bob \gset
@@ -95,7 +95,7 @@ select throws_ok($$select public.delete_fee_payment(gen_random_uuid())$$, '42501
 select throws_ok(format($$select * from public.trainee_fee_history(%L)$$, :'t_amy'), '42501', null, 'anon cannot read fee history');
 select throws_ok($$select * from public.fee_status_list('2026-06-01')$$, '42501', null, 'anon cannot read the fee status list');
 select throws_ok($$select * from public.monthly_attendance_summary('2026-06-01')$$, '42501', null, 'anon cannot read the attendance summary');
-select tests.authenticate_as('919000000010');
+select tests.authenticate_as('blocked@local.test');
 select throws_ok(format($$select public.record_fee_payment(%L, 500, 'cash', '2026-06-10', '2026-06-01')$$, :'t_amy'), 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot record a payment');
 select throws_ok($$select public.delete_fee_payment(gen_random_uuid())$$, 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot delete a payment');
 select throws_ok(format($$select * from public.trainee_fee_history(%L)$$, :'t_amy'), 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot read fee history');
@@ -103,12 +103,12 @@ select throws_ok($$select * from public.fee_status_list('2026-06-01')$$, 'BXPRM'
 select throws_ok($$select * from public.monthly_attendance_summary('2026-06-01')$$, 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot read the attendance summary');
 
 -- record_fee_payment: positive path -----------------------------------------------------
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select is(
   (select amount from public.record_fee_payment(:'t_cy', 500, 'cash', '2026-06-10', '2026-06-01', '  first month  ')),
   500, 'recording a payment returns the row'
 );
-select is((select recorded_by from public.fee_payments where trainee_id = :'t_cy'), tests.user_id('919000000002'), 'the payment records the staff member who made it');
+select is((select recorded_by from public.fee_payments where trainee_id = :'t_cy'), tests.user_id('coach@local.test'), 'the payment records the staff member who made it');
 select is((select note from public.fee_payments where trainee_id = :'t_cy'), 'first month', 'the note is trimmed');
 select is((select created_at from public.fee_payments where trainee_id = :'t_cy'), '2026-06-10 12:00:00+00'::timestamptz, 'created_at follows the pinned clock');
 select is((select method::text || ' ' || paid_on::text || ' ' || period_month::text from public.fee_payments where trainee_id = :'t_cy'), 'cash 2026-06-10 2026-06-01', 'method, paid date and period are stored as given');
@@ -143,18 +143,18 @@ select is((select count(*)::int from public.fee_payments), 3, 'staff can select 
 select throws_ok(format($$insert into public.fee_payments (trainee_id, amount, method, paid_on, period_month) values (%L, 500, 'cash', '2026-06-10', '2026-06-01')$$, :'t_amy'), '42501', null, 'staff cannot insert a payment directly');
 select throws_ok(format($$update public.fee_payments set amount = 1 where trainee_id = %L$$, :'t_cy'), '42501', null, 'staff cannot update a payment directly');
 select throws_ok(format($$delete from public.fee_payments where trainee_id = %L$$, :'t_cy'), '42501', null, 'staff cannot delete a payment directly');
-select tests.authenticate_as('919000000010');
+select tests.authenticate_as('blocked@local.test');
 select is((select count(*)::int from public.fee_payments), 0, 'a blocked coach sees no fee payments');
 select tests.authenticate_as_anon();
 select throws_ok($$select count(*) from public.fee_payments$$, '42501', null, 'anon has no select privilege on fee_payments');
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 
 -- Table checks stay in force even for the table owner ------------------------------------------
 select tests.clear_auth();
 select throws_ok(format($$insert into public.fee_payments (trainee_id, amount, method, paid_on, period_month) values (%L, 500, 'cash', '2026-06-10', '2026-06-15')$$, :'t_amy'), '23514', null, 'the table refuses a period that is not a month start');
 select throws_ok(format($$insert into public.fee_payments (trainee_id, amount, method, paid_on, period_month) values (%L, 0, 'cash', '2026-06-10', '2026-06-01')$$, :'t_amy'), '23514', null, 'the table refuses a zero amount');
 select throws_ok(format($$insert into public.fee_payments (trainee_id, amount, method, paid_on, period_month, note) values (%L, 500, 'cash', '2026-06-10', '2026-06-01', repeat('x', 301))$$, :'t_amy'), '23514', null, 'the table refuses a long note');
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 
 -- Payments for the reports below: amy pays June in two parts, Bob only May ---------------------------
 select tests.set_clock('2026-06-09 12:00:00+00');
@@ -179,7 +179,7 @@ select throws_ok(format($$select * from public.trainee_fee_history(%L)$$, gen_ra
 
 -- delete_fee_payment: the seven day window ---------------------------------------------------------
 select id as p_old from public.fee_payments where trainee_id = :'t_bob' and period_month = '2026-05-01' \gset
-select tests.authenticate_as('919000000001');
+select tests.authenticate_as('admin@local.test');
 select tests.set_clock('2026-06-16 12:00:01+00');
 select throws_ok(format($$select public.delete_fee_payment(%L)$$, :'p_old'), 'BXVAL', 'Payments older than 7 days cannot be removed', 'a payment older than 7 days cannot be removed');
 select is((select count(*)::int from public.fee_payments where id = :'p_old'), 1, 'the refused delete kept the payment');
@@ -192,7 +192,7 @@ select tests.set_clock('2026-06-10 12:00:00+00');
 
 -- fee_status_list ---------------------------------------------------------------------------------------
 select public.record_fee_payment(:'t_bob', 200, 'cash', '2026-05-10', '2026-05-01');
-select tests.authenticate_as('919000000002');
+select tests.authenticate_as('coach@local.test');
 select is(
   (select array_agg(full_name order by ordinality) from public.fee_status_list('2026-06-01') with ordinality),
   array['Bob Bell', 'Zed Zulu', 'amy Adams', 'Cy Child'],
