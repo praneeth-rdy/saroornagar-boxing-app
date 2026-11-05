@@ -66,31 +66,81 @@ void main() {
       MockAttendanceRepository(),
       DateTime.utc(2026, 11, 5, 9),
     );
-    container.listen(selectedSessionIdProvider, (_, _) {});
+    container.listen(selectedSessionIdProvider(fixtureDay), (_, _) {});
     await container.read(daySessionsProvider(fixtureDay).future);
-    expect(container.read(selectedSessionIdProvider), eveningId);
+    expect(container.read(selectedSessionIdProvider(fixtureDay)), eveningId);
+  });
+
+  test(
+    'the selection for another day never holds a session of today',
+    () async {
+      final previousDay = DateTime(2026, 11, 4);
+      final container = _container(
+        MockAttendanceRepository(),
+        DateTime.utc(2026, 11, 5, 16, 45),
+      );
+      container.listen(selectedSessionIdProvider(fixtureDay), (_, _) {});
+      await container.read(daySessionsProvider(fixtureDay).future);
+      container
+          .read(selectedSessionIdProvider(fixtureDay).notifier)
+          .select(morningId);
+      final seen = <String?>[];
+      container.listen(
+        selectedSessionIdProvider(previousDay),
+        (_, next) => seen.add(next),
+        fireImmediately: true,
+      );
+      await container.read(daySessionsProvider(previousDay).future);
+
+      expect(
+        container.read(selectedSessionIdProvider(previousDay)),
+        eveningSession(previousDay).id,
+      );
+      expect(seen.first, isNull);
+      expect(seen, everyElement(isNot(anyOf(morningId, eveningId))));
+      expect(container.read(selectedSessionIdProvider(fixtureDay)), morningId);
+    },
+  );
+
+  test('a mark for a session of another day is refused', () async {
+    final repository = MockAttendanceRepository();
+    final container = _container(repository, DateTime.utc(2026, 11, 5, 7));
+    container.listen(daySessionsProvider(fixtureDay), (_, _) {});
+    await container.read(daySessionsProvider(fixtureDay).future);
+    container.listen(markControllerProvider(fixtureDay), (_, _) {});
+    final otherDayId = eveningSession(DateTime(2026, 11, 4)).id;
+
+    await expectLater(
+      container
+          .read(markControllerProvider(fixtureDay).notifier)
+          .mark(otherDayId, 'trainee-001', AttendanceStatus.present),
+      throwsA(isA<AssertionError>()),
+    );
+    expect(repository.markCalls, isEmpty);
   });
 
   test('a failed mark is rolled back and can be retried', () async {
     final repository = MockAttendanceRepository();
     final container = _container(repository, DateTime.utc(2026, 11, 5, 7));
-    await repository.sessionsFor(fixtureDay);
+    container.listen(daySessionsProvider(fixtureDay), (_, _) {});
+    await container.read(daySessionsProvider(fixtureDay).future);
     container.listen(rosterProvider(morningId), (_, _) {});
     await container.read(rosterProvider(morningId).future);
-    container.listen(markControllerProvider(morningId), (_, _) {});
+    container.listen(markControllerProvider(fixtureDay), (_, _) {});
 
     repository.scenario = MockScenario.offline;
     final controller = container.read(
-      markControllerProvider(morningId).notifier,
+      markControllerProvider(fixtureDay).notifier,
     );
-    await controller.mark('trainee-001', AttendanceStatus.present);
+    await controller.mark(morningId, 'trainee-001', AttendanceStatus.present);
 
     final entries = container.read(rosterProvider(morningId)).value!;
     expect(
       entries.firstWhere((e) => e.traineeId == 'trainee-001').status,
       null,
     );
-    expect(container.read(markControllerProvider(morningId)).hasError, isTrue);
+    expect(container.read(markControllerProvider(fixtureDay)).hasError, isTrue);
+    expect(controller.failedSessionId, morningId);
 
     repository.scenario = MockScenario.success;
     await controller.retry();

@@ -154,7 +154,7 @@ class _SessionDay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedId = ref.watch(selectedSessionIdProvider);
+    final selectedId = ref.watch(selectedSessionIdProvider(date));
     SessionSlot? slot;
     for (final session in sessions) {
       if (session.id == selectedId) slot = session.slot;
@@ -228,9 +228,11 @@ class _RosterBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final marking = ref.watch(markControllerProvider(sessionId));
-    final controller = ref.read(markControllerProvider(sessionId).notifier);
-    final failure = marking.isLoading ? null : marking.error;
+    final marking = ref.watch(markControllerProvider(date));
+    final controller = ref.read(markControllerProvider(date).notifier);
+    final failure = marking.isLoading || controller.failedSessionId != sessionId
+        ? null
+        : marking.error;
     final remaining = entries.where((entry) => entry.status == null).length;
     final hasBar = remaining > 0;
     return Stack(
@@ -270,7 +272,7 @@ class _RosterBody extends ConsumerWidget {
                         key: ValueKey(entry.traineeId),
                         entry: entry,
                         onMark: (status) =>
-                            controller.mark(entry.traineeId, status),
+                            controller.mark(sessionId, entry.traineeId, status),
                       ),
                   ]),
                 ),
@@ -332,8 +334,8 @@ class _RosterBody extends ConsumerWidget {
     );
     if (confirmed != true) return;
     final count = await ref
-        .read(markControllerProvider(sessionId).notifier)
-        .markRemainingAbsent();
+        .read(markControllerProvider(date).notifier)
+        .markRemainingAbsent(sessionId);
     if (count == null || !context.mounted) return;
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('$count marked absent')));

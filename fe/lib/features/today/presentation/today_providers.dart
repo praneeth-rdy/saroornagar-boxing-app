@@ -22,10 +22,9 @@ final daySessionsProvider = FutureProvider.autoDispose
       (ref, date) => ref.watch(attendanceRepositoryProvider).sessionsFor(date),
     );
 
-final selectedSessionIdProvider =
-    NotifierProvider.autoDispose<SelectedSessionId, String?>(
-      SelectedSessionId.new,
-    );
+/// Keyed by the day, so a choice made on one day never carries over to another.
+final selectedSessionIdProvider = NotifierProvider.autoDispose
+    .family<SelectedSessionId, String?, DateTime>(SelectedSessionId.new);
 
 final rosterProvider = AsyncNotifierProvider.autoDispose
     .family<RosterNotifier, List<RosterEntry>, String>(RosterNotifier.new);
@@ -37,7 +36,7 @@ final dayTrialsProvider = FutureProvider.autoDispose
     );
 
 final markControllerProvider = AsyncNotifierProvider.autoDispose
-    .family<MarkController, void, String>(MarkController.new);
+    .family<MarkController, void, DateTime>(MarkController.new);
 
 final addExtraSessionControllerProvider =
     NotifierProvider.autoDispose<AddExtraSessionController, AsyncValue<void>>(
@@ -67,16 +66,20 @@ class SelectedDate extends Notifier<DateTime> {
   void select(DateTime date) => state = dateOnly(date);
 }
 
-/// The session on screen; falls back to the default whenever the choice is not in the day.
+/// The session on screen for [date]; falls back to the default whenever the choice is not
+/// in that day.
 class SelectedSessionId extends Notifier<String?> {
+  SelectedSessionId(this.date);
+
+  final DateTime date;
+
   @override
   String? build() {
-    final date = ref.watch(selectedDateProvider);
     final sessions = ref.watch(daySessionsProvider(date));
     final loaded = sessions.value;
     if (loaded == null) return null;
     final current = stateOrNull;
-    // Keeps a choice made while the day reloads, such as a session just added.
+    // Keeps a choice made while this same day reloads, such as a session just added.
     if (sessions.isLoading && current != null) return current;
     if (current != null && loaded.any((session) => session.id == current)) {
       return current;
@@ -115,42 +118,58 @@ class RosterNotifier extends AsyncNotifier<List<RosterEntry>> {
   }
 }
 
-/// Marks for one session: optimistic single marks, the bulk absent mark, and a retry.
+/// Marks for one day: optimistic single marks, the bulk absent mark, and a retry.
 ///
-/// Loading means the bulk mark is running; an error is the last failed action.
+/// Every call names the session from the row on screen and is refused unless that session
+/// belongs to [date]. Loading means the bulk mark is running; an error is the last failed
+/// action, made on [failedSessionId].
 class MarkController extends AsyncNotifier<void> {
-  MarkController(this.sessionId);
+  MarkController(this.date);
 
-  final String sessionId;
+  final DateTime date;
   Future<void> Function()? _retry;
+
+  /// The session the error in state is about.
+  String? failedSessionId;
 
   @override
   FutureOr<void> build() {}
 
-  Future<void> mark(String traineeId, AttendanceStatus status) async {
+  Future<void> mark(
+    String sessionId,
+    String traineeId,
+    AttendanceStatus status,
+  ) async {
+    if (!_belongsToDay(sessionId)) return;
     final previous = ref
         .read(rosterProvider(sessionId).notifier)
         .entryFor(traineeId);
     if (previous == null || previous.status == status) return;
-    _replace(previous.copyWith(status: status, markedAt: null));
+    _replace(sessionId, previous.copyWith(status: status, markedAt: null));
     try {
       final stored = await ref
           .read(attendanceRepositoryProvider)
           .mark(sessionId, traineeId, status);
       if (!ref.mounted) return;
       _replace(
+        sessionId,
         previous.copyWith(status: stored.status, markedAt: stored.markedAt),
       );
     } catch (error, stackTrace) {
       if (!ref.mounted) return;
-      _replace(previous);
-      _fail(error, stackTrace, () => mark(traineeId, status));
+      _replace(sessionId, previous);
+      _fail(
+        sessionId,
+        error,
+        stackTrace,
+        () => mark(sessionId, traineeId, status),
+      );
     }
   }
 
   /// Returns how many were marked, or null when it failed (the error is in state).
-  Future<int?> markRemainingAbsent() async {
-    if (state.isLoading) return null;
+  Future<int?> markRemainingAbsent(String sessionId) async {
+    if (state.isLoading || !_belongsToDay(sessionId)) return null;
     state = const AsyncLoading();
     try {
       final count = await ref
@@ -161,7 +180,14 @@ class MarkController extends AsyncNotifier<void> {
       ref.invalidate(rosterProvider(sessionId));
       return count;
     } catch (error, stackTrace) {
-      if (ref.mounted) _fail(error, stackTrace, markRemainingAbsent);
+      if (ref.mounted) {
+        _fail(
+          sessionId,
+          error,
+          stackTrace,
+          () => markRemainingAbsent(sessionId),
+        );
+      }
       return null;
     }
   }
@@ -170,19 +196,31 @@ class MarkController extends AsyncNotifier<void> {
   Future<void> retry() async {
     final action = _retry;
     _retry = null;
+    failedSessionId = null;
     state = const AsyncData(null);
     if (action != null) await action();
   }
 
-  void _replace(RosterEntry entry) =>
+  // A session from another day would put the mark on a roster that is not on screen.
+  bool _belongsToDay(String sessionId) {
+    final sessions = ref.read(daySessionsProvider(date)).value;
+    final belongs =
+        sessions != null && sessions.any((session) => session.id == sessionId);
+    assert(belongs, 'Session $sessionId is not one of the sessions on $date');
+    return belongs;
+  }
+
+  void _replace(String sessionId, RosterEntry entry) =>
       ref.read(rosterProvider(sessionId).notifier).replace(entry);
 
   void _fail(
+    String sessionId,
     Object error,
     StackTrace stackTrace,
     Future<void> Function() retry,
   ) {
     _retry = retry;
+    failedSessionId = sessionId;
     final failure = error is AppException ? error : const UnknownException();
     state = AsyncError(failure, stackTrace);
   }
@@ -209,7 +247,7 @@ class AddExtraSessionController extends Notifier<AsyncValue<void>> {
       if (!ref.mounted) return true;
       state = const AsyncData(null);
       ref.invalidate(daySessionsProvider(date));
-      ref.read(selectedSessionIdProvider.notifier).select(session.id);
+      ref.read(selectedSessionIdProvider(date).notifier).select(session.id);
       return true;
     } catch (error, stackTrace) {
       if (!ref.mounted) return false;
@@ -225,7 +263,7 @@ class DeleteExtraSessionController extends Notifier<AsyncValue<void>> {
   @override
   AsyncValue<void> build() {
     // A failure belongs to the session it was about; another choice clears it.
-    ref.watch(selectedSessionIdProvider);
+    ref.watch(selectedSessionIdProvider(ref.watch(selectedDateProvider)));
     return const AsyncData(null);
   }
 
@@ -249,7 +287,9 @@ class DeleteExtraSessionController extends Notifier<AsyncValue<void>> {
       ref.invalidate(daySessionsProvider(session.sessionDate));
       // Chosen before the reload lands, so the removed session's roster is never asked for.
       // Last call here: the new choice rebuilds this controller.
-      ref.read(selectedSessionIdProvider.notifier).select(next);
+      ref
+          .read(selectedSessionIdProvider(session.sessionDate).notifier)
+          .select(next);
     } catch (error, stackTrace) {
       if (!ref.mounted) return;
       final failure = error is AppException ? error : const UnknownException();

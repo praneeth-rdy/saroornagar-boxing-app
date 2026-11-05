@@ -50,6 +50,9 @@ class MockAttendanceRepository implements AttendanceRepository {
   final _marks = <String, AttendanceMark>{};
   var _extraCount = 0;
 
+  /// Every `mark` call as sent, oldest first, for assertions.
+  final markCalls = <({String sessionId, String traineeId})>[];
+
   /// The stored mark, for assertions.
   AttendanceMark? markFor(String sessionId, String traineeId) =>
       _marks[_markKey(sessionId, traineeId)];
@@ -136,6 +139,15 @@ class MockAttendanceRepository implements AttendanceRepository {
 
   @override
   Future<AttendanceMark> mark(
+    String sessionId,
+    String traineeId,
+    AttendanceStatus status,
+  ) {
+    markCalls.add((sessionId: sessionId, traineeId: traineeId));
+    return _markStored(sessionId, traineeId, status);
+  }
+
+  Future<AttendanceMark> _markStored(
     String sessionId,
     String traineeId,
     AttendanceStatus status,

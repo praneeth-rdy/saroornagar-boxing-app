@@ -40,7 +40,7 @@ class SessionSegment extends ConsumerWidget {
           ],
           selected: selectedId,
           onSelected: (id) =>
-              ref.read(selectedSessionIdProvider.notifier).select(id),
+              ref.read(selectedSessionIdProvider(date).notifier).select(id),
         ),
         Row(
           children: [

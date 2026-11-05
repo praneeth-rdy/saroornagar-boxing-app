@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:saroornagar_boxing/core/di/repository_providers.dart';
+import 'package:saroornagar_boxing/core/models/attendance_status.dart';
 import 'package:saroornagar_boxing/core/theme/app_theme.dart';
 import 'package:saroornagar_boxing/features/today/presentation/today_providers.dart';
 import 'package:saroornagar_boxing/features/today/presentation/today_screen.dart';
@@ -14,6 +15,8 @@ import '../../../support/scenario.dart';
 
 final _morningId = morningSession(fixtureDay).id;
 final _morningClock = DateTime.utc(2026, 11, 5, 7);
+final _eveningClock = DateTime.utc(2026, 11, 5, 16, 45);
+final _previousDay = DateTime(2026, 11, 4);
 
 Future<void> _pump(
   WidgetTester tester,
@@ -145,5 +148,42 @@ void main() {
 
     expect(find.text('Faisal Ahmed'), findsOneWidget);
     expect(find.text('Rahul Verma'), findsNothing);
+  });
+
+  testWidgets('a mark after changing the date lands on that date\'s session', (
+    tester,
+  ) async {
+    final repository = MockAttendanceRepository(trainees: fixtureTrainees(3));
+    await _pump(tester, repository, clock: _eveningClock);
+    final todayEveningId = eveningSession(fixtureDay).id;
+    final previousEveningId = eveningSession(_previousDay).id;
+
+    await tester.tap(find.byKey(const Key('present-trainee-001')));
+    await tester.pumpAndSettle();
+    expect(repository.markCalls.single.sessionId, todayEveningId);
+
+    // The hosted database answers slowly enough for a frame to show the day loading.
+    repository.scenario = MockScenario.slow;
+    ProviderScope.containerOf(tester.element(find.byType(TodayScreen)))
+        .read(selectedDateProvider.notifier)
+        .select(_previousDay);
+    await tester.pump();
+    // Sessions, then the roster and trials, each wait one slow delay.
+    await tester.pump(slowScenarioDelay * 3);
+    repository.scenario = MockScenario.success;
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('present-trainee-001')));
+    await tester.pumpAndSettle();
+
+    expect(repository.markCalls, hasLength(2));
+    expect(repository.markCalls.last.sessionId, previousEveningId);
+    expect(
+      repository.markFor(previousEveningId, 'trainee-001')!.status,
+      AttendanceStatus.present,
+    );
+    expect(
+      repository.markCalls.where((call) => call.sessionId == todayEveningId),
+      hasLength(1),
+    );
   });
 }
