@@ -18,6 +18,8 @@ the date) or marked as an open question. Nothing is built from an assumption.
 - One club, one location. Two sessions every day, morning and evening, except Sunday. A coach
   or staff member can add an extra session on a day when needed.
 - Trial booking happens in the app, with no account needed for the visitor.
+- Sign-in is phone number and password (owner, 2026-11-05), for staff and trainees alike. No
+  OTP, no SMS provider.
 
 ## Open questions
 
@@ -28,7 +30,7 @@ Confirmed section with its date.
 2. (answered) Coach marks a session list.
 3. (answered) One club, two sessions daily except Sunday. Still open: roughly how many trainees; do trainees belong to one session (morning or evening) or can they come to either; session timings.
 4. (answered) In the app, no account. Still open: who confirms a trial and how the visitor hears back; any trial fee; what the coach sees and does with a trial booking.
-5. Sign-in: phone OTP, email, or no account for visitors; who is allowed in.
+5. (answered) Phone number and password. Still open: who creates a trainee's account and first password (staff, or self sign-up); how a forgotten password is reset without SMS (staff reset is the free path).
 6. Trainee records: what is stored (name, phone, joining date, plan, fees?).
 7. Fees: trainees see their fee payment updates (cash or UPI). Still open: what a fee record is (monthly? plan?), who records a payment, whether UPI is collected in the app or only recorded.
 8. Notifications (reminders, confirmations): in scope or not; channel.
