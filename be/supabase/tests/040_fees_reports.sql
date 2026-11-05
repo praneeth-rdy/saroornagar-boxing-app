@@ -1,6 +1,6 @@
 -- Fee payments and staff reports: tier helper, table, RLS, payment functions, fee status, monthly summary.
 begin;
-select plan(101);
+select plan(104);
 
 -- Fixtures: a blocked coach and the pinned clock (2026-06-10 12:00 UTC is 2026-06-10 in India).
 select tests.create_user('blocked@local.test', 'blocked-local-1234', 'Blocked Coach', 'coach');
@@ -241,6 +241,12 @@ select public.mark_attendance(:'s_evening', :'t_amy', 'absent');
 select public.mark_attendance(:'s_jun30_m', :'t_zed', 'absent');
 select public.mark_attendance(:'s_jun30_e', :'t_zed', 'absent');
 select public.mark_attendance(:'s_extra', :'t_cy', 'present');
+-- A second mark on the 1 June morning; the 1 June evening stays unmarked, so June holds 7 rows and 6 held sessions.
+select public.mark_attendance(:'s_jun1', :'t_bob', 'present');
+select is(
+  (select count(*)::int from public.sessions where session_date >= '2026-06-01' and session_date < '2026-07-01'),
+  7, 'June has seven session rows, the unmarked 1 June evening among them'
+);
 select is(
   (select array_agg(full_name order by ordinality) from public.monthly_attendance_summary('2026-06-01') with ordinality),
   array['amy Adams', 'Bob Bell', 'Cy Child', 'Zed Zulu'],
@@ -249,19 +255,33 @@ select is(
 select is(
   (select array_agg(present_count::text || '/' || absent_count::text || '/' || session_count::text order by ordinality)
    from public.monthly_attendance_summary('2026-06-01') with ordinality),
-  array['2/1/7', '0/0/7', '1/0/7', '0/2/7'],
-  'June counts only June sessions, and every row carries the month session total'
+  array['2/1/6', '1/0/6', '1/0/6', '0/2/6'],
+  'June counts only June sessions, and every row carries the month held session total without the unmarked session'
 );
 select is(
   (select array_agg(present_count::text || '/' || absent_count::text || '/' || session_count::text order by ordinality)
    from public.monthly_attendance_summary('2026-05-01') with ordinality),
-  array['1/0/2', '0/0/2', '0/0/2', '0/0/2'],
-  'May counts only the May sessions'
+  array['1/0/1', '0/0/1', '0/0/1', '0/0/1'],
+  'May counts only the held May session'
 );
 select is(
   (select present_count::text || '/' || absent_count::text || '/' || session_count::text
    from public.monthly_attendance_summary('2026-07-01') where trainee_id = :'t_amy'),
-  '0/1/2', 'July counts only the July sessions'
+  '0/1/1', 'July counts only the held July session'
+);
+select public.ensure_day_sessions('2026-08-03');
+select is(
+  (select count(*)::int from public.monthly_attendance_summary('2026-08-01') where session_count = 0),
+  4, 'a month whose sessions have no marks counts no sessions'
+);
+select id as s_sep from public.ensure_day_sessions('2026-09-07') where slot = 'morning' \gset
+select public.mark_attendance(:'s_sep', :'t_amy', 'present');
+select public.mark_attendance(:'s_sep', :'t_bob', 'present');
+select public.mark_attendance(:'s_sep', :'t_cy', 'absent');
+select public.mark_attendance(:'s_sep', :'t_zed', 'present');
+select is(
+  (select array_agg(distinct session_count) from public.monthly_attendance_summary('2026-09-01')),
+  array[1], 'a session marked for four trainees counts once'
 );
 select is(
   (select count(*)::int from public.monthly_attendance_summary('2026-04-01') where present_count = 0 and absent_count = 0 and session_count = 0),

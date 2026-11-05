@@ -11,3 +11,6 @@
 - Open for the Architect: `paid_on` and `period_month` have no lower bound, so a typo year
   (0026) is accepted; `fee_status_list` and `monthly_attendance_summary` list only active
   trainees, so an inactive trainee's payments for that month do not appear there.
+- `20261105114039_summary_held_sessions.sql`: `session_count` now counts only sessions with an
+  attendance mark (opening a date creates empty session rows). `present_count`/`absent_count`
+  were already mark-based. The fe mock repository's summary must apply the same held rule.
