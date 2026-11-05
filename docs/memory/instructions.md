@@ -8,6 +8,7 @@ each was applied. Newest first. Settled instructions are promoted into the relev
 
 | Instruction (owner's words, condensed) | Applied in |
 |---|---|
+| "Install the new build once the logo is in and can you make the payment records screen a bit more compact & simple. Let's also have the amount as a dropdown of 500 or 800." | Release install after run-3 task-07; task-09 (compact record-payment screen, 500/800 choice); task-08 (senior tier 800 on the server, `docs/product.md`). Assumption stated to the owner: the senior tier is 800, not 1000. |
 | "Let's use L5a classic" | Decision D-05: logo = L5a Classic badge (name on the upper arc, blue glove centre), app icon = the glove emblem. `docs/decisions.md`; run-3 task-07 (launcher icon, in-app mark). |
 | "Use [the owner's gmail address] for the email account" / "admin" | Hosted admin re-created by email with role admin (2026-11-05); login in `creds.md`. |
 | "Let's remove club text from the logo" (after "Can you show me variations for L5?") | Logo canvas: every artboard reads "Saroornagar Boxing"; five L5 badge variations added (L5a..L5e). The launcher label stays "Boxing Club" until the owner picks a name. |

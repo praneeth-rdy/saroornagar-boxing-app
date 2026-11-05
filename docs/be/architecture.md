@@ -22,7 +22,8 @@ trigger `on_auth_user_email_changed`, and `update_staff` with `p_phone` (the 3-a
 dropped). Migration `20261105110147_profile_on_metadata.sql` (local only): `private.ensure_profile`
 shared by `on_auth_user_created` and the new trigger `on_auth_user_app_metadata_changed`, so a
 profile is made when `app_metadata.role` arrives in the update Auth admin `createUser` runs after
-its insert. `seed.sql` adds a local admin `admin@local.test` and coach `coach@local.test` (email
+its insert. Migration `20261105111738_fee_tier_800.sql` (local only): `private.fee_tier_amount`
+replaced with 800 for seniors, same signature and grants. `seed.sql` adds a local admin `admin@local.test` and coach `coach@local.test` (email
 provider and identities, role in `raw_app_meta_data`; passwords in the file). pgTAP helpers live in
 `supabase/tests/000_helpers.sql` (schema `tests`, local stack only). `config.toml` enables the
 phone provider (`[auth.sms] enabled = true`). Hosted project `qgqmnaxdxuezjlexlfpw` in
@@ -84,7 +85,7 @@ security definer functions `book_trial` and `my_trial_bookings`. A direct anon `
 | `public.trainee_fee_history(p_trainee_id)` | authenticated (staff) | The trainee's payments, newest `period_month` first, then `paid_on` desc, `created_at` desc. | `BXPRM`; `BXNTF` `Trainee not found` |
 | `public.fee_status_list(p_month)` | authenticated (staff) | Every active trainee with `tier_amount` (tier on the month's first day, null without a date of birth), `paid_amount` (sum for that `period_month`, 0 when none), `last_paid_on`; unpaid (`paid_amount = 0`) first, then `lower(full_name)`. | `BXPRM`; `BXVAL` `Period must be a month` |
 | `public.monthly_attendance_summary(p_month)` | authenticated (staff) | Every active trainee with `present_count`, `absent_count` over sessions dated in the month, and `session_count` (sessions that month, same on every row); by `lower(full_name)`. | `BXPRM`; `BXVAL` `Period must be a month` |
-| `private.fee_tier_amount(p_date_of_birth, p_on)` | internal | 500 when age on `p_on` is under 15 (`age()` years), else 1000; null when either date is null. Immutable. | |
+| `private.fee_tier_amount(p_date_of_birth, p_on)` | internal | 500 when age on `p_on` is under 15 (`age()` years), else 800 (owner, 2026-11-05; was 1000 before `20261105111738_fee_tier_800.sql`); null when either date is null. Immutable. | |
 | `private.clean_trainee_input(...)` | internal | Shared validation and normalization for `create_trainee` and `update_trainee`; returns `o_full_name`, `o_phone`, `o_notes`. | `BXVAL` as above |
 | `private.is_staff()` / `private.is_admin()` | authenticated (RLS) | Caller has an unblocked profile / an unblocked admin profile. Security definer. | |
 | `private.fail(p_code, p_message)` | internal | Raises with the given SQLSTATE; the only failure path. | the code passed |

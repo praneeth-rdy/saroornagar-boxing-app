@@ -43,8 +43,8 @@ view (own attendance, fee updates) is a later release; nothing in release 1 may 
 - Staff reports in release 1: per-trainee attendance history, monthly attendance summary,
   fee status list.
 
-- Fees (round 4): monthly. 500 per month for juniors (below 15 years), 1000 per month for
-  seniors (15 and above). The app just records payments; no automatic due or overdue logic
+- Fees (round 4): monthly. 500 per month for juniors (below 15 years), 800 per month for
+  seniors (15 and above) (owner, 2026-11-05: amounts are 500 or 800). The app just records payments; no automatic due or overdue logic
   was asked for. A trainee's age therefore matters to the fee tier.
 - Trial form: name, phone, date, session (morning or evening), age or date of birth, and an
   optional note.

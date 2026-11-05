@@ -79,14 +79,14 @@ select is(
 
 -- Tier helper (runs as the test owner; API roles cannot call it) -------------------
 select is(private.fee_tier_amount('2011-06-11', '2026-06-10'), 500, '14 years and 364 days is the junior tier');
-select is(private.fee_tier_amount('2011-06-10', '2026-06-10'), 1000, 'exactly 15 years is the senior tier');
-select is(private.fee_tier_amount('2011-06-09', '2026-06-10'), 1000, '15 years and a day is the senior tier');
+select is(private.fee_tier_amount('2011-06-10', '2026-06-10'), 800, 'exactly 15 years is the senior tier');
+select is(private.fee_tier_amount('2011-06-09', '2026-06-10'), 800, '15 years and a day is the senior tier');
 select is(private.fee_tier_amount('2024-01-01', '2026-06-10'), 500, 'a toddler is the junior tier');
-select is(private.fee_tier_amount('1985-01-01', '2026-06-10'), 1000, 'an adult is the senior tier');
+select is(private.fee_tier_amount('1985-01-01', '2026-06-10'), 800, 'an adult is the senior tier');
 select is(private.fee_tier_amount(null, '2026-06-10'), null, 'no date of birth has no tier');
 select is(private.fee_tier_amount('2011-06-10', null), null, 'no reference date has no tier');
 select is(private.fee_tier_amount('2012-02-29', '2027-02-28'), 500, 'a 29 February birthday has not turned 15 on 28 February');
-select is(private.fee_tier_amount('2012-02-29', '2027-03-01'), 1000, 'a 29 February birthday turns 15 on 1 March in a common year');
+select is(private.fee_tier_amount('2012-02-29', '2027-03-01'), 800, 'a 29 February birthday turns 15 on 1 March in a common year');
 
 -- Access: anon and blocked staff ------------------------------------------------------
 select tests.authenticate_as_anon();
@@ -201,7 +201,7 @@ select is(
 select is(
   (select array_agg(coalesce(tier_amount::text, 'none') || '/' || paid_amount::text || '/' || coalesce(last_paid_on::text, 'never') order by ordinality)
    from public.fee_status_list('2026-06-01') with ordinality),
-  array['none/0/never', '500/0/never', '1000/1000/2026-06-09', '500/500/2026-06-10'],
+  array['none/0/never', '500/0/never', '800/1000/2026-06-09', '500/500/2026-06-10'],
   'tier, summed partial payments and last paid date per trainee'
 );
 select is((select count(*)::int from public.fee_status_list('2026-06-01') where trainee_id = :'t_dan'), 0, 'inactive trainees are not listed');
@@ -219,7 +219,7 @@ select is(
   'May lists unpaid first and paid by name'
 );
 select is((select tier_amount from public.fee_status_list('2026-06-01') where trainee_id = :'t_cy'), 500, 'Cy is junior on 1 June');
-select is((select tier_amount from public.fee_status_list('2026-07-01') where trainee_id = :'t_cy'), 1000, 'Cy is senior from the month after turning 15');
+select is((select tier_amount from public.fee_status_list('2026-07-01') where trainee_id = :'t_cy'), 800, 'Cy is senior from the month after turning 15');
 select is((select count(*)::int from public.fee_status_list('2026-04-01') where paid_amount = 0), 4, 'a month without payments lists every active trainee as unpaid');
 select throws_ok($$select * from public.fee_status_list('2026-06-15')$$, 'BXVAL', 'Period must be a month', 'a mid-month date is refused');
 select throws_ok($$select * from public.fee_status_list(null)$$, 'BXVAL', 'Period must be a month', 'a null month is refused');
