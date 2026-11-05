@@ -26,6 +26,12 @@ the date) or marked as an open question. Nothing is built from an assumption.
 - Fees in release 1: record only. Staff record a payment (cash or UPI, amount, date, period);
   the trainee sees their history and what is due. No money moves through the app.
 
+## Release 1 scope (owner, 2026-11-05)
+
+Guest trial-slot booking plus the coach / staff / admin app. **No trainee view in release 1**:
+trainees do not sign in; their attendance and fee records are kept by staff. The trainee
+view (own attendance, fee updates) is a later release; nothing in release 1 may depend on it.
+
 ## Open questions
 
 Gathered through the requirements interview, broad to narrow. Each answer moves to the
@@ -35,7 +41,7 @@ Confirmed section with its date.
 2. (answered) Coach marks a session list.
 3. (answered) One club, two sessions daily except Sunday; any trainee may attend any session. Still open: roughly how many trainees; session timings.
 4. (answered) In the app, no account. Still open: who confirms a trial and how the visitor hears back; any trial fee; what the coach sees and does with a trial booking.
-5. (answered) Phone number and password. Still open: who creates a trainee's account and first password (staff, or self sign-up); how a forgotten password is reset without SMS (staff reset is the free path).
+5. (answered) Phone number and password, staff only in release 1. Still open: who creates a coach's account (owner in the app, or seeded by us); how a forgotten staff password is reset.
 6. Trainee records: what is stored (name, phone, joining date, plan, fees?).
 7. (answered) Fees are record-only in release 1. Still open: the fee model (monthly amount per trainee? plans?), and what "due" means.
 8. Notifications (reminders, confirmations): in scope or not; channel.

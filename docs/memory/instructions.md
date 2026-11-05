@@ -8,6 +8,7 @@ each was applied. Newest first. Settled instructions are promoted into the relev
 
 | Instruction (owner's words, condensed) | Applied in |
 |---|---|
+| "Let's not have trainees view for now. Let's only build for guest slot booking and coach/staff/admin." | `docs/product.md` Release 1 scope; trainee view deferred; backlog D-02 settled. |
 | "Let's have phone-number & password login" (after a chat on free phone OTP options) | `docs/product.md` Confirmed: phone + password for staff and trainees, no SMS provider. |
 | "use /build as needed" | Standing opt-in: the Architect runs the `tiered-build` workflow whenever a goal needs several packages or an implement-test-fix loop. `.claude/CLAUDE.md` routing rule 4. |
 | "You are the main architect & the brain behind the work. Opus needs to do the implementation. Optimise the tokens burnt on you." | `.claude/CLAUDE.md` routing rule 8: the Architect plans, packages and reviews; all bulk writing goes to Opus (or Sonnet for mechanical work). First applied to the design canvas: directions B, C, D written by an Opus worker. |

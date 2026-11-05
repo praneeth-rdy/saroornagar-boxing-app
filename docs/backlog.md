@@ -18,6 +18,6 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | ID | Decision | Options | Status |
 |---|---|---|---|
 | D-01 | Design direction | Canvas: A Ivory and Graphite, B Graphite and Signal, C Paper and Oxblood, D Slate and Volt | open |
-| D-02 | First scope: attendance only, trial booking only, or both in release 1 | | open |
+| D-02 | First scope | Guest trial booking + coach/staff/admin app; no trainee view | decided 2026-11-05 |
 | D-03 | Hosted Supabase organisation, region and project name | | open |
 | D-04 | Android application id (currently the Flutter default `com.example.saroornagar_boxing`) | | open |
