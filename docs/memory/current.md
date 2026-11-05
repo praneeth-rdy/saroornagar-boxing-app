@@ -5,7 +5,7 @@ Last updated 2026-11-05 (end of the second session, late). History in `log.md`.
 ## Where the product stands
 
 Release 1 is built, applied to the hosted project and installed on the owner's phone
-(build 37, "Saroornagar Boxing"). Staff sign in by email with a forgot-password flow; L5a
+(build 39, "Saroornagar Boxing", package `com.saroornagarboxing.app`, shared with the coaches). Staff sign in by email with a forgot-password flow; L5a
 Classic badge and icon; presence-only attendance with confirmed unmark and session reset;
 logs grouped by date; monthly attendance = classes attended per student; the app says
 "Student" everywhere; compact record-payment with 500 / 800; roll numbers (unique among active students,
@@ -16,7 +16,7 @@ and reports defects in chat; each becomes an R3-nn row and a direct developer di
 |---|---|
 | `be/` | 12 migrations (through `backlog_sweep`), pgTAP 600, seed (email accounts), Edge Function `admin-staff` v2. All applied to hosted 2026-11-05 except `20261105160639_backlog_sweep` (apply blocked by the permission classifier; the app tolerates the old version). |
 | `fe/` | Theme A kit, config, errors, email auth + forgot password, shell, Today, Trainees, Trials, Fees (compact record screen, 500/800), Staff admin by email, brand badge + launcher icon. Baseline: analyze 0, `flutter test` 440 (incl. 57 proofs). Release signing with the upload keystore; app name "Boxing Club". |
-| Device | Build 37 installed and copied to `/sdcard/Download/boxing-club-37.apk` (older copies deleted). The owner is about to share the APK with coaches. Reinstall after every landed app run. |
+| Device | Build 39 installed under the new package id and copied to `/sdcard/Download/boxing-club-39.apk`; this is the build the owner shares with the coaches. Later builds install over it. | Reinstall after every landed app run. |
 | Hosted | Project `qgqmnaxdxuezjlexlfpw`. Admin by email (login in `creds.md`). Advisors: no RLS gaps. Migration history uses MCP timestamps (B-10). Migration history uses MCP timestamps (B-10). |
 | `docs/` | Review log R1-01..R1-07, R2-01..R2-07 (all fixed except R1-03, R1-04 as backlog B-05, B-06). Backlog A-08..A-11, B-05, B-06, B-09, B-10 open. |
 
@@ -25,8 +25,7 @@ and reports defects in chat; each becomes an R3-nn row and a direct developer di
 1. Hosted dashboard: turn off "Allow new users to sign up". (The reset-password template
    step is dropped: the forgot-password entry point is hidden; admins reset from Staff.)
 1b. Apply `20261105160639_backlog_sweep.sql` to hosted (blocked; owner says "retry now").
-1c. Android application id before sharing (D-04): recommended `com.saroornagarboxing.app`;
-   changing it after people install forces a reinstall.
+1c. (settled) Application id `com.saroornagarboxing.app`.
 2. Android application id (D-04): still `com.example.saroornagar_boxing`. Changing it later
    means uninstalling the current build on the phone.
 3. Product calls: B-05 (today's ended batch still bookable), B-06 (inactive trainees drop off
