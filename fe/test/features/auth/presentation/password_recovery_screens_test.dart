@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:saroornagar_boxing/core/errors/app_exception.dart';
 import 'package:saroornagar_boxing/core/di/repository_providers.dart';
 import 'package:saroornagar_boxing/core/router/routes.dart';
-import 'package:saroornagar_boxing/core/theme/app_theme.dart';
 import 'package:saroornagar_boxing/features/auth/presentation/forgot_password_screen.dart';
 import 'package:saroornagar_boxing/features/auth/presentation/reset_password_screen.dart';
 
+import '../../../helpers/pump_app.dart';
 import '../../../support/mocks/mock_auth_repository.dart';
 import '../../../support/scenario.dart';
 
@@ -19,29 +18,21 @@ Future<void> pumpScreen(
   WidgetTester tester,
   MockAuthRepository repository,
   Widget screen,
-) async {
-  final router = GoRouter(
-    routes: [
-      GoRoute(path: '/', builder: (_, _) => screen),
-      GoRoute(
-        path: Routes.signIn,
-        builder: (_, _) => const Scaffold(body: Text('sign-in route')),
-      ),
-      GoRoute(
-        path: Routes.resetPassword,
-        builder: (_, _) => const Scaffold(body: Text('reset route')),
-      ),
-    ],
-  );
-  addTearDown(router.dispose);
-  await tester.pumpWidget(
-    ProviderScope(
-      overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      child: MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
+) => pumpApp(
+  tester,
+  overrides: [authRepositoryProvider.overrideWithValue(repository)],
+  home: screen,
+  routes: [
+    GoRoute(
+      path: Routes.signIn,
+      builder: (_, _) => const Scaffold(body: Text('sign-in route')),
     ),
-  );
-  await tester.pumpAndSettle();
-}
+    GoRoute(
+      path: Routes.resetPassword,
+      builder: (_, _) => const Scaffold(body: Text('reset route')),
+    ),
+  ],
+);
 
 Future<void> pumpForgot(
   WidgetTester tester,

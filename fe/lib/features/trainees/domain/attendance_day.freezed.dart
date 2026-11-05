@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$AttendanceDay {
 
  DateTime get date;/// Present batches in day order: morning, evening, then extras.
- List<SessionSlot> get slots;
+ List<SessionSlot> get slots;/// `HH:mm:ss` starts of the present extras that carry one, earliest first.
+ List<String> get extraStarts;
 /// Create a copy of AttendanceDay
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +29,20 @@ $AttendanceDayCopyWith<AttendanceDay> get copyWith => _$AttendanceDayCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as AttendanceDay;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AttendanceDay&&(identical(other.date, _this.date) || other.date == _this.date)&&const DeepCollectionEquality().equals(other.slots, _this.slots));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AttendanceDay&&(identical(other.date, _this.date) || other.date == _this.date)&&const DeepCollectionEquality().equals(other.slots, _this.slots)&&const DeepCollectionEquality().equals(other.extraStarts, _this.extraStarts));
 }
 
 
 @override
 int get hashCode {
   final _this = this as AttendanceDay;
-  return Object.hash(runtimeType,_this.date,const DeepCollectionEquality().hash(_this.slots));
+  return Object.hash(runtimeType,_this.date,const DeepCollectionEquality().hash(_this.slots),const DeepCollectionEquality().hash(_this.extraStarts));
 }
 
 @override
 String toString() {
   final _this = this as AttendanceDay;
-  return 'AttendanceDay(date: ${_this.date}, slots: ${_this.slots})';
+  return 'AttendanceDay(date: ${_this.date}, slots: ${_this.slots}, extraStarts: ${_this.extraStarts})';
 }
 
 
@@ -52,7 +53,7 @@ abstract mixin class $AttendanceDayCopyWith<$Res>  {
   factory $AttendanceDayCopyWith(AttendanceDay value, $Res Function(AttendanceDay) _then) = _$AttendanceDayCopyWithImpl;
 @useResult
 $Res call({
- DateTime date, List<SessionSlot> slots
+ DateTime date, List<SessionSlot> slots, List<String> extraStarts
 });
 
 
@@ -69,11 +70,12 @@ class _$AttendanceDayCopyWithImpl<$Res>
 
 /// Create a copy of AttendanceDay
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? date = null,Object? slots = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? date = null,Object? slots = null,Object? extraStarts = null,}) {
   return _then(AttendanceDay(
 date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,slots: null == slots ? _self.slots : slots // ignore: cast_nullable_to_non_nullable
-as List<SessionSlot>,
+as List<SessionSlot>,extraStarts: null == extraStarts ? _self.extraStarts : extraStarts // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
@@ -158,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime date,  List<SessionSlot> slots)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime date,  List<SessionSlot> slots,  List<String> extraStarts)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AttendanceDay() when $default != null:
-return $default(_that.date,_that.slots);case _:
+return $default(_that.date,_that.slots,_that.extraStarts);case _:
   return orElse();
 
 }
@@ -179,10 +181,10 @@ return $default(_that.date,_that.slots);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime date,  List<SessionSlot> slots)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime date,  List<SessionSlot> slots,  List<String> extraStarts)  $default,) {final _that = this;
 switch (_that) {
 case _AttendanceDay():
-return $default(_that.date,_that.slots);case _:
+return $default(_that.date,_that.slots,_that.extraStarts);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +201,10 @@ return $default(_that.date,_that.slots);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime date,  List<SessionSlot> slots)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime date,  List<SessionSlot> slots,  List<String> extraStarts)?  $default,) {final _that = this;
 switch (_that) {
 case _AttendanceDay() when $default != null:
-return $default(_that.date,_that.slots);case _:
+return $default(_that.date,_that.slots,_that.extraStarts);case _:
   return null;
 
 }
@@ -214,7 +216,7 @@ return $default(_that.date,_that.slots);case _:
 
 
 class _AttendanceDay extends AttendanceDay {
-  const _AttendanceDay({required this.date, required  List<SessionSlot> slots}): _slots = slots,super._();
+  const _AttendanceDay({required this.date, required  List<SessionSlot> slots,  List<String> extraStarts = const <String>[]}): _slots = slots,_extraStarts = extraStarts,super._();
   
 
 @override final  DateTime date;
@@ -225,6 +227,15 @@ class _AttendanceDay extends AttendanceDay {
   if (_slots is EqualUnmodifiableListView) return _slots;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_slots);
+}
+
+/// `HH:mm:ss` starts of the present extras that carry one, earliest first.
+ final  List<String> _extraStarts;
+/// `HH:mm:ss` starts of the present extras that carry one, earliest first.
+@override@JsonKey() List<String> get extraStarts {
+  if (_extraStarts is EqualUnmodifiableListView) return _extraStarts;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_extraStarts);
 }
 
 
@@ -238,18 +249,18 @@ _$AttendanceDayCopyWith<_AttendanceDay> get copyWith => __$AttendanceDayCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AttendanceDay&&(identical(other.date, date) || other.date == date)&&const DeepCollectionEquality().equals(other.slots, _slots));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AttendanceDay&&(identical(other.date, date) || other.date == date)&&const DeepCollectionEquality().equals(other.slots, _slots)&&const DeepCollectionEquality().equals(other.extraStarts, _extraStarts));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,date,const DeepCollectionEquality().hash(_slots));
+    return Object.hash(runtimeType,date,const DeepCollectionEquality().hash(_slots),const DeepCollectionEquality().hash(_extraStarts));
 }
 
 @override
 String toString() {
-    return 'AttendanceDay(date: $date, slots: $slots)';
+    return 'AttendanceDay(date: $date, slots: $slots, extraStarts: $extraStarts)';
 }
 
 
@@ -260,7 +271,7 @@ abstract mixin class _$AttendanceDayCopyWith<$Res> implements $AttendanceDayCopy
   factory _$AttendanceDayCopyWith(_AttendanceDay value, $Res Function(_AttendanceDay) _then) = __$AttendanceDayCopyWithImpl;
 @override @useResult
 $Res call({
- DateTime date, List<SessionSlot> slots
+ DateTime date, List<SessionSlot> slots, List<String> extraStarts
 });
 
 
@@ -277,11 +288,12 @@ class __$AttendanceDayCopyWithImpl<$Res>
 
 /// Create a copy of AttendanceDay
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? date = null,Object? slots = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? date = null,Object? slots = null,Object? extraStarts = null,}) {
   return _then(_AttendanceDay(
 date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,slots: null == slots ? _self._slots : slots // ignore: cast_nullable_to_non_nullable
-as List<SessionSlot>,
+as List<SessionSlot>,extraStarts: null == extraStarts ? _self._extraStarts : extraStarts // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 

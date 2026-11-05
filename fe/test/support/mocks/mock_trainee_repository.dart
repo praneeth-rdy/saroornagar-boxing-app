@@ -42,6 +42,9 @@ class MockTraineeRepository implements TraineeRepository {
   /// Every photo upload, oldest first.
   final uploads = <MockPhotoUpload>[];
 
+  /// Stored photo objects deleted after a replace or remove, oldest first.
+  final deletedPhotoPaths = <String>[];
+
   /// The stored trainee, for assertions.
   Trainee? traineeFor(String id) => _trainees[id];
 
@@ -147,21 +150,32 @@ class MockTraineeRepository implements TraineeRepository {
           final current = _trainee(id);
           _photoCount++;
           uploads.add((traineeId: id, fileName: fileName, size: bytes.length));
-          return _store(
+          final saved = _store(
             current.copyWith(
               photoPath: '$id/photo-$_photoCount.jpg',
               updatedAt: now(),
             ),
           );
+          _deletePhotoObject(current.photoPath);
+          return saved;
         },
       );
 
   @override
   Future<Trainee> removePhoto(String id) => applyScenario(
     scenario,
-    success: () =>
-        _store(_trainee(id).copyWith(photoPath: null, updatedAt: now())),
+    success: () {
+      final current = _trainee(id);
+      final saved = _store(current.copyWith(photoPath: null, updatedAt: now()));
+      _deletePhotoObject(current.photoPath);
+      return saved;
+    },
   );
+
+  // Like the Supabase repository: the old object goes only after the new path is saved.
+  void _deletePhotoObject(String? path) {
+    if (path != null) deletedPhotoPaths.add(path);
+  }
 
   /// Always null: tests have no network, so avatars show initials.
   @override
@@ -197,7 +211,7 @@ class MockTraineeRepository implements TraineeRepository {
 
   Trainee _trainee(String id) {
     final trainee = _trainees[id];
-    if (trainee == null) throw const NotFoundException('Trainee not found');
+    if (trainee == null) throw const NotFoundException('Student not found');
     return trainee;
   }
 

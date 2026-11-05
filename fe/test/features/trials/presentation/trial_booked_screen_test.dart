@@ -1,48 +1,33 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:saroornagar_boxing/core/router/routes.dart';
-import 'package:saroornagar_boxing/core/theme/app_theme.dart';
 import 'package:saroornagar_boxing/features/auth/presentation/auth_providers.dart';
 import 'package:saroornagar_boxing/features/trials/domain/trial_booking.dart';
 import 'package:saroornagar_boxing/features/trials/presentation/trial_booked_screen.dart';
 
+import '../../../helpers/pump_app.dart';
 import '../../../support/fixtures/trials.dart';
 
 TrialBooking get _booking => fixtureTrials(DateTime(2026, 11, 6)).first;
 
-Future<void> _pump(WidgetTester tester, {required bool isSignedIn}) async {
-  final router = GoRouter(
-    initialLocation: '/booked',
-    routes: [
-      GoRoute(
-        path: '/booked',
-        builder: (context, state) => TrialBookedScreen(booking: _booking),
-      ),
-      GoRoute(
-        path: Routes.trial,
-        builder: (context, state) => const Text('Trial form'),
-      ),
-      GoRoute(
-        path: Routes.trials,
-        builder: (context, state) => const Text('Trials tab'),
-      ),
-    ],
-  );
-  addTearDown(router.dispose);
-  await tester.pumpWidget(
-    ProviderScope(
-      overrides: [
-        sessionProvider.overrideWith((ref) => Stream.value(isSignedIn)),
-      ],
-      child: MaterialApp.router(theme: AppTheme.light(), routerConfig: router),
+Future<void> _pump(WidgetTester tester, {required bool isSignedIn}) => pumpApp(
+  tester,
+  overrides: [sessionProvider.overrideWith((ref) => Stream.value(isSignedIn))],
+  home: TrialBookedScreen(booking: _booking),
+  routes: [
+    GoRoute(
+      path: Routes.trial,
+      builder: (context, state) => const Text('Trial form'),
     ),
-  );
-  await tester.pumpAndSettle();
-}
+    GoRoute(
+      path: Routes.trials,
+      builder: (context, state) => const Text('Trials tab'),
+    ),
+  ],
+);
 
 void main() {
   testWidgets('tells the visitor the day, batch and hours', (tester) async {

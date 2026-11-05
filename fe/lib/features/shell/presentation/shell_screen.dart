@@ -17,9 +17,10 @@ class ShellScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(currentProfileProvider);
-    // A retry shows the spinner again instead of keeping the old error on screen.
+    // A retry after an error shows the spinner instead of the old error; a refresh of a
+    // loaded profile (an own-name edit) keeps the tabs on screen.
     return profile.when(
-      skipLoadingOnRefresh: false,
+      skipLoadingOnRefresh: !profile.hasError,
       loading: () => const Scaffold(body: LoadingView()),
       error: (error, _) => switch (error) {
         PermissionException() => const BlockedScreen(),

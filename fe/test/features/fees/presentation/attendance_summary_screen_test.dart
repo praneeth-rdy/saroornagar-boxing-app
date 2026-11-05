@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:saroornagar_boxing/core/di/repository_providers.dart';
 import 'package:saroornagar_boxing/core/router/routes.dart';
-import 'package:saroornagar_boxing/core/theme/app_theme.dart';
 import 'package:saroornagar_boxing/features/fees/presentation/attendance_summary_screen.dart';
 import 'package:saroornagar_boxing/features/today/presentation/today_providers.dart';
 
@@ -65,13 +63,17 @@ void main() {
     );
     final rows = await repository.attendanceSummary(DateTime(2026, 11));
     final pushed = <String>[];
-    final router = GoRouter(
-      initialLocation: Routes.attendanceSummary,
+    tester.view.physicalSize = const Size(1600, 3000);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+    await pumpApp(
+      tester,
+      overrides: [
+        feeRepositoryProvider.overrideWithValue(repository),
+        clockProvider.overrideWithValue(() => _clock),
+      ],
+      home: const AttendanceSummaryScreen(),
       routes: [
-        GoRoute(
-          path: Routes.attendanceSummary,
-          builder: (_, _) => const AttendanceSummaryScreen(),
-        ),
         GoRoute(
           path: Routes.traineeHistory,
           builder: (_, state) {
@@ -81,23 +83,6 @@ void main() {
         ),
       ],
     );
-    addTearDown(router.dispose);
-    tester.view.physicalSize = const Size(1600, 3000);
-    tester.view.devicePixelRatio = 2;
-    addTearDown(tester.view.reset);
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          feeRepositoryProvider.overrideWithValue(repository),
-          clockProvider.overrideWithValue(() => _clock),
-        ],
-        child: MaterialApp.router(
-          theme: AppTheme.light(),
-          routerConfig: router,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
 
     await tester.tap(find.text(rows.first.fullName));
     await tester.pumpAndSettle();

@@ -159,7 +159,7 @@ class MockAttendanceRepository implements AttendanceRepository {
       _session(sessionId);
       final trainee = _trainee(traineeId);
       if (!trainee.isActive) {
-        throw const ValidationException('This trainee is inactive');
+        throw const ValidationException('This student is inactive');
       }
       if (status == AttendanceStatus.unknown) {
         throw const ValidationException('Choose present or absent');
@@ -243,7 +243,7 @@ class MockAttendanceRepository implements AttendanceRepository {
     for (final trainee in trainees) {
       if (trainee.id == traineeId) return trainee;
     }
-    throw const NotFoundException('Trainee not found');
+    throw const NotFoundException('Student not found');
   }
 }
 

@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/di/repository_providers.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../auth/domain/staff_profile.dart';
+import '../../auth/presentation/auth_providers.dart';
 import '../domain/staff_input.dart';
 
 final staffListProvider = FutureProvider.autoDispose<List<StaffProfile>>(
@@ -62,9 +64,15 @@ class StaffFormController extends Notifier<AsyncValue<void>> {
       if (!ref.mounted) return saved;
       state = const AsyncData(null);
       ref.invalidate(staffListProvider);
+      // The shell keeps the old profile on screen while this reloads.
+      if (saved.id == ref.read(currentProfileProvider).value?.id) {
+        ref.invalidate(currentProfileProvider);
+      }
       return saved;
     } catch (error, stackTrace) {
-      if (ref.mounted) state = AsyncError(_appError(error), stackTrace);
+      final failure = _appError(error);
+      if (ref.mounted) state = AsyncError(failure, stackTrace);
+      await _signOutIfExpired(ref, failure);
       return null;
     }
   }
@@ -88,7 +96,9 @@ class StaffBlockController extends Notifier<AsyncValue<void>> {
       state = const AsyncData(null);
       ref.invalidate(staffListProvider);
     } catch (error, stackTrace) {
-      if (ref.mounted) state = AsyncError(_appError(error), stackTrace);
+      final failure = _appError(error);
+      if (ref.mounted) state = AsyncError(failure, stackTrace);
+      await _signOutIfExpired(ref, failure);
     }
   }
 }
@@ -111,7 +121,9 @@ class ResetPasswordController extends Notifier<AsyncValue<void>> {
       if (ref.mounted) state = const AsyncData(null);
       return true;
     } catch (error, stackTrace) {
-      if (ref.mounted) state = AsyncError(_appError(error), stackTrace);
+      final failure = _appError(error);
+      if (ref.mounted) state = AsyncError(failure, stackTrace);
+      await _signOutIfExpired(ref, failure);
       return false;
     }
   }
@@ -119,3 +131,14 @@ class ResetPasswordController extends Notifier<AsyncValue<void>> {
 
 AppException _appError(Object error) =>
     error is AppException ? error : const UnknownException();
+
+// An expired session cannot be repaired here; signing out lets the route guard show sign-in.
+Future<void> _signOutIfExpired(Ref ref, AppException failure) async {
+  if (failure is! AuthFailedException || !ref.mounted) return;
+  try {
+    await ref.read(signOutProvider)();
+  } on AppException catch (error) {
+    // The banner already says to sign in again; the button on More still works.
+    debugPrint('Sign-out after an expired session failed: $error');
+  }
+}

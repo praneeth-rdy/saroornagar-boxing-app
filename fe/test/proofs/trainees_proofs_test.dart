@@ -59,8 +59,8 @@ Future<void> _proof(
   expect(file.existsSync(), isTrue);
 }
 
-// Morning marks plus an evening present mark on the newest date, so one row reads
-// "Morning and evening".
+// Morning marks plus evening and extra present marks on the newest date, so one row
+// reads "Morning, evening and extra 4:00 pm".
 List<AttendanceRecord> _historyWithEvening({int days = 60}) {
   final records = fixtureAttendanceHistory(days: days);
   final first = records.first;
@@ -72,6 +72,17 @@ List<AttendanceRecord> _historyWithEvening({int days = 60}) {
       slot: SessionSlot.evening,
       status: AttendanceStatus.present,
       markedAt: first.markedAt.add(const Duration(hours: 10)),
+      startsAt: '17:30:00',
+      endsAt: '20:00:00',
+    ),
+    AttendanceRecord(
+      sessionId: 'extra-${first.sessionDate.day}',
+      sessionDate: first.sessionDate,
+      slot: SessionSlot.extra,
+      status: AttendanceStatus.present,
+      markedAt: first.markedAt.add(const Duration(hours: 9)),
+      startsAt: '16:00:00',
+      endsAt: '17:00:00',
     ),
     ...records.skip(1),
   ];

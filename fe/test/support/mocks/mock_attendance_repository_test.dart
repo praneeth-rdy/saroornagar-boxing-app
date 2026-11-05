@@ -94,7 +94,7 @@ void main() {
         isA<ValidationException>().having(
           (e) => e.message,
           'message',
-          'This trainee is inactive',
+          'This student is inactive',
         ),
       ),
     );

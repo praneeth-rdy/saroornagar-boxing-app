@@ -20,29 +20,14 @@ import '../../../support/mocks/mock_trial_repository.dart';
 DateTime _clock() => DateTime.utc(2026, 11, 5, 7);
 
 // The form needs a router for canPop and the booked screen.
-Widget _router() {
-  final router = GoRouter(
-    routes: [
-      GoRoute(path: '/', builder: (_, _) => const BookTrialScreen()),
-      GoRoute(
-        path: Routes.trialBooked,
-        builder: (_, state) =>
-            TrialBookedScreen(booking: state.extra! as TrialBooking),
-      ),
-      GoRoute(
-        path: Routes.signIn,
-        builder: (_, _) => const Text('Sign in page'),
-      ),
-    ],
-  );
-  addTearDown(router.dispose);
-  return Router(
-    routeInformationProvider: router.routeInformationProvider,
-    routeInformationParser: router.routeInformationParser,
-    routerDelegate: router.routerDelegate,
-    backButtonDispatcher: RootBackButtonDispatcher(),
-  );
-}
+final _routes = [
+  GoRoute(
+    path: Routes.trialBooked,
+    builder: (_, state) =>
+        TrialBookedScreen(booking: state.extra! as TrialBooking),
+  ),
+  GoRoute(path: Routes.signIn, builder: (_, _) => const Text('Sign in page')),
+];
 
 Future<void> _pump(WidgetTester tester, MockTrialRepository repository) {
   tester.view.physicalSize = const Size(1600, 4000);
@@ -50,7 +35,8 @@ Future<void> _pump(WidgetTester tester, MockTrialRepository repository) {
   addTearDown(tester.view.reset);
   return pumpApp(
     tester,
-    home: _router(),
+    home: const BookTrialScreen(),
+    routes: _routes,
     overrides: [
       trialRepositoryProvider.overrideWithValue(repository),
       deviceKeyStoreProvider.overrideWithValue(MockDeviceKeyStore()),

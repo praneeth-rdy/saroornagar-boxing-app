@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:saroornagar_boxing/core/errors/app_exception.dart';
 import 'package:saroornagar_boxing/core/models/staff_role.dart';
+import 'package:saroornagar_boxing/core/supabase/supabase_errors.dart';
 import 'package:saroornagar_boxing/core/utils/phone_format.dart';
 import 'package:saroornagar_boxing/core/utils/validators.dart';
 import 'package:saroornagar_boxing/features/auth/domain/staff_profile.dart';
@@ -31,6 +32,13 @@ class MockStaffRepository implements StaffRepository {
 
   MockScenario scenario;
   StaffProfile caller;
+
+  /// When true, every `admin-staff` call fails as the gateway's expired-JWT 401 does.
+  bool isSessionExpired = false;
+
+  /// Called with every stored profile; a test links it to the auth mock, which reads the
+  /// same `profiles` row on the server.
+  void Function(StaffProfile saved)? onStored;
 
   final _staff = <String, StaffProfile>{};
 
@@ -65,6 +73,7 @@ class MockStaffRepository implements StaffRepository {
   }) => applyScenario(
     scenario,
     success: () {
+      _requireLiveSession();
       _requireAdmin();
       final name = _requireFullName(fullName);
       final normalizedEmail = _requireEmail(email);
@@ -143,6 +152,7 @@ class MockStaffRepository implements StaffRepository {
   Future<void> resetPassword(String userId, String password) => applyScenario(
     scenario,
     success: () {
+      _requireLiveSession();
       _requireAdmin();
       _requireUserId(userId);
       _requirePassword(password);
@@ -155,6 +165,7 @@ class MockStaffRepository implements StaffRepository {
   Future<StaffProfile> setBlocked(String userId, bool blocked) => applyScenario(
     scenario,
     success: () {
+      _requireLiveSession();
       _requireAdmin();
       _requireUserId(userId);
       final member = _requireMember(userId);
@@ -164,6 +175,13 @@ class MockStaffRepository implements StaffRepository {
       return _store(member.copyWith(isBlocked: blocked));
     },
   );
+
+  // Mirrors mapSupabaseError on a code-less 401 from the functions gateway.
+  void _requireLiveSession() {
+    if (isSessionExpired) {
+      throw const AuthFailedException(sessionExpiredMessage);
+    }
+  }
 
   void _requireAdmin() {
     final self = _staff[caller.id] ?? caller;
@@ -188,6 +206,7 @@ class MockStaffRepository implements StaffRepository {
   StaffProfile _store(StaffProfile member) {
     final updated = member.copyWith(updatedAt: DateTime.now().toUtc());
     _staff[updated.id] = updated;
+    onStored?.call(updated);
     return updated;
   }
 }

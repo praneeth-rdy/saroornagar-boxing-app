@@ -50,8 +50,15 @@ AppException _fromFunction(FunctionException error) {
     );
     if (mapped != null) return mapped;
   }
+  // The gateway refuses an expired or bad JWT before the function runs, without a code.
+  if (error.status == 401) {
+    return const AuthFailedException(sessionExpiredMessage);
+  }
   return const UnknownException();
 }
+
+/// Shown when the gateway refuses the session token; the app signs out after it.
+const sessionExpiredMessage = 'Your session expired. Sign in again.';
 
 const _phoneProviderDisabledMessage =
     'Phone sign-in is not enabled on the server yet. Ask the club admin.';

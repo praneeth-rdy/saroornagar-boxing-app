@@ -19,6 +19,10 @@ abstract class AttendanceRecord with _$AttendanceRecord {
     @JsonKey(fromJson: AttendanceStatus.fromWire, toJson: _statusToWire)
     required AttendanceStatus status,
     @JsonKey(name: 'marked_at') required DateTime markedAt,
+
+    /// `HH:mm:ss` India wall clock; null from a server older than the time columns.
+    @JsonKey(name: 'starts_at') String? startsAt,
+    @JsonKey(name: 'ends_at') String? endsAt,
   }) = _AttendanceRecord;
 
   factory AttendanceRecord.fromJson(Map<String, dynamic> json) =>

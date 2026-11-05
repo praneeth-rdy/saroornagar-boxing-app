@@ -121,6 +121,8 @@ Map<String, List<AttendanceRecord>> fixtureMonthAttendance(
                   ? AttendanceStatus.absent
                   : AttendanceStatus.present,
               markedAt: DateTime.utc(date.year, date.month, date.day, 0, 32),
+              startsAt: '06:00:00',
+              endsAt: '08:30:00',
             ),
       ],
   };

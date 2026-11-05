@@ -11,12 +11,14 @@ AttendanceRecord _record(
   DateTime date,
   SessionSlot slot, {
   AttendanceStatus status = AttendanceStatus.present,
+  String? startsAt,
 }) => AttendanceRecord(
-  sessionId: '${date.day}-${slot.wire}',
+  sessionId: '${date.day}-${slot.wire}-$startsAt',
   sessionDate: date,
   slot: slot,
   status: status,
   markedAt: DateTime.utc(date.year, date.month, date.day, 1),
+  startsAt: startsAt,
 );
 
 void main() {
@@ -73,6 +75,40 @@ void main() {
     ]);
 
     expect(days.single.label, 'Morning, evening and 2 extras');
+  });
+
+  test('an extra with a start time is named by it', () {
+    final days = groupAttendanceByDate([
+      _record(_thursday, SessionSlot.extra, startsAt: '16:00:00'),
+      _record(_thursday, SessionSlot.morning, startsAt: '06:00:00'),
+    ]);
+
+    expect(days.single.extraStarts, ['16:00:00']);
+    expect(days.single.label, 'Morning and extra 4:00 pm');
+  });
+
+  test('two timed extras are named earliest first', () {
+    final days = groupAttendanceByDate([
+      _record(_thursday, SessionSlot.extra, startsAt: '16:00:00'),
+      _record(_thursday, SessionSlot.evening, startsAt: '17:30:00'),
+      _record(_thursday, SessionSlot.extra, startsAt: '07:15:00'),
+    ]);
+
+    expect(days.single.label, 'Evening, extra 7:15 am and extra 4:00 pm');
+  });
+
+  test('an absent extra is not named', () {
+    final days = groupAttendanceByDate([
+      _record(_thursday, SessionSlot.morning),
+      _record(
+        _thursday,
+        SessionSlot.extra,
+        status: AttendanceStatus.absent,
+        startsAt: '16:00:00',
+      ),
+    ]);
+
+    expect(days.single.label, 'Morning');
   });
 
   test('a date with only absent marks gives no day', () {

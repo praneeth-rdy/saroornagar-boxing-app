@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/errors/app_exception.dart';
@@ -82,6 +82,7 @@ class SupabaseTraineeRepository implements TraineeRepository {
   ) async {
     final type = _photoTypeOf(fileName);
     final path = '$id/${_randomUuid()}.${type.extension}';
+    final previousPath = await _photoPathOf(id);
     await guardSupabase(
       () => _storage(
         () => client.storage
@@ -93,8 +94,9 @@ class SupabaseTraineeRepository implements TraineeRepository {
             ),
       ),
     );
+    final Trainee saved;
     try {
-      return await _trainee('set_trainee_photo', {
+      saved = await _trainee('set_trainee_photo', {
         'p_trainee_id': id,
         'p_photo_path': path,
       });
@@ -103,11 +105,42 @@ class SupabaseTraineeRepository implements TraineeRepository {
       client.storage.from(_photoBucket).remove([path]).ignore();
       rethrow;
     }
+    if (previousPath != null && previousPath != path) {
+      await _deletePhotoObject(previousPath);
+    }
+    return saved;
   }
 
   @override
-  Future<Trainee> removePhoto(String id) =>
-      _trainee('set_trainee_photo', {'p_trainee_id': id, 'p_photo_path': null});
+  Future<Trainee> removePhoto(String id) async {
+    final previousPath = await _photoPathOf(id);
+    final saved = await _trainee('set_trainee_photo', {
+      'p_trainee_id': id,
+      'p_photo_path': null,
+    });
+    if (previousPath != null) await _deletePhotoObject(previousPath);
+    return saved;
+  }
+
+  Future<String?> _photoPathOf(String id) => guardSupabase(() async {
+    final row = await client
+        .from('trainees')
+        .select('photo_path')
+        .eq('id', id)
+        .maybeSingle();
+    if (row == null) throw const NotFoundException('Student not found');
+    return row['photo_path'] as String?;
+  });
+
+  // Runs only after the new path is saved; a failure leaves an orphan, never an error.
+  Future<void> _deletePhotoObject(String path) async {
+    try {
+      await client.storage.from(_photoBucket).remove([path]);
+      _signedUrls.remove(path);
+    } on Object catch (error) {
+      debugPrint('Old photo $path was not deleted: $error');
+    }
+  }
 
   @override
   Future<String?> photoUrl(String? photoPath) async {

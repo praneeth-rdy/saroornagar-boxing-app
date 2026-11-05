@@ -22,3 +22,11 @@ DateTime parseWireDate(String value) => dateOnly(DateTime.parse(value));
 /// `6:02 am` style time; lower-case am and pm.
 String formatClockTime(DateTime time) =>
     DateFormat('h:mm a').format(time).toLowerCase();
+
+/// `4:00 pm` from Postgres `time` text (`HH:mm` or `HH:mm:ss`).
+String formatWireTime(String time) {
+  final parts = time.split(':').map(int.parse).toList();
+  return formatClockTime(
+    DateTime.utc(2000, 1, 1, parts[0], parts.length > 1 ? parts[1] : 0),
+  );
+}

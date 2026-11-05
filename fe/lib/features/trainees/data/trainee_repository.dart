@@ -25,10 +25,10 @@ abstract class TraineeRepository {
   /// Throws `DuplicateException` when reactivating onto a roll number in use.
   Future<Trainee> setStatus(String id, TraineeStatus status);
 
-  /// Stores the photo under the trainee's folder and links it to the trainee.
+  /// Stores the photo under the trainee's folder, links it, then deletes the old one (best effort).
   Future<Trainee> uploadPhoto(String id, Uint8List bytes, String fileName);
 
-  /// Unlinks the photo; the stored object is left in place.
+  /// Unlinks the photo, then deletes the stored object (best effort).
   Future<Trainee> removePhoto(String id);
 
   /// A short-lived URL for a stored photo, or null when there is none.

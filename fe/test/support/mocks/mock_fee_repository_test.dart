@@ -66,7 +66,7 @@ void main() {
     test('unknown trainee', () async {
       await _expectMessage(
         _record(_repo(), traineeId: 'nobody'),
-        'Trainee not found',
+        'Student not found',
       );
     });
 
@@ -119,7 +119,7 @@ void main() {
           amount: 0,
           paidOn: DateTime(2026, 11, 6),
         ),
-        'Trainee not found',
+        'Student not found',
       );
       await _expectMessage(
         _record(
@@ -164,7 +164,7 @@ void main() {
     });
 
     test('unknown trainee', () async {
-      await _expectMessage(_repo().history('nobody'), 'Trainee not found');
+      await _expectMessage(_repo().history('nobody'), 'Student not found');
     });
   });
 

@@ -27,8 +27,8 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | B-07 | Edge Function `admin-staff` (create, reset_password, set_blocked) | done (2026-11-05), deployed 2026-11-05 (version 1) |
 | B-08 | Harden profile creation (app_metadata role) and revoke anon select (`20261105081756_harden_profiles.sql`) | done (2026-11-05), applied to hosted |
 | B-09 | Merge `profiles_select_own` and `profiles_select_staff` into one policy (performance advisor: multiple permissive policies) | done (2026-11-05), `profiles_select_staff_or_own` in `20261105160639_backlog_sweep.sql`; not yet applied to hosted |
-| B-13 | `trainee_attendance_history` returns no `starts_at`, so grouped logs show an extra session as "extra" without its time; add the time in a migration and show it in the app | done (2026-11-05), `20261105160639_backlog_sweep.sql`; not yet applied to hosted; app side in the fe package |
-| B-12 | Server messages say "trainee" ("This trainee is inactive", "Trainee not found"); the app now says Student. Reword in a migration. | done (2026-11-05), `20261105160639_backlog_sweep.sql`; not yet applied to hosted; app side in the fe package |
+| B-13 | `trainee_attendance_history` returns no `starts_at`, so grouped logs show an extra session as "extra" without its time; add the time in a migration and show it in the app | done (2026-11-05), `20261105160639_backlog_sweep.sql`; not yet applied to hosted; app side done (2026-11-05): `AttendanceRecord.startsAt`/`endsAt`, "Morning and extra 4:00 pm" |
+| B-12 | Server messages say "trainee" ("This trainee is inactive", "Trainee not found"); the app now says Student. Reword in a migration. | done (2026-11-05), `20261105160639_backlog_sweep.sql`; not yet applied to hosted; app side done (2026-11-05): `AttendanceRecord.startsAt`/`endsAt`, "Morning and extra 4:00 pm" |
 | B-11 | Apply `fee_tier_800`, `summary_held_sessions`, `unmark_attendance` to hosted | done (2026-11-05) |
 | B-10 | Hosted migration history carries MCP timestamps, not file names; run `supabase migration repair` before any `db push` | todo (only if db push is ever used) |
 
@@ -43,10 +43,10 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | A-05 | Trials: public booking screen, staff list of upcoming bookings | done (2026-11-05) |
 | A-06 | Fees: record payment, fee status list; monthly attendance summary | done (2026-11-05) |
 | A-07 | Staff admin: create, edit, block, reset password (admin only) | done (2026-11-05) |
-| A-08 | Trainee photos: delete the old storage object when a photo is replaced or removed (orphans stay in the bucket today) | todo |
-| A-09 | An admin who renames themselves sees the old name on More until the next load (`currentProfileProvider` is not invalidated to avoid blanking the shell) | todo |
-| A-10 | Expired-JWT gateway 401 on `admin-staff` maps to the unknown error; map it to a sign-in-again state | todo |
-| A-11 | `pumpApp` has no router option; widget tests of screens that call `context.canPop()` wrap their own GoRouter | todo |
+| A-08 | Trainee photos: delete the old storage object when a photo is replaced or removed (orphans stay in the bucket today) | done (2026-11-05) |
+| A-09 | An admin who renames themselves sees the old name on More until the next load (`currentProfileProvider` is not invalidated to avoid blanking the shell) | done (2026-11-05) |
+| A-10 | Expired-JWT gateway 401 on `admin-staff` maps to the unknown error; map it to a sign-in-again state | done (2026-11-05): staff actions sign out |
+| A-11 | `pumpApp` has no router option; widget tests of screens that call `context.canPop()` wrap their own GoRouter | done (2026-11-05) |
 
 ## Open decisions
 

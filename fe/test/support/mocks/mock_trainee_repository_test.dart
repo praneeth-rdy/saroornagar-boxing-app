@@ -247,6 +247,53 @@ void main() {
     expect(removed.photoPath, isNull);
   });
 
+  test('replacing a photo deletes the previous object after saving', () async {
+    final repository = _repository();
+    final first = await repository.uploadPhoto(
+      detailTrainee.id,
+      Uint8List.fromList([1]),
+      'a.jpg',
+    );
+    final second = await repository.uploadPhoto(
+      detailTrainee.id,
+      Uint8List.fromList([2]),
+      'b.jpg',
+    );
+    expect(repository.deletedPhotoPaths, [first.photoPath]);
+    expect(
+      repository.traineeFor(detailTrainee.id)!.photoPath,
+      second.photoPath,
+    );
+  });
+
+  test('removing a photo deletes its object', () async {
+    final repository = _repository();
+    final saved = await repository.uploadPhoto(
+      detailTrainee.id,
+      Uint8List.fromList([1]),
+      'a.jpg',
+    );
+    await repository.removePhoto(detailTrainee.id);
+    expect(repository.deletedPhotoPaths, [saved.photoPath]);
+  });
+
+  test('history throws Student not found for an unknown student', () {
+    expect(
+      _repository().history(
+        'missing',
+        DateTime(2026, 11),
+        DateTime(2026, 11, 5),
+      ),
+      throwsA(
+        isA<NotFoundException>().having(
+          (error) => error.message,
+          'message',
+          'Student not found',
+        ),
+      ),
+    );
+  });
+
   test('scenarios throw the matching exceptions', () {
     expect(
       _repository(scenario: MockScenario.permissionDenied)

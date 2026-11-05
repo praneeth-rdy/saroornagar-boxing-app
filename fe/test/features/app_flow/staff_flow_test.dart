@@ -97,6 +97,87 @@ void main() {
     expect(find.text('Blocked'), findsOneWidget);
   });
 
+  testWidgets('an admin who renames themselves sees the new name on More', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1600, 3600);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+    final auth = MockAuthRepository(signedIn: true);
+    addTearDown(auth.dispose);
+    final staff = MockStaffRepository(staff: [adminProfile])
+      ..onStored = (saved) {
+        if (saved.id == auth.profile.id) auth.profile = saved;
+      };
+    await pumpApp(
+      tester,
+      overrides: [
+        authRepositoryProvider.overrideWithValue(auth),
+        attendanceRepositoryProvider.overrideWithValue(
+          MockAttendanceRepository(),
+        ),
+        staffRepositoryProvider.overrideWithValue(staff),
+      ],
+    );
+
+    await tester.tap(find.text('More'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Staff'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ravi Kumar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Edit'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).at(0), 'Ravi K');
+    await tester.tap(find.byType(PrimaryButton));
+    await tester.pump();
+
+    // The profile reloads behind the tabs instead of blanking the shell.
+    expect(find.byType(NavigationBar), findsOneWidget);
+    await tester.pumpAndSettle();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ravi K'), findsOneWidget);
+    expect(find.text('Ravi Kumar'), findsNothing);
+  });
+
+  testWidgets('an expired session on a staff action signs the admin out', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1600, 3600);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+    final auth = MockAuthRepository(signedIn: true);
+    addTearDown(auth.dispose);
+    final staff = MockStaffRepository();
+    await pumpApp(
+      tester,
+      overrides: [
+        authRepositoryProvider.overrideWithValue(auth),
+        attendanceRepositoryProvider.overrideWithValue(
+          MockAttendanceRepository(),
+        ),
+        staffRepositoryProvider.overrideWithValue(staff),
+      ],
+    );
+    GoRouter.of(tester.element(find.byType(NavigationBar)))
+        .go(Routes.staffDetailOf(coachProfile.id));
+    await tester.pumpAndSettle();
+    staff.isSessionExpired = true;
+
+    await tester.tap(find.text('Block access'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Block access').last);
+    await tester.pumpAndSettle();
+
+    expect(auth.isSignedIn, isFalse);
+    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.text('Sign in'), findsWidgets);
+  });
+
   testWidgets('a coach has no Staff card on More', (tester) async {
     final auth = MockAuthRepository(signedIn: true, profile: coachProfile);
     addTearDown(auth.dispose);

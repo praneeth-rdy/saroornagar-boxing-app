@@ -13,6 +13,8 @@ _AttendanceRecord _$AttendanceRecordFromJson(Map<String, dynamic> json) =>
       slot: SessionSlot.fromWire(json['slot'] as String?),
       status: AttendanceStatus.fromWire(json['status'] as String?),
       markedAt: DateTime.parse(json['marked_at'] as String),
+      startsAt: json['starts_at'] as String?,
+      endsAt: json['ends_at'] as String?,
     );
 
 Map<String, dynamic> _$AttendanceRecordToJson(_AttendanceRecord instance) =>
@@ -22,4 +24,6 @@ Map<String, dynamic> _$AttendanceRecordToJson(_AttendanceRecord instance) =>
       'slot': _slotToWire(instance.slot),
       'status': _statusToWire(instance.status),
       'marked_at': instance.markedAt.toIso8601String(),
+      'starts_at': instance.startsAt,
+      'ends_at': instance.endsAt,
     };

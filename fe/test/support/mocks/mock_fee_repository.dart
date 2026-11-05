@@ -171,7 +171,7 @@ class MockFeeRepository implements FeeRepository {
 
   Trainee _trainee(String id) {
     final trainee = _trainees[id];
-    if (trainee == null) throw const NotFoundException('Trainee not found');
+    if (trainee == null) throw const NotFoundException('Student not found');
     return trainee;
   }
 

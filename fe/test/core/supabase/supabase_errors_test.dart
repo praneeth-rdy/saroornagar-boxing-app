@@ -353,6 +353,29 @@ void main() {
         isA<OfflineException>(),
       );
     });
+
+    test('a gateway 401 without a code maps to session expired', () {
+      final result = mapSupabaseError(
+        const FunctionsHttpException(
+          status: 401,
+          details: {'msg': 'Invalid JWT'},
+        ),
+      );
+
+      expect(result, isA<AuthFailedException>());
+      expect(result.message, 'Your session expired. Sign in again.');
+    });
+
+    test('a 401 that carries a BX code keeps the server mapping', () {
+      final result = mapSupabaseError(
+        const FunctionsHttpException(
+          status: 401,
+          details: {'code': 'BXPRM', 'message': 'Only an admin'},
+        ),
+      );
+
+      expect(result, isA<PermissionException>());
+    });
   });
 
   group('guardSupabase', () {

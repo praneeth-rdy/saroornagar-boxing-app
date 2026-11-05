@@ -17,16 +17,22 @@ abstract class AttendanceDay with _$AttendanceDay {
 
     /// Present batches in day order: morning, evening, then extras.
     required List<SessionSlot> slots,
+
+    /// `HH:mm:ss` starts of the present extras that carry one, earliest first.
+    @Default(<String>[]) List<String> extraStarts,
   }) = _AttendanceDay;
 
-  /// `Morning and evening`, `Morning`, `Morning and extra`, `Morning, evening and 2 extras`.
+  /// `Morning and evening`, `Morning and extra 4:00 pm`, `Morning, evening and 2 extras`.
   String get label {
     final extras = slots.where((slot) => slot == SessionSlot.extra).length;
+    // Extras without a start time (an older server) are counted, not named.
+    final untimed = extras - extraStarts.length;
     final parts = [
       for (final slot in slots)
         if (slot != SessionSlot.extra) slot.label.toLowerCase(),
-      if (extras == 1) 'extra',
-      if (extras > 1) '$extras extras',
+      for (final start in extraStarts) 'extra ${formatWireTime(start)}',
+      if (untimed == 1) 'extra',
+      if (untimed > 1) '$untimed extras',
     ];
     if (parts.isEmpty) return '';
     final text = parts.length == 1
@@ -38,17 +44,23 @@ abstract class AttendanceDay with _$AttendanceDay {
 
 /// Present marks grouped by date, newest date first; dates with no present mark are left out.
 List<AttendanceDay> groupAttendanceByDate(List<AttendanceRecord> records) {
-  final byDate = <DateTime, List<SessionSlot>>{};
+  final byDate = <DateTime, List<AttendanceRecord>>{};
   for (final record in records) {
     if (record.status != AttendanceStatus.present) continue;
-    byDate.putIfAbsent(dateOnly(record.sessionDate), () => []).add(record.slot);
+    byDate.putIfAbsent(dateOnly(record.sessionDate), () => []).add(record);
   }
   final dates = byDate.keys.toList()..sort((a, b) => b.compareTo(a));
-  return [
-    for (final date in dates)
-      AttendanceDay(
-        date: date,
-        slots: byDate[date]!..sort((a, b) => a.index.compareTo(b.index)),
-      ),
-  ];
+  return [for (final date in dates) _dayOf(date, byDate[date]!)];
+}
+
+AttendanceDay _dayOf(DateTime date, List<AttendanceRecord> present) {
+  final slots = [for (final record in present) record.slot]
+    ..sort((a, b) => a.index.compareTo(b.index));
+  // `HH:mm:ss` text sorts in clock order.
+  final extraStarts = [
+    for (final record in present)
+      if (record.slot == SessionSlot.extra && record.startsAt != null)
+        record.startsAt!,
+  ]..sort();
+  return AttendanceDay(date: date, slots: slots, extraStarts: extraStarts);
 }
