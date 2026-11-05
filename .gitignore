@@ -1,0 +1,17 @@
+# OS / editors
+.DS_Store
+.idea/
+*.swp
+*.log
+
+# Claude Code: machine-personal files stay out of git
+.claude/settings.local.json
+.mcp.json
+.claude/skills/supabase
+.claude/skills/supabase-postgres-best-practices
+.agents/skills/
+
+# Credentials never live in the repo (see docs/memory/current.md for where they are kept)
+creds.md
+keys/
+builds/

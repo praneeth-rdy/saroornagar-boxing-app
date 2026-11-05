@@ -1,0 +1,15 @@
+# Analyzer configuration for the boxing club app.
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - "**/*.freezed.dart"
+    - "**/*.g.dart"
+
+linter:
+  rules:
+    prefer_single_quotes: true
+    avoid_print: true
+    require_trailing_commas: true
