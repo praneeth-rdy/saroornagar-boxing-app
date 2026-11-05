@@ -4,6 +4,7 @@ import 'package:saroornagar_boxing/core/di/repository_providers.dart';
 
 import '../../helpers/pump_app.dart';
 import '../../support/fixtures/profiles.dart';
+import '../../support/mocks/mock_attendance_repository.dart';
 import '../../support/mocks/mock_auth_repository.dart';
 
 void main() {
@@ -14,7 +15,12 @@ void main() {
     addTearDown(repository.dispose);
     await pumpApp(
       tester,
-      overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      overrides: [
+        authRepositoryProvider.overrideWithValue(repository),
+        attendanceRepositoryProvider.overrideWithValue(
+          MockAttendanceRepository(),
+        ),
+      ],
     );
 
     expect(find.text('Staff and coaches only.'), findsOneWidget);
@@ -24,7 +30,7 @@ void main() {
     await tester.tap(find.text('Sign in').last);
     await tester.pumpAndSettle();
 
-    expect(find.text('Coming next'), findsOneWidget);
+    expect(find.text('Today'), findsWidgets);
     expect(find.byType(NavigationBar), findsOneWidget);
 
     await tester.tap(find.text('More'));

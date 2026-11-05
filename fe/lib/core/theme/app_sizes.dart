@@ -8,6 +8,9 @@ abstract final class AppSizes {
   static const double listRowMinHeight = 64;
   static const double avatar = 40;
 
+  /// The avatar at the top of a profile.
+  static const double avatarLarge = 72;
+
   /// Initials take this share of the avatar diameter.
   static const double avatarInitialsRatio = 0.38;
   static const double hairline = 1;

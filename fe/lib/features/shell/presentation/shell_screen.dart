@@ -7,7 +7,8 @@ import '../../../core/widgets/state_views.dart';
 import '../../auth/presentation/auth_providers.dart';
 import '../../auth/presentation/blocked_screen.dart';
 
-/// The four-tab staff shell; shows the blocked screen instead when the server says so.
+/// The four-tab staff shell; shows the blocked screen instead when the server says so,
+/// or its not-staff variant for an account without a profile.
 class ShellScreen extends ConsumerWidget {
   const ShellScreen({super.key, required this.navigationShell});
 
@@ -20,16 +21,18 @@ class ShellScreen extends ConsumerWidget {
     return profile.when(
       skipLoadingOnRefresh: false,
       loading: () => const Scaffold(body: LoadingView()),
-      error: (error, _) => error is PermissionException
-          ? const BlockedScreen()
-          : Scaffold(
-              body: ErrorView(
-                message: error is AppException
-                    ? error.message
-                    : UnknownException.defaultMessage,
-                onRetry: () => ref.invalidate(currentProfileProvider),
-              ),
-            ),
+      error: (error, _) => switch (error) {
+        PermissionException() => const BlockedScreen(),
+        NotFoundException() => const BlockedScreen.notStaff(),
+        _ => Scaffold(
+          body: ErrorView(
+            message: error is AppException
+                ? error.message
+                : UnknownException.defaultMessage,
+            onRetry: () => ref.invalidate(currentProfileProvider),
+          ),
+        ),
+      },
       data: (staff) => staff.isBlocked
           ? const BlockedScreen()
           : _TabScaffold(navigationShell: navigationShell),

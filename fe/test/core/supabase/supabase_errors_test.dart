@@ -205,6 +205,27 @@ void main() {
     });
   });
 
+  group('mapSupabaseError for Edge Function transport types', () {
+    test('a FunctionsHttpException with a BXDUP body maps to Duplicate', () {
+      final result = mapSupabaseError(
+        const FunctionsHttpException(
+          status: 409,
+          details: {'code': 'BXDUP', 'message': 'Number already exists'},
+        ),
+      );
+
+      expect(result, isA<DuplicateException>());
+      expect(result.message, 'Number already exists');
+    });
+
+    test('a FunctionsFetchException maps to OfflineException', () {
+      expect(
+        mapSupabaseError(const FunctionsFetchException(details: 'no network')),
+        isA<OfflineException>(),
+      );
+    });
+  });
+
   group('guardSupabase', () {
     test('returns the value on success', () async {
       expect(await guardSupabase(() async => 7), 7);

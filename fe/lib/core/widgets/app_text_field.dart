@@ -18,6 +18,8 @@ class AppTextField extends StatelessWidget {
     this.textInputAction,
     this.onSubmitted,
     this.maxLength,
+    this.maxLines = 1,
+    this.showCounter = false,
     this.enabled = true,
   });
 
@@ -34,6 +36,12 @@ class AppTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
   final int? maxLength;
+
+  /// More than 1 for a multiline field such as notes.
+  final int maxLines;
+
+  /// Shows the `n/max` counter; worth it on long fields only.
+  final bool showCounter;
   final bool enabled;
 
   @override
@@ -52,6 +60,8 @@ class AppTextField extends StatelessWidget {
           textInputAction: textInputAction,
           onSubmitted: onSubmitted,
           maxLength: maxLength,
+          maxLines: maxLines,
+          minLines: maxLines > 1 ? maxLines ~/ 2 : null,
           enabled: enabled,
           style: AppTypography.body,
           decoration: InputDecoration(
@@ -77,7 +87,7 @@ class AppTextField extends StatelessWidget {
                     bottom: AppSpacing.lg,
                   ),
             // The limit is enforced; a running counter is noise on short fields.
-            counterText: '',
+            counterText: showCounter ? null : '',
           ),
         ),
       ],

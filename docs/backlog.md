@@ -38,6 +38,10 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | A-05 | Trials: public booking screen, staff list of upcoming bookings | todo (run 2) |
 | A-06 | Fees: record payment, fee status list; monthly attendance summary | todo (run 2) |
 | A-07 | Staff admin: create, edit, block, reset password (admin only) | todo (run 2) |
+| A-08 | Trainee photos: delete the old storage object when a photo is replaced or removed (orphans stay in the bucket today) | todo |
+| A-09 | An admin who renames themselves sees the old name on More until the next load (`currentProfileProvider` is not invalidated to avoid blanking the shell) | todo |
+| A-10 | Expired-JWT gateway 401 on `admin-staff` maps to the unknown error; map it to a sign-in-again state | todo |
+| A-11 | `pumpApp` has no router option; widget tests of screens that call `context.canPop()` wrap their own GoRouter | todo |
 
 ## Open decisions
 

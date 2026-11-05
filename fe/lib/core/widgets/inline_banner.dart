@@ -8,7 +8,7 @@ import 'link_button.dart';
 
 enum InlineBannerTone { info, error }
 
-/// A one-line notice inside a screen, with an optional retry.
+/// A short notice inside a screen (up to three lines), with an optional retry.
 class InlineBanner extends StatelessWidget {
   const InlineBanner({
     super.key,
@@ -46,7 +46,7 @@ class InlineBanner extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                   child: Text(
                     message,
-                    maxLines: 1,
+                    maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.label.copyWith(
                       color: isError ? AppColors.negative : AppColors.ink,

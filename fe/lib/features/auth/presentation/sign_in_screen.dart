@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/errors/app_exception.dart';
+import '../../../core/router/routes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/eyebrow.dart';
 import '../../../core/widgets/inline_banner.dart';
+import '../../../core/widgets/link_button.dart';
 import '../../../core/widgets/primary_button.dart';
 import 'auth_providers.dart';
 
@@ -106,6 +109,13 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               label: 'Sign in',
               onPressed: submit,
               isBusy: attempt.isLoading,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Center(
+              child: LinkButton(
+                label: 'Want to try a session? Book a trial',
+                onPressed: () => context.push(Routes.trial).ignore(),
+              ),
             ),
           ],
         ),

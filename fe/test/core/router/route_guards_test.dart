@@ -21,6 +21,10 @@ void main() {
         redirectFor(hasSession: false, location: '${Routes.trial}/confirmed'),
         isNull,
       );
+      expect(
+        redirectFor(hasSession: false, location: Routes.trialBooked),
+        isNull,
+      );
       expect(redirectFor(hasSession: false, location: Routes.signIn), isNull);
     });
 

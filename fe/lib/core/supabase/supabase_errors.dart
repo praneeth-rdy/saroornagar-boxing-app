@@ -10,6 +10,8 @@ AppException mapSupabaseError(Object error) {
   return switch (error) {
     AppException() => error,
     PostgrestException() => _fromPostgrest(error),
+    // No response reached the app, so the body has no code to read.
+    FunctionsFetchException() => const OfflineException(),
     FunctionException() => _fromFunction(error),
     AuthRetryableFetchException() => const OfflineException(),
     AuthException() => _fromAuth(error),

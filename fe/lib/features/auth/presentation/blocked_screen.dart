@@ -8,7 +8,17 @@ import 'sign_out_button.dart';
 
 /// Shown instead of the app when the server reports the staff member as blocked.
 class BlockedScreen extends StatelessWidget {
-  const BlockedScreen({super.key});
+  const BlockedScreen({super.key})
+    : title = 'Access blocked',
+      message = 'Ask the club admin to restore your access.';
+
+  /// A signed-in account with no staff profile.
+  const BlockedScreen.notStaff({super.key})
+    : title = 'Not a staff account',
+      message = 'This account is not set up for staff.';
+
+  final String title;
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +35,13 @@ class BlockedScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Access blocked',
+                    title,
                     style: AppTypography.heading,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Ask the club admin to restore your access.',
+                    message,
                     style: AppTypography.body.copyWith(color: AppColors.muted),
                     textAlign: TextAlign.center,
                   ),
