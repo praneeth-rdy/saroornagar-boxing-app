@@ -14,7 +14,9 @@ the date) or marked as an open question. Nothing is built from an assumption.
 - Users (interview round 1): coaches / club staff, trainees, and public visitors (not yet
   members) who book a trial. Trainees never check themselves in; they can see their own
   attendance and their fee payment updates (cash or UPI), among other things.
-- Attendance is captured by a coach marking a session list: present or absent per trainee.
+- Attendance is captured by a coach tapping the students who are present (owner,
+  2026-11-05). Everyone else in a session that has at least one mark counts as absent; a
+  session with no marks is ignored (class not held or attendance not taken).
 - One club, one location. Two sessions every day, morning and evening, except Sunday. A coach
   or staff member can add an extra session on a day when needed.
 - Trial booking happens in the app, with no account needed for the visitor.

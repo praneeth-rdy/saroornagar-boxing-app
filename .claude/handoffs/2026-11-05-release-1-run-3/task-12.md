@@ -2,7 +2,7 @@
 
 - **Run:** `.claude/handoffs/2026-11-05-release-1-run-3/`
 - **Area:** fe
-- **Depends on:** task-10
+- **Depends on:** task-10, task-14 (Today files)
 - **Worker:** developer (Opus)
 - **Tests:** yes (developer updates tests; assistant renders proofs)
 - **Owner request this serves (two messages, 2026-11-05):** "Wherever we show list of attendance logs - need not show separate rows or cards for morning & evening. You can show date-wise logs with each date noting morning & evening if they are present in both and just morning or evening if they are present in only one session." and "Let's not show the target number sessions. Let's only show the number of classes they attended this month inside monthly attendance. If someone clicks on the user, then we can show the list of their attendance logs. Also, let's rename the term Trainee to Student across the app." (2026-11-05)
@@ -30,11 +30,11 @@ validator message, semantic label and proof fixture with the word Trainee/traine
 - Attendance logs are grouped by date, in the history screen AND the recent section of the
   student detail: one `ListRow` per date (title `EEE d MMM`), subtitle built from that
   date's PRESENT marks: "Morning and evening", "Morning", "Evening", extras by time
-  ("Morning and extra 4:00 pm"); a date whose marks are all absent reads "Absent" in
-  muted; dates with no marks do not appear. Counts caption on the history screen becomes
+  ("Morning and extra 4:00 pm"). Absence is implicit (owner, 2026-11-05): dates with no
+  present mark do not appear at all, and legacy absent rows are ignored. Counts caption on the history screen becomes
   "12 classes attended" (present marks). Put the grouping in a pure function
   (`groupAttendanceByDate(List<AttendanceRecord>) -> List<AttendanceDay>`) in the trainees
-  domain with unit tests (both present, one present one absent, extra session, all absent).
+  domain with unit tests (both present, one present one absent, extra session, all absent gives no day).
 - Rename: "Student" / "Students" / "student" replaces "Trainee" / "Trainees" / "trainee"
   in every user-facing string: the tab label and icon tooltip, screen titles ("Students",
   "Add student", "Student"), buttons ("Add student"), empty states, confirm dialogs,

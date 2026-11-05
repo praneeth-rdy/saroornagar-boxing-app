@@ -1,6 +1,6 @@
 -- Attendance and trial bookings: tables, RLS, marking functions, roster, history, booking window.
 begin;
-select plan(117);
+select plan(141);
 
 -- Fixtures: a blocked coach and the pinned clock (2026-06-10 is a Wednesday in India; 06-14 is a Sunday).
 select tests.create_user('blocked@local.test', 'blocked-local-1234', 'Blocked Coach', 'coach');
@@ -273,6 +273,61 @@ select throws_ok($$select * from public.trial_bookings_between('2026-06-01', '20
 -- Authenticated users can book too ------------------------------------------------------------------------------------
 select tests.authenticate_as('coach@local.test');
 select is((select count(*)::int from public.book_trial('Staff Friend', '9876543255', '2026-06-13', 'evening', 'device-key-ffffffff-0006', null, 40)), 1, 'a signed-in user can book a trial');
+
+-- unmark_attendance (presence-only marking) ------------------------------------------------------------------------
+select is(
+  (select prosecdef and 'search_path=""' = any(proconfig) from pg_proc where oid = 'public.unmark_attendance(uuid, uuid)'::regprocedure),
+  true, 'unmark_attendance is security definer with an empty search_path'
+);
+select is(
+  has_function_privilege('authenticated', 'public.unmark_attendance(uuid, uuid)', 'execute')
+    and not has_function_privilege('anon', 'public.unmark_attendance(uuid, uuid)', 'execute'),
+  true, 'authenticated can execute unmark_attendance and anon cannot'
+);
+-- August is untouched by the fixtures above, so its summary reflects only these marks.
+select id as s_aug from public.ensure_day_sessions('2026-08-03') where slot = 'morning' \gset
+select public.mark_attendance(:'s_aug', :'t_amy', 'present');
+select public.mark_attendance(:'s_aug', :'t_bob', 'present');
+select tests.authenticate_as_anon();
+select throws_ok(format($$select public.unmark_attendance(%L, %L)$$, :'s_aug', :'t_amy'), '42501', null, 'anon cannot call unmark_attendance');
+select tests.authenticate_as('blocked@local.test');
+select throws_ok(format($$select public.unmark_attendance(%L, %L)$$, :'s_aug', :'t_amy'), 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot unmark attendance');
+select tests.authenticate_as('coach@local.test');
+select is((select session_count from public.monthly_attendance_summary('2026-08-01') limit 1), 1, 'the marked August session counts as held');
+select lives_ok(format($$select public.unmark_attendance(%L, %L)$$, :'s_aug', :'t_bob'), 'a coach can remove a mark');
+select is((select session_count from public.monthly_attendance_summary('2026-08-01') limit 1), 1, 'a session with a mark left is still held');
+select lives_ok(format($$select public.unmark_attendance(%L, %L)$$, :'s_aug', :'t_amy'), 'a coach can remove the last mark');
+select is((select count(*)::int from public.attendance where session_id = :'s_aug'), 0, 'the removed marks are gone');
+select is((select session_count from public.monthly_attendance_summary('2026-08-01') limit 1), 0, 'a session whose only mark was removed no longer counts');
+select is((select present_count from public.monthly_attendance_summary('2026-08-01') where trainee_id = :'t_amy'), 0, 'the removed mark no longer counts as present');
+select throws_ok(format($$select public.unmark_attendance(%L, %L)$$, :'s_aug', :'t_amy'), 'BXNTF', 'No mark to remove', 'removing a mark twice is not found');
+select throws_ok(format($$select public.unmark_attendance(%L, %L)$$, gen_random_uuid(), :'t_amy'), 'BXNTF', 'Session not found', 'unmarking on an unknown session is not found');
+
+-- reset_session_attendance -----------------------------------------------------------------------------------------
+select is(
+  (select prosecdef and 'search_path=""' = any(proconfig) from pg_proc where oid = 'public.reset_session_attendance(uuid)'::regprocedure),
+  true, 'reset_session_attendance is security definer with an empty search_path'
+);
+select is(
+  has_function_privilege('authenticated', 'public.reset_session_attendance(uuid)', 'execute')
+    and not has_function_privilege('anon', 'public.reset_session_attendance(uuid)', 'execute'),
+  true, 'authenticated can execute reset_session_attendance and anon cannot'
+);
+select id as s_aug_eve from public.ensure_day_sessions('2026-08-03') where slot = 'evening' \gset
+select public.mark_attendance(:'s_aug_eve', :'t_amy', 'present');
+select public.mark_attendance(:'s_aug_eve', :'t_bob', 'present');
+select tests.authenticate_as_anon();
+select throws_ok(format($$select public.reset_session_attendance(%L)$$, :'s_aug_eve'), '42501', null, 'anon cannot call reset_session_attendance');
+select tests.authenticate_as('blocked@local.test');
+select throws_ok(format($$select public.reset_session_attendance(%L)$$, :'s_aug_eve'), 'BXPRM', 'Only club staff can do this', 'a blocked coach cannot reset a session');
+select tests.authenticate_as('coach@local.test');
+select is((select count(*)::int from public.attendance where session_id = :'s_aug_eve'), 2, 'the refused resets removed nothing');
+select is((select session_count from public.monthly_attendance_summary('2026-08-01') limit 1), 1, 'the marked August evening counts as held before the reset');
+select is(public.reset_session_attendance(:'s_aug_eve'), 2, 'a coach reset removes every mark of the session and returns the count');
+select is((select count(*)::int from public.attendance where session_id = :'s_aug_eve'), 0, 'the reset session has no marks');
+select is((select session_count from public.monthly_attendance_summary('2026-08-01') limit 1), 0, 'a reset session no longer counts as held');
+select is(public.reset_session_attendance(:'s_aug_eve'), 0, 'a repeated reset removes nothing and returns 0');
+select throws_ok(format($$select public.reset_session_attendance(%L)$$, gen_random_uuid()), 'BXNTF', 'Session not found', 'resetting an unknown session is not found');
 
 select * from finish();
 rollback;
