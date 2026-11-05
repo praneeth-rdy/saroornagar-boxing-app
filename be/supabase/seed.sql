@@ -1,6 +1,6 @@
 -- Local stack only: known staff logins for manual runs and pgTAP; never apply to hosted.
 
--- The on_auth_user_created trigger turns each auth user into a profile with the metadata role.
+-- The on_auth_user_created trigger turns each auth user into a profile with the app_metadata role.
 insert into auth.users (
   instance_id, id, aud, role, phone, encrypted_password, phone_confirmed_at,
   raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
@@ -11,16 +11,16 @@ values
     '00000000-0000-0000-0000-000000000000', '00000000-0000-4000-a000-000000000001',
     'authenticated', 'authenticated', '919000000001',
     extensions.crypt('admin-local-1234', extensions.gen_salt('bf')), now(),
-    '{"provider": "phone", "providers": ["phone"]}',
-    '{"full_name": "Local Admin", "role": "admin"}',
+    '{"provider": "phone", "providers": ["phone"], "role": "admin", "full_name": "Local Admin"}',
+    '{"full_name": "Local Admin"}',
     now(), now(), '', '', '', ''
   ),
   (
     '00000000-0000-0000-0000-000000000000', '00000000-0000-4000-a000-000000000002',
     'authenticated', 'authenticated', '919000000002',
     extensions.crypt('coach-local-1234', extensions.gen_salt('bf')), now(),
-    '{"provider": "phone", "providers": ["phone"]}',
-    '{"full_name": "Local Coach", "role": "coach"}',
+    '{"provider": "phone", "providers": ["phone"], "role": "coach", "full_name": "Local Coach"}',
+    '{"full_name": "Local Coach"}',
     now(), now(), '', '', '', ''
   )
 on conflict (id) do nothing;

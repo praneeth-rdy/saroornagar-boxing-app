@@ -157,12 +157,14 @@ async function createStaff(admin: SupabaseClient, body: Record<string, unknown>)
   const password = requirePassword(body.password);
   const role = requireRole(body.role);
 
-  // The on_auth_user_created trigger turns the metadata into the profiles row.
+  // The on_auth_user_created trigger reads the role from app_metadata, which only the
+  // service role can write, so a self sign-up never becomes staff.
   const { data, error } = await admin.auth.admin.createUser({
     phone,
     password,
     phone_confirm: true,
-    user_metadata: { full_name: fullName, role },
+    app_metadata: { role, full_name: fullName },
+    user_metadata: { full_name: fullName },
   });
   if (error) {
     if (error.code === 'phone_exists') {

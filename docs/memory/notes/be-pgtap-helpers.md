@@ -1,6 +1,6 @@
 # pgTAP helper file quirks (be, 2026-11-05)
 
-- pg_prove fails a file with no plan, so `tests/000_helpers.sql` ends with `plan(6)` and
+- pg_prove fails a file with no plan, so `tests/000_helpers.sql` ends with `plan(7)` and
   `has_function` checks; it has no begin/rollback, so the `tests` schema stays committed.
 - `tests.authenticate_as` uses `set_config(..., true)`: only effective inside a transaction,
   so every other test file must be `begin; ... rollback;`. A failing statement rolled back to

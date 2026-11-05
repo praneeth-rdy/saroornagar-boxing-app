@@ -1,11 +1,9 @@
-# Open: public sign-up plus metadata role lets anyone become admin (be, 2026-11-05)
+# Sign-up role escalation: remaining hosted steps (be, 2026-11-05)
 
-Observed on the local stack with a phone provider enabled: `POST /auth/v1/signup` with the
-publishable key and `data: {"role": "admin"}` created an `admin` profile, because
-`private.handle_new_user` (task-01 spec) trusts `raw_user_meta_data`, which the caller controls.
-Without a role it still yields a `coach`, i.e. full staff read access.
-Not fixed in task-01 (design decision). Options for the Architect:
-- Turn public sign-ups off: hosted dashboard "Allow new users to sign up" off, and
-  `[auth] enable_signup = false` locally. Admin `createUser` and password sign-in keep working.
-- Defence in depth: take `role` from `raw_app_meta_data` (only the service role can set it),
-  which changes task-05 (`app_metadata: { role }`), the seed and `tests.create_user`.
+Fixed in the schema by `20261105081756_harden_profiles.sql`: the profile role comes only from
+`app_metadata` (service role only), so a self sign-up gets no profile. Still to do by hand in
+the hosted dashboard (Authentication settings), with the owner, before staff go live:
+- Turn "Allow new users to sign up" off (admin `createUser` and password sign-in keep working).
+- Enable the Phone provider (password sign-in by phone; no SMS sender needed for that).
+- Keep phone confirmations off (`createUser` sets `phone_confirm: true`).
+Local `config.toml` still has `enable_signup` at its default; harmless now, untouched here.

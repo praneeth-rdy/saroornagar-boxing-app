@@ -146,7 +146,7 @@ select throws_ok(format($$delete from public.fee_payments where trainee_id = %L$
 select tests.authenticate_as('919000000010');
 select is((select count(*)::int from public.fee_payments), 0, 'a blocked coach sees no fee payments');
 select tests.authenticate_as_anon();
-select is((select count(*)::int from public.fee_payments), 0, 'anon sees no fee payments');
+select throws_ok($$select count(*) from public.fee_payments$$, '42501', null, 'anon has no select privilege on fee_payments');
 select tests.authenticate_as('919000000002');
 
 -- Table checks stay in force even for the table owner ------------------------------------------

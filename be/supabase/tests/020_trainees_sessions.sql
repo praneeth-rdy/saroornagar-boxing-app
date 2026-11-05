@@ -139,7 +139,7 @@ select is((select count(*)::int from public.trainees where id in (:'t1', :'t2'))
 select tests.authenticate_as('919000000010');
 select is((select count(*)::int from public.trainees), 0, 'blocked coach reads no trainees');
 select tests.authenticate_as_anon();
-select is((select count(*)::int from public.trainees), 0, 'anon reads no trainees');
+select throws_ok($$select count(*) from public.trainees$$, '42501', null, 'anon has no select privilege on trainees');
 select tests.authenticate_as('919000000002');
 select throws_ok($$insert into public.trainees (full_name) values ('Direct Insert')$$, '42501', null, 'coach cannot insert a trainee directly');
 select tests.authenticate_as('919000000002');
@@ -348,7 +348,7 @@ select cmp_ok((select count(*)::int from public.sessions), '>=', 10, 'admin read
 select tests.authenticate_as('919000000010');
 select is((select count(*)::int from public.sessions), 0, 'blocked coach reads no sessions');
 select tests.authenticate_as_anon();
-select is((select count(*)::int from public.sessions), 0, 'anon reads no sessions');
+select throws_ok($$select count(*) from public.sessions$$, '42501', null, 'anon has no select privilege on sessions');
 select tests.authenticate_as('919000000002');
 select throws_ok($$insert into public.sessions (session_date, slot, starts_at, ends_at) values ('2026-06-30', 'extra', '10:00', '11:00')$$, '42501', null, 'coach cannot insert a session directly');
 select tests.authenticate_as('919000000002');

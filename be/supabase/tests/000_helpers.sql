@@ -19,7 +19,8 @@ as $$
   select u.id from auth.users u where u.phone = p_phone;
 $$;
 
--- Same rows as seed.sql; the on_auth_user_created trigger creates the profile from the metadata.
+-- Same rows as seed.sql; the on_auth_user_created trigger creates the profile from the
+-- app_metadata role, as the admin-staff Edge Function sets it. A null role makes no profile.
 create or replace function tests.create_user(
   p_phone text,
   p_password text,
@@ -47,8 +48,57 @@ begin
   values (
     '00000000-0000-0000-0000-000000000000', v_id, 'authenticated', 'authenticated', p_phone,
     extensions.crypt(p_password, extensions.gen_salt('bf')), now(),
+    jsonb_build_object('provider', 'phone', 'providers', jsonb_build_array('phone'))
+      || jsonb_strip_nulls(jsonb_build_object('role', p_role, 'full_name', p_full_name)),
+    jsonb_strip_nulls(jsonb_build_object('full_name', p_full_name)),
+    now(), now(), '', '', '', ''
+  );
+
+  insert into auth.identities (
+    id, provider_id, user_id, provider, identity_data, last_sign_in_at, created_at, updated_at
+  )
+  values (
+    v_id, v_id::text, v_id, 'phone',
+    jsonb_build_object(
+      'sub', v_id::text, 'phone', p_phone, 'email_verified', false, 'phone_verified', true
+    ),
+    now(), now(), now()
+  );
+
+  return v_id;
+end;
+$$;
+
+-- A plain sign-up: the role sits only in user metadata, which the caller controls, so the
+-- trigger must create no profile. p_user_role null leaves user metadata empty.
+create or replace function tests.create_user_without_role(
+  p_phone text,
+  p_password text,
+  p_user_role text default null
+)
+returns uuid
+language plpgsql
+set search_path = ''
+as $$
+declare
+  v_id uuid := tests.user_id(p_phone);
+begin
+  if v_id is not null then
+    return v_id;
+  end if;
+
+  v_id := gen_random_uuid();
+
+  insert into auth.users (
+    instance_id, id, aud, role, phone, encrypted_password, phone_confirmed_at,
+    raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+    confirmation_token, recovery_token, email_change_token_new, email_change
+  )
+  values (
+    '00000000-0000-0000-0000-000000000000', v_id, 'authenticated', 'authenticated', p_phone,
+    extensions.crypt(p_password, extensions.gen_salt('bf')), now(),
     '{"provider": "phone", "providers": ["phone"]}'::jsonb,
-    jsonb_strip_nulls(jsonb_build_object('full_name', p_full_name, 'role', p_role)),
+    jsonb_strip_nulls(jsonb_build_object('role', p_user_role)),
     now(), now(), '', '', '', ''
   );
 
@@ -122,9 +172,10 @@ end;
 $$;
 
 -- pg_prove needs a plan from every file; these prove the helpers installed.
-select plan(6);
+select plan(7);
 select has_function('tests', 'user_id', array['text'], 'tests.user_id exists');
 select has_function('tests', 'create_user', array['text', 'text', 'text', 'text'], 'tests.create_user exists');
+select has_function('tests', 'create_user_without_role', array['text', 'text', 'text'], 'tests.create_user_without_role exists');
 select has_function('tests', 'authenticate_as', array['text'], 'tests.authenticate_as exists');
 select has_function('tests', 'authenticate_as_anon', array[]::text[], 'tests.authenticate_as_anon exists');
 select has_function('tests', 'clear_auth', array[]::text[], 'tests.clear_auth exists');

@@ -119,17 +119,20 @@ select is(
   2, 'seed accounts have phone identities'
 );
 
-select tests.create_user('919000000020', 'x-local-1234', null, null) as nameless_id \gset
+select tests.create_user('919000000020', 'x-local-1234', null, 'coach') as nameless_id \gset
 select is(
   (select full_name from public.profiles where id = :'nameless_id'),
   '919000000020', 'missing full_name falls back to the phone'
 );
+-- The role is read from app_metadata only; a sign-up without it, or with it only in user metadata, is not staff.
+select tests.create_user_without_role('919000000022', 'x-local-1234') as roleless_id \gset
+select tests.create_user_without_role('919000000023', 'x-local-1234', 'admin') as self_admin_id \gset
 select is(
-  (select role::text from public.profiles where id = :'nameless_id'),
-  'coach', 'missing role falls back to coach'
+  (select count(*)::int from public.profiles where id in (:'roleless_id', :'self_admin_id')),
+  0, 'no app_metadata role (none, or admin in user metadata only) creates no profile'
 );
 select is(
-  tests.create_user('919000000020', 'x-local-1234', null, null), :'nameless_id'::uuid,
+  tests.create_user('919000000020', 'x-local-1234', null, 'coach'), :'nameless_id'::uuid,
   'tests.create_user is idempotent on phone'
 );
 update auth.users set phone = '919000000021' where id = :'nameless_id';
@@ -187,7 +190,7 @@ select tests.authenticate_as('919000000001');
 select throws_ok($$update public.profiles set role = 'coach' where phone = '919000000002'$$, '42501', null, 'admin cannot update profiles directly either');
 
 select tests.authenticate_as_anon();
-select is((select count(*)::int from public.profiles), 0, 'anon reads no profile rows');
+select throws_ok($$select count(*) from public.profiles$$, '42501', null, 'anon has no select privilege on profiles');
 select tests.clear_auth();
 
 -- update_staff ----------------------------------------------------------------------

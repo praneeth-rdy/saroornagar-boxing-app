@@ -25,7 +25,7 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | B-05 | `book_trial`: refuse a batch that has already ended today; consider an anon rate limit | todo |
 | B-06 | Decide whether past rosters and reports should include trainees who are now inactive | todo (owner) |
 | B-07 | Edge Function `admin-staff` (create, reset_password, set_blocked) | done (2026-11-05), not deployed |
-| B-08 | Harden profile creation (app_metadata role) and revoke anon select | in progress |
+| B-08 | Harden profile creation (app_metadata role) and revoke anon select (`20261105081756_harden_profiles.sql`) | done (2026-11-05), not applied to hosted |
 
 ## App
 

@@ -181,7 +181,7 @@ select throws_ok(format($$delete from public.attendance where session_id = %L$$,
 select tests.authenticate_as('919000000010');
 select is((select count(*)::int from public.attendance), 0, 'a blocked coach sees no attendance rows');
 select tests.authenticate_as_anon();
-select is((select count(*)::int from public.attendance), 0, 'anon sees no attendance rows');
+select throws_ok($$select count(*) from public.attendance$$, '42501', null, 'anon has no select privilege on attendance');
 select tests.authenticate_as('919000000002');
 
 -- delete_extra_session with attendance -------------------------------------------------------
@@ -235,7 +235,8 @@ select throws_ok($$select public.book_trial('Ravi Again', '+919876543210', '2026
 select is((select count(*)::int from public.my_trial_bookings('device-key-dddddddd-0004')), 0, 'a duplicate stored nothing for the second device');
 
 -- my_trial_bookings and direct access -----------------------------------------------------------------------
-select is((select count(*)::int from public.trial_bookings), 0, 'anon cannot select trial_bookings directly');
+select throws_ok($$select count(*) from public.trial_bookings$$, '42501', null, 'anon has no select privilege on trial_bookings');
+select tests.authenticate_as_anon();
 select throws_ok($$insert into public.trial_bookings (full_name, phone, age, session_date, slot, device_key) values ('Direct Row', '919876543201', 20, '2026-06-11', 'morning', 'device-key-eeeeeeee-0005')$$, '42501', null, 'anon cannot insert trial_bookings directly');
 select throws_ok($$delete from public.trial_bookings$$, '42501', null, 'anon cannot delete trial_bookings');
 select is((select count(*)::int from public.my_trial_bookings('device-key-zzzzzzzz-9999')), 0, 'another device key sees nothing');
