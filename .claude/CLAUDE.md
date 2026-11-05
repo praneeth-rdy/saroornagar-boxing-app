@@ -146,6 +146,13 @@ list, and for `be` packages the owner's approval date and the app impact.
   the MCP `apply_migration` with the file's exact name as its version, or `npx supabase db
   push`) happens only on the owner's say-so. The free tier has no Supabase branching and no
   deploy-on-push: the hosted apply is always an explicit step.
+- **Release builds go to the owner's device** (owner, 2026-11-05): after every landed app
+  run, an `assistant` builds `flutter build apk --release --dart-define-from-file=config/prod.json
+  --build-number=$(git rev-list --count HEAD)` from `fe/`, checks the signing certificate, and
+  installs with `~/Library/Android/sdk/platform-tools/adb install -r` on the connected device,
+  then launches the app. The upload keystore lives in `fe/android/keystore/` with
+  `fe/android/key.properties` (both gitignored); passwords are in `creds.md`. Back the keystore
+  up; it cannot be regenerated.
 - Supabase skills (`supabase`, `supabase-postgres-best-practices` from
   `supabase/agent-skills`) are installed under `.claude/skills/` and `.agents/skills/` and
   gitignored; `skills-lock.json` records them. Reinstall on a new machine with the skills CLI
