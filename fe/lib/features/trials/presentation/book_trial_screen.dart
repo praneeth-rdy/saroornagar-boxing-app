@@ -13,6 +13,7 @@ import '../../../core/utils/india_date.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_text_field.dart';
+import '../../../core/widgets/brand_badge.dart';
 import '../../../core/widgets/choice_row.dart';
 import '../../../core/widgets/date_field.dart';
 import '../../../core/widgets/eyebrow.dart';
@@ -178,6 +179,8 @@ class _BookTrialScreenState extends ConsumerState<BookTrialScreen> {
             AppSpacing.xxl,
           ),
           children: [
+            const BrandBadge(),
+            const SizedBox(height: AppSpacing.xl),
             const Eyebrow('SAROORNAGAR BOXING'),
             const SizedBox(height: AppSpacing.sm),
             const Text('Try a session', style: AppTypography.title),
