@@ -8,6 +8,7 @@ each was applied. Newest first. Settled instructions are promoted into the relev
 
 | Instruction (owner's words, condensed) | Applied in |
 |---|---|
+| Round 4 answers: "Monthly fee. 500 per month for juniors below the age of 15 and 1000 per month for seniors >= age 15. Just record the payments."; trial form = name, phone, date, session, age/DOB, optional note; design A; owner creates the Supabase project. | `docs/product.md`, `docs/decisions.md` (A), `docs/backlog.md` D-01, D-03, S-04. |
 | "Let the admin user have the ability to reset password of any user, block access, etc and also be able to manage the coaches/staff accounts" | `docs/product.md` Confirmed (Roles); replaces the earlier "same powers for now". |
 | Round 3 answers: trainee fields (name, optional photo/phone/joining date, active/inactive); trials have no confirmation, the slot only informs the coach; morning 6:00-8:30 am, evening 5:30-8:00 pm; reports: per-trainee history, monthly summary, fee status list. | `docs/product.md` Confirmed. |
 | "Let's not have trainees view for now. Let's only build for guest slot booking and coach/staff/admin." | `docs/product.md` Release 1 scope; trainee view deferred; backlog D-02 settled. |

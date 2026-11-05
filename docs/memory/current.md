@@ -24,16 +24,17 @@ OAuth is the owner's step); no `gh`. Xcode incomplete (irrelevant, Android only)
 
 ## Blocked on the owner
 
-1. Design direction (D-01) from the canvas.
-2. Interview answers (product.md, Open questions 1 to 10).
-3. Hosted Supabase project: organisation, region, name (D-03); then `supabase login` in an
-   interactive shell or the MCP OAuth, and the project ref into `.mcp.json`.
-4. The file outside the repo where credentials are kept (the other project uses a plain
-   `creds.md` in the workspace folder).
+1. Hosted Supabase project (the owner creates it): project ref, publishable key, and either
+   an access token or `supabase login` so the CLI can link; project ref into `.mcp.json`.
+2. Remaining open points in `docs/product.md` (DOB on the trainee record, trial slot
+   details, Android application id, first admin creation).
+3. Approval of the first schema proposal (sent in chat 2026-11-05).
+4. The file outside the repo where credentials are kept.
 
 ## Resume checklist
 
-1. Read `docs/product.md`; move answered questions to Confirmed.
-2. Record the chosen direction in `docs/decisions.md` and the theme tokens plan.
-3. Propose the first schema (trainees, batches, attendance, trial bookings) in chat for
-   approval, then the first `/build` run.
+1. Interview rounds 1 to 4 done; design A chosen; release 1 = guest trial booking + staff
+   app, no trainee view.
+2. Next: schema approval, then run 1 packages (be: identity, trainees, sessions, attendance,
+   trial bookings, fee payments; fe: theme A, sign-in, Today, roster, trials, fees) through
+   the `tiered-build` workflow (standing opt-in).

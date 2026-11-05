@@ -42,6 +42,15 @@ view (own attendance, fee updates) is a later release; nothing in release 1 may 
 - Staff reports in release 1: per-trainee attendance history, monthly attendance summary,
   fee status list.
 
+- Fees (round 4): monthly. 500 per month for juniors (below 15 years), 1000 per month for
+  seniors (15 and above). The app just records payments; no automatic due or overdue logic
+  was asked for. A trainee's age therefore matters to the fee tier.
+- Trial form: name, phone, date, session (morning or evening), age or date of birth, and an
+  optional note.
+- Design direction A, Ivory and Graphite (light, Apple-like, graphite text, one blue accent).
+- Hosted Supabase project: the owner creates it and shares the project ref and publishable
+  key.
+
 ## Open questions
 
 Gathered through the requirements interview, broad to narrow. Each answer moves to the
@@ -53,10 +62,10 @@ Confirmed section with its date.
 4. (answered) In the app, no account, no confirmation. Still open: what the guest fills in (name, phone, session, date); whether a slot has a capacity; whether the guest can cancel; any trial fee; what the coach does when the guest arrives (mark as attended? convert to trainee?).
 5. (answered) Phone and password; admin creates and manages staff accounts, resets passwords, blocks access. Still open: how the first admin account is created (seeded by us with a password handed over).
 6. (answered) Trainee record fields.
-7. (answered) Fees are record-only in release 1. Still open: the fee model (monthly amount per trainee? plans?), and what "due" means.
+7. (answered) Monthly fee by age tier, record only. Still open: does the trainee record carry a date of birth (needed to pick the tier), and should the fee status list show "last paid month" only or also flag months with no payment.
 8. Notifications (reminders, confirmations): in scope or not; channel.
 9. (answered) Reports: per-trainee history, monthly summary, fee status list.
-10. Hosted Supabase: which organisation, region and project name; the Android application id.
+10. (answered) Hosted Supabase: the owner creates it. Still open: the Android application id (needs the club's name or domain); how the first admin account is created (proposal: seeded by a migration with a password the owner changes).
 
 ## Glossary
 
