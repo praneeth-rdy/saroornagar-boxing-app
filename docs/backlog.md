@@ -12,7 +12,7 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | S-03 | Requirements interview, broad to narrow, recorded in `product.md` | in progress |
 | S-04 | Hosted Supabase project: fill `fe/config/*.json`, add `project_ref` to `.mcp.json`, link the CLI | blocked on the owner (project ref, publishable key, access token or `supabase login`) |
 | S-05 | Android application id | done (2026-11-05), `com.saroornagarboxing.app` |
-| S-06 | Hosted dashboard: disable public sign-ups, enable the Phone provider with confirmations off, enable leaked-password protection if the plan allows | blocked on the owner (admin user created 2026-11-05 through the MCP) |
+| S-06 | Hosted dashboard: disable public sign-ups (Phone provider no longer needed; leaked-password protection if the plan allows) | blocked on the owner |
 
 ## Backend
 
@@ -22,13 +22,13 @@ Prioritised work with status. IDs: `S-nn` setup, `A-nn` app (`fe`), `B-nn` backe
 | B-02 | Trainees, sessions, photo bucket (`20261105075401_trainees_sessions.sql`) | done (2026-11-05), applied to hosted 2026-11-05 |
 | B-03 | Attendance, trial bookings (`20261105080014_attendance_trials.sql`) | done (2026-11-05), applied to hosted 2026-11-05 |
 | B-04 | Fee payments, reports (`20261105080602_fees_reports.sql`) | done (2026-11-05), applied to hosted 2026-11-05 |
-| B-05 | `book_trial`: refuse a batch that has already ended today; consider an anon rate limit | done (2026-11-05), `20261105160639_backlog_sweep.sql`; no rate limit beyond the unique key; not yet applied to hosted |
-| B-06 | Decide whether past rosters and reports should include trainees who are now inactive | done (2026-11-05), `20261105160639_backlog_sweep.sql`: monthly summary keeps inactive students with marks that month; fee status and roster stay active only; not yet applied to hosted |
+| B-05 | `book_trial`: refuse a batch that has already ended today; consider an anon rate limit | done (2026-11-05), `20261105160639_backlog_sweep.sql`; no rate limit beyond the unique key; applied to hosted 2026-11-05 |
+| B-06 | Decide whether past rosters and reports should include trainees who are now inactive | done (2026-11-05), `20261105160639_backlog_sweep.sql`: monthly summary keeps inactive students with marks that month; fee status and roster stay active only; applied to hosted 2026-11-05 |
 | B-07 | Edge Function `admin-staff` (create, reset_password, set_blocked) | done (2026-11-05), deployed 2026-11-05 (version 1) |
 | B-08 | Harden profile creation (app_metadata role) and revoke anon select (`20261105081756_harden_profiles.sql`) | done (2026-11-05), applied to hosted |
-| B-09 | Merge `profiles_select_own` and `profiles_select_staff` into one policy (performance advisor: multiple permissive policies) | done (2026-11-05), `profiles_select_staff_or_own` in `20261105160639_backlog_sweep.sql`; not yet applied to hosted |
-| B-13 | `trainee_attendance_history` returns no `starts_at`, so grouped logs show an extra session as "extra" without its time; add the time in a migration and show it in the app | done (2026-11-05), `20261105160639_backlog_sweep.sql`; not yet applied to hosted; app side done (2026-11-05): `AttendanceRecord.startsAt`/`endsAt`, "Morning and extra 4:00 pm" |
-| B-12 | Server messages say "trainee" ("This trainee is inactive", "Trainee not found"); the app now says Student. Reword in a migration. | done (2026-11-05), `20261105160639_backlog_sweep.sql`; not yet applied to hosted; app side done (2026-11-05): `AttendanceRecord.startsAt`/`endsAt`, "Morning and extra 4:00 pm" |
+| B-09 | Merge `profiles_select_own` and `profiles_select_staff` into one policy (performance advisor: multiple permissive policies) | done (2026-11-05), `profiles_select_staff_or_own` in `20261105160639_backlog_sweep.sql`; applied to hosted 2026-11-05 |
+| B-13 | `trainee_attendance_history` returns no `starts_at`, so grouped logs show an extra session as "extra" without its time; add the time in a migration and show it in the app | done (2026-11-05), `20261105160639_backlog_sweep.sql`; applied to hosted 2026-11-05; app side done (2026-11-05): `AttendanceRecord.startsAt`/`endsAt`, "Morning and extra 4:00 pm" |
+| B-12 | Server messages say "trainee" ("This trainee is inactive", "Trainee not found"); the app now says Student. Reword in a migration. | done (2026-11-05), `20261105160639_backlog_sweep.sql`; applied to hosted 2026-11-05; app side done (2026-11-05): `AttendanceRecord.startsAt`/`endsAt`, "Morning and extra 4:00 pm" |
 | B-11 | Apply `fee_tier_800`, `summary_held_sessions`, `unmark_attendance` to hosted | done (2026-11-05) |
 | B-10 | Hosted migration history carries MCP timestamps, not file names; run `supabase migration repair` before any `db push` | todo (only if db push is ever used) |
 
