@@ -105,8 +105,9 @@ Newest first. Short: the decision, the reason, the alternatives considered.
   symlinked.
 - **Running memory lives under `docs/memory/`.** Keeps the owner's three-folder layout while
   preserving the settled-vs-moving split (`docs/README.md`).
-- **Commits carry the `Co-Authored-By` trailer** (owner's instruction for this project; the
-  other project omits trailers).
+- **Commits carry no co-author or attribution trailer** (owner, 2026-11-06, reversing the
+  2026-11-05 choice; all 45 earlier commits were rewritten and force-pushed that day, the only
+  history rewrite allowed on `main`).
 - **No deploy-on-push for the backend.** The free tier has no Supabase branching or GitHub
   integration; migrations are applied to hosted on the owner's say-so through the MCP or
   `npx supabase db push`.

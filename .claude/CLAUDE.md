@@ -43,10 +43,10 @@ CLAUDE.md or `docs/` file; the log entry stays as the record.
 - **Commit at logical checkpoints without asking.** When a coherent piece of work is done (a
   setup step, a package landed and smoke-checked, a docs update), commit it and say so: files
   and message. `docs/memory/` is committed in the same checkpoint as the work it describes.
-- **Every commit message ends with the co-author trailer** (owner, 2026-11-05: "use
-  coauthoring inside commit message"):
-  `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`. Subject says what changed for
-  the user; body only when the subject does not say it all. No other trailers.
+- **No co-author trailer and no attribution lines in commit messages** (owner, 2026-11-06:
+  "remove Coauthored message from all past commits & remember this decision for future
+  commits"; the history was rewritten that day). Subject says what changed for the user; body
+  only when the subject does not say it all. No trailers of any kind.
 - **Push every checkpoint commit at once**; no confirmation is needed for `main`. Applying a
   migration to the hosted Supabase project is a separate step that happens only on the
   owner's word (see Toolchain).

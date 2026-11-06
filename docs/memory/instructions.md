@@ -4,6 +4,12 @@ A dated record of the working instructions the owner gives, close to their words
 each was applied. Newest first. Settled instructions are promoted into the relevant
 `CLAUDE.md` or `docs/` file; the entry here stays as the record.
 
+## 2026-11-06
+
+| Instruction (owner's words, condensed) | Applied in |
+|---|---|
+| "Can you remove Coauthored message from all past commits & remember this decision for future commits" | History rewritten (45 commits) and force-pushed with the owner's say-so; `.claude/CLAUDE.md` Git rules, `docs/decisions.md`. |
+
 ## 2026-11-05
 
 | Instruction (owner's words, condensed) | Applied in |

@@ -81,7 +81,7 @@ only, passed in with `--dart-define-from-file`. No other credential goes into th
 ## Working on it with Claude Code
 
 Open the repo root. `.claude/CLAUDE.md` carries the workspace rules: work on the checked-out
-branch, commit at checkpoints with the co-author trailer and push, a three-tier model split
+branch, commit at checkpoints (no attribution trailers) and push, a three-tier model split
 (Fable plans and reviews, Opus implements, Sonnet tests and smoke-checks), handoff packages
 under `.claude/handoffs/`, the `/build` skill and the `tiered-build` workflow. Copy
 `.mcp.json.example` to `.mcp.json` for the Supabase MCP (add `&project_ref=<ref>` once the

@@ -2,6 +2,12 @@
 
 Newest first. One entry per work session: what changed, what it means for the next session.
 
+## 2026-11-06: commit trailers removed
+
+- Owner asked to drop the co-author trailer from every commit and for the future; `main` was
+  rewritten (45 commits) and force-pushed on the owner's word. The git rule now says no
+  trailers of any kind. Docs completion from the previous session was committed first.
+
 ## 2026-11-05 (second session, evening): device feedback round
 
 - Owner's device report (double mark, 4 sessions) led to R3-03 (session selection keyed by
